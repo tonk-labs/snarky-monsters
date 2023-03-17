@@ -38,7 +38,7 @@ const Moves = [{
     id: 2,
     attack: 10,
     crit: 2,
-    miss: 10,
+    miss: 0,
     category: Category.UNIVERSAL,
     type: MoveTypes.ATTACK
 }, {
@@ -142,7 +142,7 @@ const Moves = [{
 }];
 
 const Monsters = [{
-    id: 0,
+    id: 1,
     hp: 100,
     stats: {
         attack: 10,
@@ -150,7 +150,7 @@ const Monsters = [{
     },
     category: Category.DEGEN,
 }, {
-    id: 1,
+    id: 2,
     hp: 100,
     stats: {
         attack: 10,
@@ -158,7 +158,7 @@ const Monsters = [{
     },
     category: Category.REGULATOR,
 }, {
-    id: 2,
+    id: 3,
     hp: 100,
     stats: {
         attack: 10,
@@ -166,7 +166,7 @@ const Monsters = [{
     },
     category: Category.VC,
 }, {
-    id: 3,
+    id: 4,
     hp: 100,
     stats: {
         attack: 10,
@@ -174,7 +174,7 @@ const Monsters = [{
     },
     category: Category.NORMIE,
 }, {
-    id: 4,
+    id: 5,
     hp: 100,
     stats: {
         attack: 10,
@@ -182,7 +182,7 @@ const Monsters = [{
     },
     category: Category.AGI,
 }, {
-    id: 5,
+    id: 6,
     hp: 100,
     stats: {
         attack: 10,
@@ -190,7 +190,7 @@ const Monsters = [{
     },
     category: Category.BITCOIN_MAXI,
 }, {
-    id: 6,
+    id: 7,
     hp: 100,
     stats: {
         attack: 10,
@@ -199,9 +199,28 @@ const Monsters = [{
     category: Category.MOON_MATHER,
 }];
 
+const degen = [1, 0, 3, 2, 1, 1, 1];
+const reg =   [3, 1, 1, 2, 1, 0, 1];
+const vc =    [0, 1, 1, 1, 3, 2, 1];
+const norm =  [1, 1, 2, 1, 1, 3, 0];
+const agi =   [1, 2, 0, 1, 1, 1, 3];
+const btcm =  [1, 3, 1, 0, 1, 1, 2];
+const mm =    [1, 2, 1, 3, 0, 1, 1];
+
+const EffectivenessMatrix = [
+    degen,
+    reg,
+    vc,
+    norm,
+    agi,
+    btcm,
+    mm
+]
+
 const Game = {
     Monsters: Monsters,
     Moves: Moves,
+    EffectivenessMatrix: EffectivenessMatrix,
 }
 
 
