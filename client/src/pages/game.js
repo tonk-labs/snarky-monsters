@@ -1,9 +1,7 @@
 import Head from 'next/head'
 import styled from 'styled-components'
 
-const Container = styled.div`
-  color: red;
-`
+const Container = styled.div``
 
 export default function Game() {
   return (
@@ -18,7 +16,6 @@ export default function Game() {
         <link rel="icon" href="/favicon.png" />
       </Head>
       <Container>
-        <h1>Snarky Monsters!</h1>
         <p>here is the game</p>
       </Container>
     </>
