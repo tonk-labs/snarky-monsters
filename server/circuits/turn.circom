@@ -4,6 +4,7 @@ include "circomlib/poseidon.circom";
 include "circomlib/bitify.circom";
 include "circomlib/mux1.circom";
 include "circomlib/comparators.circom";
+include "circomlib/mux2.circom";
 
 // include "https://github.com/0xPARC/circom-secp256k1/blob/master/circuits/bigint.circom";
 
@@ -44,6 +45,8 @@ template Turn (selfIndex, otherIndex) {
      * PLAYER TURN
      */
 
+    component endGameFlag = IsEqual();
+    endGameFlag.in <== [move[movtypeoff], 6];
    
     component pMiss = LEQ(); //used for miss
     pMiss.a <== randomness;
@@ -57,21 +60,33 @@ template Turn (selfIndex, otherIndex) {
     component isSwap = IsZero();
     isSwap.in <== move[movtypeoff];
 
+    // log(isSwap.out);
+
     component pSwapMux = Mux1();
     pSwapMux.c <== [state[0][selfIndex + catoff], move[catoff]];
     pSwapMux.s <== isSwap.out * pMiss.out; //the player swap also has a miss chance, will be 0 if it's less than randomness
 
-    component pCritMux = Mux1();
-    pCritMux.c <== [0, state[0][selfIndex + atkoff]*2]; //this mux chooses whether to do a crit or not
-    pCritMux.s <== pCrit.out;
+    // log(pSwapMux.out);
 
+    component pCritMux = Mux2();
+    pCritMux.c <== [0, state[0][selfIndex + atkoff]*2, 0, 0]; //this mux chooses whether to do a crit or not
+    pCritMux.s <== [pCrit.out, endGameFlag.out];
+
+    // log(pCritMux.out);
+
+    component pCatSelector = IsZero();
+    pCatSelector.in <== move[movcatoff];
     component pCatMux = Mux1(); //this mux chooses to match players category with itself if the category of the move is universal (ie. 0)
     pCatMux.c <== [state[0][selfIndex + catoff], move[movcatoff]];
-    pCatMux.s <== move[movcatoff];
+    pCatMux.s <== pCatSelector.out;
+
+    // log(pCatMux.out);
 
     // will be equal to 1 if it's a health move, otherwise 0
     component isHealth = IsEqual();
     isHealth.in <== [move[movtypeoff], 1];
+
+    // log(isHealth.out);
 
     // assert the next category for the player matches the category of the current player state
     // unless there's a swap, in which case we want it to match the move cat, but only if swap is 1
@@ -80,31 +95,7 @@ template Turn (selfIndex, otherIndex) {
     // assert the move cat matches the player category
     state[0][selfIndex + catoff] === pCatMux.out;
 
-    component atkEffMux = Mux1();
-    atkEffMux.c <== [2, move[movatkoff] * atkeff];
-    atkEffMux.s <== atkeff;
-
-    component defEffMux = Mux1();
-    defEffMux.c <== [0, state[0][otherIndex + defoff]];
-    defEffMux.s <== defeff;
-
-    component targetMux = Mux1();
-    var reducedHP = state[0][otherIndex + hpoff] - (pCritMux.out + atkEffMux.out - defEffMux.out) * pMiss.out;
-    var sameHP = state[0][otherIndex + hpoff];
-    targetMux.c <== [reducedHP, sameHP];
-    targetMux.s <== isHealth.out;
-
-    //in the instance that def is bigger than the attack, the attack becomes useless
-    component noDiceMux = Mux1();
-    component defBigger = LEQ();    
-    defBigger.a <== pCritMux.out + atkEffMux.out;
-    defBigger.b <== defEffMux.out;
-
-    noDiceMux.c <== [state[1][otherIndex + hpoff], targetMux.out];
-    noDiceMux.s <== defBigger.out;
-
-    state[1][otherIndex + hpoff] === noDiceMux.out;
-
+    // HEALING checks
     var boostedHP = state[0][selfIndex + hpoff] + (move[movatkoff]) * pMiss.out;
     component hpCheck = LEQ();
     hpCheck.a <== 100;
@@ -122,6 +113,51 @@ template Turn (selfIndex, otherIndex) {
 
     //assert the next iteration of player health fits the constraint
     state[1][selfIndex + hpoff] === selfMux.out;
+
+    //ATTACK checks    
+
+    component atkEffSelector = IsZero();
+    atkEffSelector.in <== atkeff;
+    component atkEffMux = Mux1();
+    atkEffMux.c <== [move[movatkoff] * atkeff, 2];
+    atkEffMux.s <== atkEffSelector.out;
+
+    component defEffSelector = IsZero();
+    defEffSelector.in <== defeff;
+    component defEffMux = Mux1();
+    defEffMux.c <== [state[0][otherIndex + defoff], 2];
+    defEffMux.s <== defEffSelector.out;
+
+    component targetMux = Mux1();
+    var reducedHP = state[0][otherIndex + hpoff] - (pCritMux.out + atkEffMux.out - defEffMux.out) * pMiss.out;
+    var sameHP = state[0][otherIndex + hpoff];
+    targetMux.c <== [reducedHP, sameHP];
+    targetMux.s <== isHealth.out;
+
+    // log(targetMux.out);
+
+    //in the instance that def is bigger than the attack, the attack becomes useless
+    
+    component noDiceMux = Mux1();
+    component defBigger = LEQ();    
+    defBigger.a <== pCritMux.out + atkEffMux.out;
+    defBigger.b <== defEffMux.out;
+
+    noDiceMux.c <== [state[1][otherIndex + hpoff], targetMux.out];
+    noDiceMux.s <== defBigger.out;
+
+    //flatline to 0 if we've reached end game state
+    component bits = Num2Bits_strict();
+    bits.in <== noDiceMux.out;
+
+    component KOMux = Mux1();
+    KOMux.c <== [noDiceMux.out, 0];
+    KOMux.s <== bits.out[253];
+
+    // log(KOMux.out);
+
+    state[1][otherIndex + hpoff] === KOMux.out;
+
 }
 
 template ManyRounds() {
@@ -164,44 +200,44 @@ template ManyRounds() {
 
 
 // component main { public [ ] } = Example();
-component main = ManyRounds();
+// component main = ManyRounds();
 
 /* INPUT = {
     "state": [
         [
-            1, 100, 10, 10, 1,
-            2, 100, 10, 10, 2
+            1, 100, 5, 5, 6,
+            2, 100, 5, 5, 2
         ],
         [
-            1, 100, 10, 10, 1,
-            2, 100, 10, 10, 2
+            1, 100, 5, 5, 6,
+            2, 87, 5, 5, 2
         ],
         [
-            1, 100, 10, 10, 1, 
-            2, 100, 10, 10, 2
+            1, 100, 5, 5, 6, 
+            2, 87, 5, 5, 2
         ],
         [
-            1, 100, 10, 10, 1,
-            2, 100, 10, 10, 2
+            1, 100, 5, 5, 6,
+            2, 74, 5, 5, 2
         ],
         [
-            1, 100, 10, 10, 1,
-            2, 100, 10, 10, 2
+            1, 100, 5, 5, 6,
+            2, 74, 5, 5, 2
         ],
         [
-            1, 100, 10, 10, 1,
-            2, 80, 10, 10, 2
+            1, 100, 5, 5, 6,
+            2, 61, 5, 5, 2
         ]
     ],
     "randomness": [32, 8, 40, 50],
     "moves": [
-        [3, 10, 98, 10, 1, 2],
-        [5, 10, 98, 10, 2, 2],
-        [3, 10, 98, 10, 1, 2],
-        [1, 10, 98, 10, 0, 1]
+        [3, 5, 98, 10, 6, 2],
+        [5, 5, 98, 10, 2, 2],
+        [3, 5, 98, 10, 6, 2],
+        [3, 5, 98, 10, 6, 2]
     ],
-    "atkeff": [0, 3, 0, 1],
-    "defeff": [1, 0, 1, 0]
+    "atkeff": [3, 0, 3, 1],
+    "defeff": [0, 1, 0, 1]
 } */
 
     // "player": [
