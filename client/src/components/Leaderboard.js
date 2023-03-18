@@ -5,6 +5,9 @@ const Container = styled.div`
   padding: 8px;
   margin: 8px;
   width: 33%;
+  @media (max-width: 800px) {
+    width: auto;
+  }
 `
 
 export default function Leaderboard(props) {
@@ -17,7 +20,16 @@ export default function Leaderboard(props) {
         <li>WOZ</li>
         <li>DOM</li>
         <li>CEC</li>
+        <li>BAZ</li>
+        <li>GAV</li>
+        <li>WOZ</li>
+        <li>DOM</li>
+        <li>CEC</li>
       </ol>
+      <hr />
+      <h3>Check proof</h3>
+      <p>has my proof been uploaded yet?</p>
+      <button>my performance</button>
     </Container>
   )
 }
