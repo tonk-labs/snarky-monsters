@@ -18,13 +18,14 @@ const MoveTypes = {
     ATTACK: 2,
     BUFF: 3,
     NERF: 4,
+    END_GAME: 6,
 }
 
 const Moves = [{
     id: 0,
     attack: 0,
-    crit: 0,
-    miss: 20,
+    crit: 100, // crits occur if the crit number is less than the randomness
+    miss: 20, // misses occur if the randomness is less than the miss number
     category: Category.UNIVERSAL,
     type: MoveTypes.SWAP
 }, {

@@ -29,6 +29,8 @@ template Turn (selfIndex, otherIndex) {
     signal input atkeff;
     signal input defeff;
 
+    signal output out;
+
     var hpoff = 1;
     var atkoff = 2;
     var defoff = 3;
@@ -77,7 +79,7 @@ template Turn (selfIndex, otherIndex) {
     component pCatSelector = IsZero();
     pCatSelector.in <== move[movcatoff];
     component pCatMux = Mux1(); //this mux chooses to match players category with itself if the category of the move is universal (ie. 0)
-    pCatMux.c <== [state[0][selfIndex + catoff], move[movcatoff]];
+    pCatMux.c <== [move[movcatoff], state[0][selfIndex + catoff]];
     pCatMux.s <== pCatSelector.out;
 
     // log(pCatMux.out);
@@ -158,43 +160,8 @@ template Turn (selfIndex, otherIndex) {
 
     state[1][otherIndex + hpoff] === KOMux.out;
 
-}
+    out <== KOMux.out;
 
-template ManyRounds() {
-    signal input state[6][10];
-    signal input randomness[4];
-    signal input moves[4][6];
-    signal input atkeff[4];
-    signal input defeff[4];
-    
-    component t1 = Turn(0, 5);
-    component t2 = Turn(5, 0);
-    component t3 = Turn(0, 5);
-    component t4 = Turn(5, 0);
-
-    t1.state <== [state[0], state[1]];
-    t1.randomness <== randomness[0];
-    t1.move <== moves[0];
-    t1.atkeff <== atkeff[0];
-    t1.defeff <== defeff[0];
-
-    t2.state <== [state[1], state[2]];
-    t2.randomness <== randomness[1];
-    t2.move <== moves[1];
-    t2.atkeff <== atkeff[1];
-    t2.defeff <== defeff[1];
-    
-    t3.state <== [state[2], state[3]];
-    t3.randomness <== randomness[2];
-    t3.move <== moves[2];
-    t3.atkeff <== atkeff[2];
-    t3.defeff <== defeff[2];
-
-    t4.state <== [state[3], state[4]];
-    t4.randomness <== randomness[3];
-    t4.move <== moves[3];
-    t4.atkeff <== atkeff[3];
-    t4.defeff <== defeff[3];
 }
 
 
