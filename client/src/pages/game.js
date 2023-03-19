@@ -1,11 +1,12 @@
 import Head from 'next/head'
 import styled from 'styled-components'
 import dynamic from 'next/dynamic'
-import { loadMonsters, getMoves, hardcodedData } from '../data.js'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Opening from '@/components/Opening.js'
 import MonsterPicker from '@/components/MonsterPicker.js'
 import Image from 'next/image.js'
+import { gameReducer, getActions, initialState, useEnhancedReducer} from './gameReducer';
+import Game from '../model/model';
 
 const Container = styled.div`
   border: #5f3400 double thick;
@@ -15,11 +16,10 @@ const Container = styled.div`
 `
 
 function BattleScreen({ monster, moves }) {
-  console.log(moves)
   return (
     <div>
       <p>here can live the battle screen</p>
-      <p>{hardcodedData.categories[monster.category]}</p>
+      <p>{Game.CategoryNames[monster.category]}</p>
       <Image
         src={`/sprite_category_${monster.category}.png`}
         width={200}
@@ -30,7 +30,7 @@ function BattleScreen({ monster, moves }) {
   )
 }
 
-function Actions({ moves, hardcodedData }) {
+function Actions({ moves, gameModel }) {
   return (
     <div>
       <h3>Pick your move</h3>
@@ -42,7 +42,7 @@ function Actions({ moves, hardcodedData }) {
               // here is the turn logic
             }}
           >
-            {hardcodedData.moveNames[move.id]}
+            {gameModel.MoveNames[move.id]}
           </button>
         )
       })}
@@ -50,46 +50,39 @@ function Actions({ moves, hardcodedData }) {
   )
 }
 
-function Battle({ monster, moves, hardcodedData }) {
+function Battle({ monster, moves, gameModel }) {
   return (
     <>
       <BattleScreen monster={monster} />
-      <Actions moves={moves} hardcodedData={hardcodedData} />
+      <Actions moves={moves} gameModel={gameModel} />
     </>
   )
 }
 
-export default function Game() {
+export default function GameComponent() {
   const [opening, setOpening] = useState(true)
-  const [monsters, setMonsters] = useState(null)
-  const [moves, setMoves] = useState(null)
-  const [pickedMonsterId, setPickedMonsterId] = useState(null)
+  const [gameState, dispatch, getState] = useEnhancedReducer(gameReducer, initialState);
 
-  useEffect(() => {
-    loadMonsters().then((data) => {
-      setMonsters(data.monsters)
-    })
-    getMoves().then((data) => {
-      setMoves(data.moves)
-    })
-  }, [])
+  const {
+    playerSelectMonster
+  } = getActions(dispatch, getState);
 
   return (
     <Container>
       {opening ? (
         <Opening setOpening={setOpening} />
-      ) : monsters && !pickedMonsterId ? (
+      ) : !gameState.playerState.id ? (
         <MonsterPicker
-          monsters={monsters}
-          hardcodedData={hardcodedData}
-          setPickedMonsterId={setPickedMonsterId}
+          monsters={Game.Monsters}
+          categoryNames={Game.CategoryNames}
+          setPickedMonsterId={playerSelectMonster}
         />
-      ) : pickedMonsterId ? (
+      ) : gameState.playerState.id ? (
         <Battle
-          monster={monsters[pickedMonsterId]}
-          hardcodedData={hardcodedData}
-          moves={moves.filter((m) => {
-            return m.category === pickedMonsterId + 1
+          monster={gameState.playerState}
+          gameModel={Game}
+          moves={Game.Moves.filter((m) => {
+            return m.category === gameState.playerState.category
           })}
         />
       ) : (
@@ -98,11 +91,3 @@ export default function Game() {
     </Container>
   )
 }
-
-// const PhaserWithNav = dynamic(() => import('@/components/PhaserWithNav'), {
-//   ssr: false,
-// })
-
-// export default function Game() {
-//   return <PhaserWithNav />
-// }
