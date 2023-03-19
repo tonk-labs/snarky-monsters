@@ -1,10 +1,35 @@
 import { request, gql } from 'graphql-request'
 
-function getMonsters() {
+const hardcodedData = {
+  categories: {
+    1: 'Degen',
+    2: 'Regulator',
+    3: 'Venture Capitalist',
+    4: 'Normie',
+    5: 'Artificial General Intelligence',
+    6: 'Bitcoin Maxi',
+    7: 'Moon Mather',
+  },
+  moveTypes: {
+    0: 'Re-train',
+    1: 'Heal',
+    2: 'Attack',
+    3: 'Buff',
+    4: 'Nerf',
+  },
+}
+
+function loadMonsters() {
   const query = gql`
     {
       monsters {
         id
+        hp
+        stats {
+          attack
+          defense
+        }
+        category
       }
     }
   `
@@ -22,4 +47,4 @@ function getMoves() {
   return request('http://localhost:4000/graphql/', query)
 }
 
-export { getMonsters, getMoves }
+export { loadMonsters, getMoves, hardcodedData }

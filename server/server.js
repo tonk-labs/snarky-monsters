@@ -9,7 +9,7 @@ console.log(Game)
 var schema = buildSchema(`
   type Stats {
     attack: Int!
-    defence: Int!
+    defense: Int!
   }
 
   type Monster {
