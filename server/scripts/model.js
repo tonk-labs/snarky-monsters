@@ -31,112 +31,112 @@ const Moves = [{
 }, {
     id: 1,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.UNIVERSAL,
     type: MoveTypes.HEAL
 }, {
     id: 2,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 0,
     category: Category.UNIVERSAL,
     type: MoveTypes.ATTACK
 }, {
     id: 3,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.DEGEN,
     type: MoveTypes.ATTACK
 }, {
     id: 4,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.DEGEN,
     type: MoveTypes.ATTACK
 }, {
     id: 5,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.REGULATOR,
     type: MoveTypes.ATTACK
 }, {
     id: 6,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.REGULATOR,
     type: MoveTypes.ATTACK
 }, {
     id: 7,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.VC,
     type: MoveTypes.ATTACK
 }, {
     id: 8,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.VC,
     type: MoveTypes.ATTACK
 }, {
     id: 9,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.NORMIE,
     type: MoveTypes.ATTACK
 }, {
     id: 10,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.NORMIE,
     type: MoveTypes.ATTACK
 }, {
     id: 11,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.AGI,
     type: MoveTypes.ATTACK
 }, {
     id: 12,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.AGI,
     type: MoveTypes.ATTACK
 }, {
     id: 13,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.BITCOIN_MAXI,
     type: MoveTypes.ATTACK
 }, {
     id: 14,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.BITCOIN_MAXI,
     type: MoveTypes.ATTACK
 }, {
     id: 15,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK
 }, {
     id: 16,
     attack: 10,
-    crit: 2,
+    crit: 98,
     miss: 10,
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK
