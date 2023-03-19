@@ -226,6 +226,40 @@ const Monsters = [
   },
 ]
 
+const CategoryNames =  {
+  1: 'Degen',
+  2: 'Regulator',
+  3: 'Venture Capitalist',
+  4: 'Normie',
+  5: 'Artificial General Intelligence',
+  6: 'Bitcoin Maxi',
+  7: 'Moon Mather',
+}
+const MoveTypeNames = {
+  0: 'Re-train',
+  1: 'Heal',
+  2: 'Attack',
+  3: 'Buff',
+  4: 'Nerf',
+}
+
+const MoveNames = {
+  3: 'Diamond Hands',
+  4: 'Ape In',
+  5: 'Use CBDC',
+  6: 'Wanton Arrest',
+  7: 'Take 10%',
+  8: 'FOMO',
+  9: 'Soul Cycle',
+  10: 'Boozy Brunch',
+  11: 'Flash Crash',
+  12: 'Unleash Waluigi',
+  13: 'Angry Tweet',
+  14: 'Hard Fork',
+  15: 'PlonK',
+  16: 'Brute Force',
+}
+
 const degen = [1, 0, 3, 2, 1, 1, 1]
 const reg = [3, 1, 1, 2, 1, 0, 1]
 const vc = [0, 1, 1, 1, 3, 2, 1]
@@ -240,6 +274,9 @@ const Game = {
   Monsters: Monsters,
   Moves: Moves,
   EffectivenessMatrix: EffectivenessMatrix,
+  MoveNames: MoveNames,
+  CategoryNames: CategoryNames,
+  MoveTypeNames: MoveTypeNames,
 }
 
 // // this is a utility script to serialize the state models for input into the circuits

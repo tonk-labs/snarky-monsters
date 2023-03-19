@@ -13,10 +13,12 @@ const Container = styled.div`
 
 export default function MonsterPicker({
   monsters,
-  hardcodedData,
+  categoryNames,
   setPickedMonsterId,
 }) {
   const [carouselIndex, setCarouselIndex] = useState(0)
+
+  console.log(carouselIndex);
 
   return (
     <Container>
@@ -45,7 +47,7 @@ export default function MonsterPicker({
           width={200}
           height={200}
         />
-        <h2>{hardcodedData.categories[monsters[carouselIndex].category]}</h2>
+        <h2>{categoryNames[monsters[carouselIndex].category]}</h2>
         <p>
           Some explainer text about this character. They're really great but
           watch out for X
@@ -56,7 +58,7 @@ export default function MonsterPicker({
             // Send fetch request to /backend
             // receive back state of game, sessionID & hash(randomness_1_server)
             // modify state to show that player has been picked (and stop showing the 'pick char' component)
-            setPickedMonsterId(monsters[carouselIndex].category)
+            setPickedMonsterId(carouselIndex)
             // modify state to show that battle has begun (and start showing the 'battle' component)
           }}
         >
