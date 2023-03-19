@@ -22,6 +22,11 @@ const Container = styled.div`
       }
     }
   }
+  @media (max-width: 400px) {
+    h1 {
+      font-size: 20px;
+    }
+  }
 `
 
 export default function Header(props) {
