@@ -238,7 +238,7 @@ async function writeOut(content) {
 async function run() {
   // const game = await parseIn();
   // const circomText = stringifyToCircom(game);
-  const circomText = createRoundsFile(17);
+  const circomText = createRoundsFile(25);
   await writeOut(circomText)
 }
 

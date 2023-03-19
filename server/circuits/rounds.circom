@@ -1,11 +1,11 @@
 pragma circom 2.1.4;
 
 template Rounds() {
-  signal input state[18][10];
-  signal input randomness[17];
-  signal input moves[17][6];
-  signal input atkeff[17];
-  signal input defeff[17];
+  signal input state[26][10];
+  signal input randomness[25];
+  signal input moves[25][6];
+  signal input atkeff[25];
+  signal input defeff[25];
 
   signal output out;
 
@@ -26,6 +26,14 @@ template Rounds() {
   component t14 = Turn(0, 5);
   component t15 = Turn(5, 0);
   component t16 = Turn(0, 5);
+  component t17 = Turn(5, 0);
+  component t18 = Turn(0, 5);
+  component t19 = Turn(5, 0);
+  component t20 = Turn(0, 5);
+  component t21 = Turn(5, 0);
+  component t22 = Turn(0, 5);
+  component t23 = Turn(5, 0);
+  component t24 = Turn(0, 5);
 
   t0.state <== [state[0], state[1]];
   t0.randomness <== randomness[0];
@@ -146,5 +154,61 @@ template Rounds() {
   t16.defeff <== defeff[16];
 
 
-  out <== t16.out;
+  t17.state <== [state[17], state[18]];
+  t17.randomness <== randomness[17];
+  t17.move <== moves[17];
+  t17.atkeff <== atkeff[17];
+  t17.defeff <== defeff[17];
+
+
+  t18.state <== [state[18], state[19]];
+  t18.randomness <== randomness[18];
+  t18.move <== moves[18];
+  t18.atkeff <== atkeff[18];
+  t18.defeff <== defeff[18];
+
+
+  t19.state <== [state[19], state[20]];
+  t19.randomness <== randomness[19];
+  t19.move <== moves[19];
+  t19.atkeff <== atkeff[19];
+  t19.defeff <== defeff[19];
+
+
+  t20.state <== [state[20], state[21]];
+  t20.randomness <== randomness[20];
+  t20.move <== moves[20];
+  t20.atkeff <== atkeff[20];
+  t20.defeff <== defeff[20];
+
+
+  t21.state <== [state[21], state[22]];
+  t21.randomness <== randomness[21];
+  t21.move <== moves[21];
+  t21.atkeff <== atkeff[21];
+  t21.defeff <== defeff[21];
+
+
+  t22.state <== [state[22], state[23]];
+  t22.randomness <== randomness[22];
+  t22.move <== moves[22];
+  t22.atkeff <== atkeff[22];
+  t22.defeff <== defeff[22];
+
+
+  t23.state <== [state[23], state[24]];
+  t23.randomness <== randomness[23];
+  t23.move <== moves[23];
+  t23.atkeff <== atkeff[23];
+  t23.defeff <== defeff[23];
+
+
+  t24.state <== [state[24], state[25]];
+  t24.randomness <== randomness[24];
+  t24.move <== moves[24];
+  t24.atkeff <== atkeff[24];
+  t24.defeff <== defeff[24];
+
+
+  out <== t24.out;
 }

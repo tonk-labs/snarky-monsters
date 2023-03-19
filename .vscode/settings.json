@@ -1,0 +1,9 @@
+{
+    "eslint.execArgv": null,
+    "eslint.workingDirectories": [
+        "./client",
+        "./server"
+    ],
+    "workbench.colorCustomizations": {},
+    "workbench.settings.openDefaultKeybindings": false
+}

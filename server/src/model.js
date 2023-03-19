@@ -26,7 +26,7 @@ const Moves = [
     id: 0,
     attack: 0,
     crit: 100, // crits occur if the crit number is less than the randomness
-    miss: 20, // misses occur if the randomness is less than the miss number
+    miss: 30, // misses occur if the randomness is less than the miss number
     category: Category.UNIVERSAL,
     type: MoveTypes.SWAP,
   },
@@ -38,14 +38,14 @@ const Moves = [
     category: Category.UNIVERSAL,
     type: MoveTypes.HEAL,
   },
-  {
-    id: 2,
-    attack: 10,
-    crit: 98,
-    miss: 0,
-    category: Category.UNIVERSAL,
-    type: MoveTypes.ATTACK,
-  },
+  // {
+  //   id: 2,
+  //   attack: 15,
+  //   crit: 98,
+  //   miss: 0,
+  //   category: Category.UNIVERSAL,
+  //   type: MoveTypes.ATTACK,
+  // },
   {
     id: 3,
     attack: 10,
@@ -56,9 +56,9 @@ const Moves = [
   },
   {
     id: 4,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.DEGEN,
     type: MoveTypes.ATTACK,
   },
@@ -72,9 +72,9 @@ const Moves = [
   },
   {
     id: 6,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.REGULATOR,
     type: MoveTypes.ATTACK,
   },
@@ -88,9 +88,9 @@ const Moves = [
   },
   {
     id: 8,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.VC,
     type: MoveTypes.ATTACK,
   },
@@ -104,9 +104,9 @@ const Moves = [
   },
   {
     id: 10,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.NORMIE,
     type: MoveTypes.ATTACK,
   },
@@ -120,9 +120,9 @@ const Moves = [
   },
   {
     id: 12,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.AGI,
     type: MoveTypes.ATTACK,
   },
@@ -136,9 +136,9 @@ const Moves = [
   },
   {
     id: 14,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.BITCOIN_MAXI,
     type: MoveTypes.ATTACK,
   },
@@ -152,9 +152,9 @@ const Moves = [
   },
   {
     id: 16,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK,
   },
@@ -166,7 +166,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.DEGEN,
   },
@@ -175,7 +175,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.REGULATOR,
   },
@@ -184,7 +184,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.VC,
   },
@@ -193,7 +193,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.NORMIE,
   },
@@ -202,7 +202,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.AGI,
   },
@@ -211,7 +211,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.BITCOIN_MAXI,
   },
@@ -220,11 +220,45 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.MOON_MATHER,
   },
 ]
+
+const CategoryNames =  {
+  1: 'Degen',
+  2: 'Regulator',
+  3: 'Venture Capitalist',
+  4: 'Normie',
+  5: 'Artificial General Intelligence',
+  6: 'Bitcoin Maxi',
+  7: 'Moon Mather',
+}
+const MoveTypeNames = {
+  0: 'Re-train',
+  1: 'Heal',
+  2: 'Attack',
+  3: 'Buff',
+  4: 'Nerf',
+}
+
+const MoveNames = {
+  3: 'Diamond Hands',
+  4: 'Ape In',
+  5: 'Use CBDC',
+  6: 'Wanton Arrest',
+  7: 'Take 10%',
+  8: 'FOMO',
+  9: 'Soul Cycle',
+  10: 'Boozy Brunch',
+  11: 'Flash Crash',
+  12: 'Unleash Waluigi',
+  13: 'Angry Tweet',
+  14: 'Hard Fork',
+  15: 'PlonK',
+  16: 'Brute Force',
+}
 
 const degen = [1, 0, 3, 2, 1, 1, 1]
 const reg = [3, 1, 1, 2, 1, 0, 1]
@@ -240,6 +274,11 @@ const Game = {
   Monsters: Monsters,
   Moves: Moves,
   EffectivenessMatrix: EffectivenessMatrix,
+  MoveTypes: MoveTypes,
+  Category: Category,
+  MoveNames: MoveNames,
+  CategoryNames: CategoryNames,
+  MoveTypeNames: MoveTypeNames,
 }
 
 // // this is a utility script to serialize the state models for input into the circuits

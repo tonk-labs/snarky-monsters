@@ -26,7 +26,7 @@ const Moves = [
     id: 0,
     attack: 0,
     crit: 100, // crits occur if the crit number is less than the randomness
-    miss: 20, // misses occur if the randomness is less than the miss number
+    miss: 50, // misses occur if the randomness is less than the miss number
     category: Category.UNIVERSAL,
     type: MoveTypes.SWAP,
   },
@@ -38,14 +38,14 @@ const Moves = [
     category: Category.UNIVERSAL,
     type: MoveTypes.HEAL,
   },
-  {
-    id: 2,
-    attack: 10,
-    crit: 98,
-    miss: 0,
-    category: Category.UNIVERSAL,
-    type: MoveTypes.ATTACK,
-  },
+  // {
+  //   id: 2,
+  //   attack: 15,
+  //   crit: 98,
+  //   miss: 0,
+  //   category: Category.UNIVERSAL,
+  //   type: MoveTypes.ATTACK,
+  // },
   {
     id: 3,
     attack: 10,
@@ -56,9 +56,9 @@ const Moves = [
   },
   {
     id: 4,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.DEGEN,
     type: MoveTypes.ATTACK,
   },
@@ -72,9 +72,9 @@ const Moves = [
   },
   {
     id: 6,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.REGULATOR,
     type: MoveTypes.ATTACK,
   },
@@ -88,9 +88,9 @@ const Moves = [
   },
   {
     id: 8,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.VC,
     type: MoveTypes.ATTACK,
   },
@@ -104,9 +104,9 @@ const Moves = [
   },
   {
     id: 10,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.NORMIE,
     type: MoveTypes.ATTACK,
   },
@@ -120,9 +120,9 @@ const Moves = [
   },
   {
     id: 12,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.AGI,
     type: MoveTypes.ATTACK,
   },
@@ -136,9 +136,9 @@ const Moves = [
   },
   {
     id: 14,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.BITCOIN_MAXI,
     type: MoveTypes.ATTACK,
   },
@@ -152,9 +152,9 @@ const Moves = [
   },
   {
     id: 16,
-    attack: 10,
+    attack: 20,
     crit: 98,
-    miss: 10,
+    miss: 60,
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK,
   },
@@ -166,7 +166,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.DEGEN,
   },
@@ -175,7 +175,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.REGULATOR,
   },
@@ -184,7 +184,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.VC,
   },
@@ -193,7 +193,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.NORMIE,
   },
@@ -202,7 +202,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.AGI,
   },
@@ -211,7 +211,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.BITCOIN_MAXI,
   },
@@ -220,7 +220,7 @@ const Monsters = [
     hp: 100,
     stats: {
       attack: 10,
-      defense: 10,
+      defense: 5,
     },
     category: Category.MOON_MATHER,
   },
@@ -274,6 +274,8 @@ const Game = {
   Monsters: Monsters,
   Moves: Moves,
   EffectivenessMatrix: EffectivenessMatrix,
+  MoveTypes: MoveTypes,
+  Category: Category,
   MoveNames: MoveNames,
   CategoryNames: CategoryNames,
   MoveTypeNames: MoveTypeNames,
