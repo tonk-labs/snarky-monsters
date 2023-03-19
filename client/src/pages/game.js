@@ -3,12 +3,67 @@ import styled from 'styled-components'
 import dynamic from 'next/dynamic'
 import { loadMonsters, getMoves, hardcodedData } from '../data.js'
 import { useState, useEffect } from 'react'
+import Opening from '@/components/Opening.js'
+import MonsterPicker from '@/components/MonsterPicker.js'
+import Image from 'next/image.js'
 
-const Container = styled.div``
+const Container = styled.div`
+  border: #5f3400 double thick;
+
+  height: calc(100vh - 147px);
+  padding: 8px;
+`
+
+function BattleScreen({ monster, moves }) {
+  console.log(moves)
+  return (
+    <div>
+      <p>here can live the battle screen</p>
+      <p>{hardcodedData.categories[monster.category]}</p>
+      <Image
+        src={`/sprite_category_${monster.category}.png`}
+        width={200}
+        height={200}
+        alt="sprite"
+      />
+    </div>
+  )
+}
+
+function Actions({ moves, hardcodedData }) {
+  return (
+    <div>
+      <h3>Pick your move</h3>
+      {moves.map((move) => {
+        console.log
+        return (
+          <button
+            onClick={() => {
+              // here is the turn logic
+            }}
+          >
+            {hardcodedData.moveNames[move.id]}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function Battle({ monster, moves, hardcodedData }) {
+  return (
+    <>
+      <BattleScreen monster={monster} />
+      <Actions moves={moves} hardcodedData={hardcodedData} />
+    </>
+  )
+}
 
 export default function Game() {
+  const [opening, setOpening] = useState(true)
   const [monsters, setMonsters] = useState(null)
   const [moves, setMoves] = useState(null)
+  const [pickedMonsterId, setPickedMonsterId] = useState(null)
 
   useEffect(() => {
     loadMonsters().then((data) => {
@@ -21,41 +76,25 @@ export default function Game() {
 
   return (
     <Container>
-      {/* first they have to pick their character */}
-      <h4>Pick your character</h4>
-      {monsters ? (
-        <div>
-          {monsters.map((m) => {
-            return (
-              <button
-                onClick={() => {
-                  // This is where you need to send a message to the backend
-                  // Send fetch request to /backend
-                  // receive back state of game
-                  console.log(m.category)
-                }}
-              >
-                {hardcodedData.categories[m.category]}
-              </button>
-            )
+      {opening ? (
+        <Opening setOpening={setOpening} />
+      ) : monsters && !pickedMonsterId ? (
+        <MonsterPicker
+          monsters={monsters}
+          hardcodedData={hardcodedData}
+          setPickedMonsterId={setPickedMonsterId}
+        />
+      ) : pickedMonsterId ? (
+        <Battle
+          monster={monsters[pickedMonsterId]}
+          hardcodedData={hardcodedData}
+          moves={moves.filter((m) => {
+            return m.category === pickedMonsterId + 1
           })}
-        </div>
+        />
       ) : (
-        <p>Loading...</p>
+        <p>endgame</p>
       )}
-      {/* once character is picked then they can select moves */}
-      <h4>This is a really fun game</h4>
-      <p>Character 1</p>
-      <p>Character 2</p>
-      <h4>Dialogue</h4>
-      <p>Some snarky dialogue!</p>
-      <h4>Controls</h4>
-      <button>button 1</button>
-      <button>button 2</button>
-
-      <button>button 3</button>
-
-      <button>button 4</button>
     </Container>
   )
 }
