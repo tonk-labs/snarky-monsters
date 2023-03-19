@@ -1,11 +1,17 @@
 import styled from 'styled-components'
 import Image from 'next/image'
+import Link from 'next/link'
 import discord from '../../public/discord.png'
 import twitter from '../../public/twitter.png'
 
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
+  h1 {
+    &:hover {
+      opacity: 0.8;
+    }
+  }
   .links {
     display: flex;
     align-items: center;
@@ -32,7 +38,9 @@ const Container = styled.div`
 export default function Header(props) {
   return (
     <Container>
-      <h1>Snarky Monsters!</h1>
+      <Link href="/">
+        <h1>Snarky Monsters!</h1>
+      </Link>
       <div className="links">
         <a href="https://discord.gg/REF6tuZA7K" target="_blank">
           <Image src={discord} height={20} />
