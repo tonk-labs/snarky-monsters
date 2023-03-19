@@ -1,23 +1,10 @@
 import Phaser from 'phaser'
 import { useEffect } from 'react'
+import styled from 'styled-components'
 
-const config = {
-  type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  physics: {
-    default: 'arcade',
-    arcade: {
-      gravity: { y: 200 },
-      debug: false,
-    },
-  },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update,
-  },
-}
+const PhaserWrapperDiv = styled.div`
+  height: calc(100vh - 136px);
+`
 
 function preload() {
   // Add any assets you want to preload here
@@ -34,6 +21,29 @@ function update() {
 export default function PhaserWithNav() {
   useEffect(() => {
     if (typeof window !== 'undefined' && window.navigator) {
+      const phaserWrapperDiv = document.getElementById('phaserWrapperDiv')
+      const config = {
+        type: Phaser.AUTO,
+        width: 359,
+        height: 570,
+        parent: phaserWrapperDiv,
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 200 },
+            debug: false,
+          },
+        },
+        scene: {
+          preload: preload,
+          create: create,
+          update: update,
+        },
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+      }
       const game = new Phaser.Game(config)
       return () => {
         game.destroy()
@@ -41,5 +51,5 @@ export default function PhaserWithNav() {
     }
   }, [])
 
-  return <div id="phaserWrapperDiv"></div>
+  return <PhaserWrapperDiv id="phaserWrapperDiv" />
 }
