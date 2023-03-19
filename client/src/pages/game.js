@@ -10,12 +10,46 @@ import Image from 'next/image.js'
 const Container = styled.div`
   background-color: red;
   height: calc(100vh - 147px);
+  padding: 8px;
 `
+
+function BattleScreen({ monster }) {
+  return (
+    <div>
+      <p>You picked {hardcodedData.categories[monster.category]}</p>
+      <Image
+        src={`/sprite_category_${monster.category}.png`}
+        width={200}
+        height={200}
+      />
+      <p>here can live the battle screen</p>
+    </div>
+  )
+}
+
+function Actions() {
+  return (
+    <div>
+      <p>here can live the battle actions</p>
+    </div>
+  )
+}
+
+function Battle({ monster }) {
+  console.log(monster)
+  return (
+    <>
+      <BattleScreen monster={monster} />
+      <Actions />
+    </>
+  )
+}
 
 export default function Game() {
   const [opening, setOpening] = useState(true)
   const [monsters, setMonsters] = useState(null)
   const [moves, setMoves] = useState(null)
+  const [pickedMonsterId, setPickedMonsterId] = useState(null)
 
   useEffect(() => {
     loadMonsters().then((data) => {
@@ -30,10 +64,14 @@ export default function Game() {
     <Container>
       {opening ? (
         <Opening setOpening={setOpening} />
-      ) : monsters ? (
-        <MonsterPicker monsters={monsters} hardcodedData={hardcodedData} />
-      ) : startBattle ? (
-        <Battle />
+      ) : monsters && !pickedMonsterId ? (
+        <MonsterPicker
+          monsters={monsters}
+          hardcodedData={hardcodedData}
+          setPickedMonsterId={setPickedMonsterId}
+        />
+      ) : pickedMonsterId ? (
+        <Battle monster={monsters[pickedMonsterId]} />
       ) : (
         <p>endgame</p>
       )}

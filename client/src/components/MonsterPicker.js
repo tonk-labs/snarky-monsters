@@ -3,7 +3,6 @@ import Image from 'next/image.js'
 import { useState } from 'react'
 
 const Container = styled.div`
-  height: 80%;
   text-align: center;
   .monsterDiv {
     display: flex;
@@ -12,7 +11,11 @@ const Container = styled.div`
   }
 `
 
-export default function MonsterPicker({ monsters, hardcodedData }) {
+export default function MonsterPicker({
+  monsters,
+  hardcodedData,
+  setPickedMonsterId,
+}) {
   const [carouselIndex, setCarouselIndex] = useState(0)
 
   return (
@@ -39,7 +42,6 @@ export default function MonsterPicker({ monsters, hardcodedData }) {
       <div className="monsterDiv">
         <Image
           src={`/sprite_category_${monsters[carouselIndex].category}.png`}
-          // src={`/sprite_category_1.png`}
           width={200}
           height={200}
         />
@@ -52,10 +54,10 @@ export default function MonsterPicker({ monsters, hardcodedData }) {
           onClick={() => {
             // This is where you need to send a message to the backend
             // Send fetch request to /backend
-            // receive back state of game
+            // receive back state of game, sessionID & hash(randomness_1_server)
             // modify state to show that player has been picked (and stop showing the 'pick char' component)
+            setPickedMonsterId(monsters[carouselIndex].category)
             // modify state to show that battle has begun (and start showing the 'battle' component)
-            console.log(monsters[carouselIndex].category)
           }}
         >
           Select fighter
