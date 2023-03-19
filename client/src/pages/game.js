@@ -1,10 +1,17 @@
 import Head from 'next/head'
 import styled from 'styled-components'
 import dynamic from 'next/dynamic'
+import { getMonsters, getMoves } from '../data.js'
 
 const Container = styled.div``
 
 export default function Game() {
+  getMonsters().then((data) => {
+    console.log(data)
+  })
+  getMoves().then((data) => {
+    console.log(data)
+  })
   return (
     <Container>
       <h4>This is a really fun game</h4>
