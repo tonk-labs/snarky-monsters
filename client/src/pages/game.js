@@ -30,6 +30,8 @@ export default function Game() {
               <button
                 onClick={() => {
                   // This is where you need to send a message to the backend
+                  // Send fetch request to /backend
+                  // receive back state of game
                   console.log(m.category)
                 }}
               >
