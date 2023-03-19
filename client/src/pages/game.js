@@ -8,39 +8,53 @@ import MonsterPicker from '@/components/MonsterPicker.js'
 import Image from 'next/image.js'
 
 const Container = styled.div`
-  background-color: red;
+  border: #5f3400 double thick;
+
   height: calc(100vh - 147px);
   padding: 8px;
 `
 
-function BattleScreen({ monster }) {
+function BattleScreen({ monster, moves }) {
+  console.log(moves)
   return (
     <div>
-      <p>You picked {hardcodedData.categories[monster.category]}</p>
+      <p>here can live the battle screen</p>
+      <p>{hardcodedData.categories[monster.category]}</p>
       <Image
         src={`/sprite_category_${monster.category}.png`}
         width={200}
         height={200}
+        alt="sprite"
       />
-      <p>here can live the battle screen</p>
     </div>
   )
 }
 
-function Actions() {
+function Actions({ moves, hardcodedData }) {
   return (
     <div>
-      <p>here can live the battle actions</p>
+      <h3>Pick your move</h3>
+      {moves.map((move) => {
+        console.log
+        return (
+          <button
+            onClick={() => {
+              // here is the turn logic
+            }}
+          >
+            {hardcodedData.moveNames[move.id]}
+          </button>
+        )
+      })}
     </div>
   )
 }
 
-function Battle({ monster }) {
-  console.log(monster)
+function Battle({ monster, moves, hardcodedData }) {
   return (
     <>
       <BattleScreen monster={monster} />
-      <Actions />
+      <Actions moves={moves} hardcodedData={hardcodedData} />
     </>
   )
 }
@@ -71,11 +85,16 @@ export default function Game() {
           setPickedMonsterId={setPickedMonsterId}
         />
       ) : pickedMonsterId ? (
-        <Battle monster={monsters[pickedMonsterId]} />
+        <Battle
+          monster={monsters[pickedMonsterId]}
+          hardcodedData={hardcodedData}
+          moves={moves.filter((m) => {
+            return m.category === pickedMonsterId + 1
+          })}
+        />
       ) : (
         <p>endgame</p>
       )}
-      {/* first they have to pick their character */}
     </Container>
   )
 }
