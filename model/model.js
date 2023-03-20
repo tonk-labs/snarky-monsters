@@ -38,14 +38,14 @@ const Moves = [
     category: Category.UNIVERSAL,
     type: MoveTypes.HEAL,
   },
-  {
-    id: 2,
-    attack: 10,
-    crit: 98,
-    miss: 0,
-    category: Category.UNIVERSAL,
-    type: MoveTypes.ATTACK,
-  },
+  // {
+  //   id: 2,
+  //   attack: 10,
+  //   crit: 98,
+  //   miss: 0,
+  //   category: Category.UNIVERSAL,
+  //   type: MoveTypes.ATTACK,
+  // },
   {
     id: 3,
     attack: 10,
@@ -226,7 +226,7 @@ const Monsters = [
   },
 ]
 
-const CategoryNames =  {
+const CategoryNames = {
   1: 'Degen',
   2: 'Regulator',
   3: 'Venture Capitalist',
@@ -244,6 +244,8 @@ const MoveTypeNames = {
 }
 
 const MoveNames = {
+  0: 'Re-train',
+  1: 'Heal',
   3: 'Diamond Hands',
   4: 'Ape In',
   5: 'Use CBDC',

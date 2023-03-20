@@ -74,15 +74,13 @@ function Actions({ playerState, Game, selectMove }) {
           <button
             key={move.id}
             onClick={() => {
-              selectMove(moveIndex)
+              selectMove(move.id)
             }}
           >
             {move.name}
           </button>
         )
       })}
-      <button>Heal</button>
-      <button>Re-train</button>
     </div>
   )
 }

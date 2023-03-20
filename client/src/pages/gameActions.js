@@ -8,7 +8,12 @@ export const playerSelectMonster = (dispatch, getState) => (monsterId) => {
     const monsterState = { ...Game.Monsters[id] }
     monsterState.categoryName = Game.CategoryNames[id + 1]
     monsterState.moves = Game.Moves.filter((move) => {
-      return move.category === monsterState.category
+      // Add the monster's unique moves plus universal moves (re-train and heal)
+      return (
+        move.category === monsterState.category ||
+        move.id === 0 ||
+        move.category === 0
+      )
     }).map((move) => {
       move.name = Game.MoveNames[move.id]
       return move
