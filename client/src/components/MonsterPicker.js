@@ -52,7 +52,7 @@ export default function MonsterPicker({
         </p>
         <button
           onClick={() => {
-            playerSelectMonster(carouselIndex)
+            playerSelectMonster(carouselIndex + 1)
           }}
         >
           Select fighter

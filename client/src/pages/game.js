@@ -5,8 +5,9 @@ import { useState } from 'react'
 import Opening from '@/components/Opening.js'
 import MonsterPicker from '@/components/MonsterPicker.js'
 import BattleScreen from '@/components/BattleScreen.js'
-import Actions from '@/components/Actions'
+import Actions from '@/components/MoveBox'
 import Image from 'next/image.js'
+import Battle from '@/components/Battle'
 import Dialogue from '@/components/Dialogue'
 import {
   gameReducer,
@@ -23,34 +24,6 @@ const Container = styled.div`
   padding: 8px;
 `
 
-function Battle({ playerState, Game, selectMove, npcState }) {
-  const [dialogue, setDialogue] = useState('')
-  const [showActions, setShowActions] = useState(false)
-  return (
-    <>
-      <BattleScreen
-        playerState={playerState}
-        npcState={npcState}
-        setDialogue={setDialogue}
-      />
-      {dialogue != '' && (
-        <Dialogue
-          dialogue={dialogue}
-          setDialogue={setDialogue}
-          setShowActions={setShowActions}
-        />
-      )}
-      {showActions && (
-        <Actions
-          Game={Game}
-          selectMove={selectMove}
-          playerState={playerState}
-        />
-      )}
-    </>
-  )
-}
-
 export default function GameComponent() {
   const [opening, setOpening] = useState(true)
   const [gameState, dispatch, getState] = useEnhancedReducer(
@@ -62,22 +35,25 @@ export default function GameComponent() {
 
   return (
     <Container>
-      {opening ? (
-        <Opening setOpening={setOpening} />
-      ) : !gameState.playerState.id ? (
+      {opening && <Opening setOpening={setOpening} />}
+      {!opening && !gameState.playerState.id && (
         <MonsterPicker
           monsters={Game.Monsters}
           categoryNames={Game.CategoryNames}
           playerSelectMonster={playerSelectMonster}
         />
-      ) : gameState.playerState.id ? (
-        <Battle
-          playerState={gameState.playerState}
-          npcState={gameState.npcState}
-          Game={Game}
-          selectMove={selectMove}
-        />
-      ) : (
+      )}
+      {gameState.playerState.id &&
+        gameState.playerState.hp > 0 &&
+        gameState.npcState.hp > 0 && (
+          <Battle
+            playerState={gameState.playerState}
+            npcState={gameState.npcState}
+            Game={Game}
+            selectMove={selectMove}
+          />
+        )}
+      {(gameState.playerState.hp === 0 || gameState.npcState.hp === 0) && (
         <p>endgame</p>
       )}
     </Container>

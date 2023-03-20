@@ -48,7 +48,7 @@ const Moves = [
   // },
   {
     id: 3,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.DEGEN,
@@ -56,7 +56,7 @@ const Moves = [
   },
   {
     id: 4,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.DEGEN,
@@ -64,7 +64,7 @@ const Moves = [
   },
   {
     id: 5,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.REGULATOR,
@@ -72,7 +72,7 @@ const Moves = [
   },
   {
     id: 6,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.REGULATOR,
@@ -80,7 +80,7 @@ const Moves = [
   },
   {
     id: 7,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.VC,
@@ -88,7 +88,7 @@ const Moves = [
   },
   {
     id: 8,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.VC,
@@ -96,7 +96,7 @@ const Moves = [
   },
   {
     id: 9,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.NORMIE,
@@ -104,7 +104,7 @@ const Moves = [
   },
   {
     id: 10,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.NORMIE,
@@ -112,7 +112,7 @@ const Moves = [
   },
   {
     id: 11,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.AGI,
@@ -120,7 +120,7 @@ const Moves = [
   },
   {
     id: 12,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.AGI,
@@ -128,7 +128,7 @@ const Moves = [
   },
   {
     id: 13,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.BITCOIN_MAXI,
@@ -136,7 +136,7 @@ const Moves = [
   },
   {
     id: 14,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.BITCOIN_MAXI,
@@ -144,7 +144,7 @@ const Moves = [
   },
   {
     id: 15,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.MOON_MATHER,
@@ -152,7 +152,7 @@ const Moves = [
   },
   {
     id: 16,
-    attack: 10,
+    attack: 20,
     crit: 98,
     miss: 10,
     category: Category.MOON_MATHER,

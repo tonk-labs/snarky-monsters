@@ -43,7 +43,7 @@ export default function BattleScreen({
         <div
           id="enemyDiv"
           onAnimationEnd={() => {
-            setDialogue(`A wild ${npcState.name} appeared!`)
+            setDialogue(`A wild ${npcState.categoryName} appeared!`)
           }}
         >
           <h3>{npcState.categoryName}</h3>
