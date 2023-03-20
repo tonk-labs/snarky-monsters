@@ -1,6 +1,6 @@
 pragma circom 2.1.4;
 
-include "circomlib/mimc.circom";
+include "../node_modules/circomlib/circuits/mimc.circom";
 
 // Here we will check the hash, and set k = 0 everytime. 
 // We don't actually care about the security of the hash, 

@@ -1,10 +1,9 @@
 pragma circom 2.1.4;
 
-include "circomlib/poseidon.circom";
-include "circomlib/bitify.circom";
-include "circomlib/mux1.circom";
-include "circomlib/comparators.circom";
-include "circomlib/mux2.circom";
+include "../node_modules/circomlib/circuits/bitify.circom";
+include "../node_modules/circomlib/circuits/mux1.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/mux2.circom";
 
 // include "https://github.com/0xPARC/circom-secp256k1/blob/master/circuits/bigint.circom";
 
