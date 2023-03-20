@@ -55,11 +55,11 @@ function BattleScreen({ playerState, npcState }) {
   )
 }
 
-function Dialogue() {
+function Dialogue({ dialogue, setDialogue }) {
   return (
     <div>
-      <h2>Dialogue box</h2>
-      <p>Here goes the dialogue</p>
+      <p>{dialogue}</p>
+      <button onClick={() => setDialogue('')}>next</button>
     </div>
   )
 }
@@ -72,6 +72,7 @@ function Actions({ playerState, Game, selectMove }) {
       {playerState.moves.map((move) => {
         return (
           <button
+            key={move.id}
             onClick={() => {
               selectMove(moveIndex)
             }}
@@ -87,11 +88,21 @@ function Actions({ playerState, Game, selectMove }) {
 }
 
 function Battle({ playerState, Game, selectMove, npcState }) {
+  const [dialogue, setDialogue] = useState(
+    `A wild ${npcState.categoryName} appeared!`,
+  )
   return (
     <>
       <BattleScreen playerState={playerState} npcState={npcState} />
-      <Dialogue />
-      <Actions Game={Game} selectMove={selectMove} playerState={playerState} />
+      {dialogue === '' ? (
+        <Actions
+          Game={Game}
+          selectMove={selectMove}
+          playerState={playerState}
+        />
+      ) : (
+        <Dialogue dialogue={dialogue} setDialogue={setDialogue} />
+      )}
     </>
   )
 }
@@ -113,7 +124,7 @@ export default function GameComponent() {
         <MonsterPicker
           monsters={Game.Monsters}
           categoryNames={Game.CategoryNames}
-          setPickedMonsterId={playerSelectMonster}
+          playerSelectMonster={playerSelectMonster}
         />
       ) : gameState.playerState.id ? (
         <Battle

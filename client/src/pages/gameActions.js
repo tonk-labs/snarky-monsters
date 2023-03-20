@@ -47,8 +47,11 @@ export const playerSelectMonster = (dispatch, getState) => (monsterId) => {
   }, 3000)
 }
 
-export const selectMove = (dispatch, getState) => (moves) => {
+export const selectMove = (dispatch, getState) => (move) => {
+  console.log('hitting function')
+  dispatch({})
   // generate some new randomness
+
   // each state update is a separate dispatch
   // update to latest move - playerMovePending: {},
   // update currentMove: {}, (THIS INITIATES VISUAL TRANSITION)

@@ -2,6 +2,7 @@ import { useCallback, useReducer, useRef } from 'react'
 import {
   ACTION_TYPES, //this will only be needed if we decide to do something fancy on the reducer side
   playerSelectMonster,
+  selectMove,
 } from './gameActions'
 
 export const initialState = {
@@ -22,6 +23,7 @@ export const initialState = {
 export const getActions = (dispatch, getState) => {
   return {
     playerSelectMonster: playerSelectMonster(dispatch, getState),
+    selectMove: selectMove(dispatch, getState),
   }
 }
 
