@@ -4,7 +4,10 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import Opening from '@/components/Opening.js'
 import MonsterPicker from '@/components/MonsterPicker.js'
+import BattleScreen from '@/components/BattleScreen.js'
+import Actions from '@/components/Actions'
 import Image from 'next/image.js'
+import Dialogue from '@/components/Dialogue'
 import {
   gameReducer,
   getActions,
@@ -20,86 +23,29 @@ const Container = styled.div`
   padding: 8px;
 `
 
-function BattleScreen({ playerState, npcState }) {
-  return (
-    <div>
-      <h3>{playerState.categoryName}</h3>
-      <p>
-        <strong>HP: </strong>
-        {playerState.hp}
-      </p>
-      <Image
-        src={`/sprite_category_${playerState.category}.png`}
-        width={50}
-        height={50}
-        alt="sprite"
-      />
-      {npcState.categoryName != null ? (
-        <div>
-          <h3>{npcState.categoryName}</h3>
-          <p>
-            <strong>HP: </strong>
-            {npcState.hp}
-          </p>
-          <Image
-            src={`/sprite_category_${npcState.category}.png`}
-            width={50}
-            height={50}
-            alt="sprite"
-          />
-        </div>
-      ) : (
-        <p>Finding monster...</p>
-      )}
-    </div>
-  )
-}
-
-function Dialogue({ dialogue, setDialogue }) {
-  return (
-    <div>
-      <p>{dialogue}</p>
-      <button onClick={() => setDialogue('')}>next</button>
-    </div>
-  )
-}
-
-function Actions({ playerState, Game, selectMove }) {
-  const [moveIndex, updateMoveIndex] = useState(0)
-  return (
-    <div>
-      <h3>Pick your move</h3>
-      {playerState.moves.map((move) => {
-        return (
-          <button
-            key={move.id}
-            onClick={() => {
-              selectMove(move.id)
-            }}
-          >
-            {move.name}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
 function Battle({ playerState, Game, selectMove, npcState }) {
-  const [dialogue, setDialogue] = useState(
-    `A wild ${npcState.categoryName} appeared!`,
-  )
+  const [dialogue, setDialogue] = useState('')
+  const [showActions, setShowActions] = useState(false)
   return (
     <>
-      <BattleScreen playerState={playerState} npcState={npcState} />
-      {dialogue === '' ? (
+      <BattleScreen
+        playerState={playerState}
+        npcState={npcState}
+        setDialogue={setDialogue}
+      />
+      {dialogue != '' && (
+        <Dialogue
+          dialogue={dialogue}
+          setDialogue={setDialogue}
+          setShowActions={setShowActions}
+        />
+      )}
+      {showActions && (
         <Actions
           Game={Game}
           selectMove={selectMove}
           playerState={playerState}
         />
-      ) : (
-        <Dialogue dialogue={dialogue} setDialogue={setDialogue} />
       )}
     </>
   )

@@ -38,14 +38,14 @@ const Moves = [
     category: Category.UNIVERSAL,
     type: MoveTypes.HEAL,
   },
-  {
-    id: 2,
-    attack: 10,
-    crit: 98,
-    miss: 0,
-    category: Category.UNIVERSAL,
-    type: MoveTypes.ATTACK,
-  },
+  // {
+  //   id: 2,
+  //   attack: 10,
+  //   crit: 98,
+  //   miss: 0,
+  //   category: Category.UNIVERSAL,
+  //   type: MoveTypes.ATTACK,
+  // },
   {
     id: 3,
     attack: 10,
