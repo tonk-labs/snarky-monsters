@@ -5,8 +5,13 @@ import { useState } from 'react'
 import Opening from '@/components/Opening.js'
 import MonsterPicker from '@/components/MonsterPicker.js'
 import Image from 'next/image.js'
-import { gameReducer, getActions, initialState, useEnhancedReducer} from './gameReducer';
-import Game from '../model/model';
+import {
+  gameReducer,
+  getActions,
+  initialState,
+  useEnhancedReducer,
+} from './gameReducer'
+import Game from '../model/model'
 
 const Container = styled.div`
   border: #5f3400 double thick;
@@ -15,57 +20,90 @@ const Container = styled.div`
   padding: 8px;
 `
 
-function BattleScreen({ monster, moves }) {
+function BattleScreen({ playerState, npcState }) {
   return (
     <div>
-      <p>here can live the battle screen</p>
-      <p>{Game.CategoryNames[monster.category]}</p>
+      <h3>{playerState.categoryName}</h3>
+      <p>
+        <strong>HP: </strong>
+        {playerState.hp}
+      </p>
       <Image
-        src={`/sprite_category_${monster.category}.png`}
-        width={200}
-        height={200}
+        src={`/sprite_category_${playerState.category}.png`}
+        width={50}
+        height={50}
         alt="sprite"
       />
+      {npcState.categoryName != null ? (
+        <div>
+          <h3>{npcState.categoryName}</h3>
+          <p>
+            <strong>HP: </strong>
+            {npcState.hp}
+          </p>
+          <Image
+            src={`/sprite_category_${npcState.category}.png`}
+            width={50}
+            height={50}
+            alt="sprite"
+          />
+        </div>
+      ) : (
+        <p>Finding monster...</p>
+      )}
     </div>
   )
 }
 
-function Actions({ moves, gameModel }) {
+function Dialogue() {
+  return (
+    <div>
+      <h2>Dialogue box</h2>
+      <p>Here goes the dialogue</p>
+    </div>
+  )
+}
+
+function Actions({ playerState, Game, selectMove }) {
+  const [moveIndex, updateMoveIndex] = useState(0)
   return (
     <div>
       <h3>Pick your move</h3>
-      {moves.map((move) => {
-        console.log
+      {playerState.moves.map((move) => {
         return (
           <button
             onClick={() => {
-              // here is the turn logic
+              selectMove(moveIndex)
             }}
           >
-            {gameModel.MoveNames[move.id]}
+            {move.name}
           </button>
         )
       })}
+      <button>Heal</button>
+      <button>Re-train</button>
     </div>
   )
 }
 
-function Battle({ monster, moves, gameModel }) {
+function Battle({ playerState, Game, selectMove, npcState }) {
   return (
     <>
-      <BattleScreen monster={monster} />
-      <Actions moves={moves} gameModel={gameModel} />
+      <BattleScreen playerState={playerState} npcState={npcState} />
+      <Dialogue />
+      <Actions Game={Game} selectMove={selectMove} playerState={playerState} />
     </>
   )
 }
 
 export default function GameComponent() {
   const [opening, setOpening] = useState(true)
-  const [gameState, dispatch, getState] = useEnhancedReducer(gameReducer, initialState);
+  const [gameState, dispatch, getState] = useEnhancedReducer(
+    gameReducer,
+    initialState,
+  )
 
-  const {
-    playerSelectMonster
-  } = getActions(dispatch, getState);
+  const { playerSelectMonster, selectMove } = getActions(dispatch, getState)
 
   return (
     <Container>
@@ -79,11 +117,10 @@ export default function GameComponent() {
         />
       ) : gameState.playerState.id ? (
         <Battle
-          monster={gameState.playerState}
-          gameModel={Game}
-          moves={Game.Moves.filter((m) => {
-            return m.category === gameState.playerState.category
-          })}
+          playerState={gameState.playerState}
+          npcState={gameState.npcState}
+          Game={Game}
+          selectMove={selectMove}
         />
       ) : (
         <p>endgame</p>

@@ -17,9 +17,6 @@ export default function MonsterPicker({
   setPickedMonsterId,
 }) {
   const [carouselIndex, setCarouselIndex] = useState(0)
-
-  console.log(carouselIndex);
-
   return (
     <Container>
       <h2>Pick your monster!</h2>
@@ -46,6 +43,7 @@ export default function MonsterPicker({
           src={`/sprite_category_${monsters[carouselIndex].category}.png`}
           width={200}
           height={200}
+          alt="sprite"
         />
         <h2>{categoryNames[monsters[carouselIndex].category]}</h2>
         <p>
