@@ -14,12 +14,9 @@ const Container = styled.div`
 export default function MonsterPicker({
   monsters,
   categoryNames,
-  setPickedMonsterId,
+  playerSelectMonster,
 }) {
   const [carouselIndex, setCarouselIndex] = useState(0)
-
-  console.log(carouselIndex);
-
   return (
     <Container>
       <h2>Pick your monster!</h2>
@@ -46,6 +43,7 @@ export default function MonsterPicker({
           src={`/sprite_category_${monsters[carouselIndex].category}.png`}
           width={200}
           height={200}
+          alt="sprite"
         />
         <h2>{categoryNames[monsters[carouselIndex].category]}</h2>
         <p>
@@ -54,12 +52,7 @@ export default function MonsterPicker({
         </p>
         <button
           onClick={() => {
-            // This is where you need to send a message to the backend
-            // Send fetch request to /backend
-            // receive back state of game, sessionID & hash(randomness_1_server)
-            // modify state to show that player has been picked (and stop showing the 'pick char' component)
-            setPickedMonsterId(carouselIndex)
-            // modify state to show that battle has begun (and start showing the 'battle' component)
+            playerSelectMonster(carouselIndex + 1)
           }}
         >
           Select fighter

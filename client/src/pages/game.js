@@ -4,9 +4,18 @@ import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import Opening from '@/components/Opening.js'
 import MonsterPicker from '@/components/MonsterPicker.js'
+import BattleScreen from '@/components/BattleScreen.js'
+import Actions from '@/components/MoveBox'
 import Image from 'next/image.js'
-import { gameReducer, getActions, initialState, useEnhancedReducer} from './gameReducer';
-import Game from '../model/model';
+import Battle from '@/components/Battle'
+import Dialogue from '@/components/Dialogue'
+import {
+  gameReducer,
+  getActions,
+  initialState,
+  useEnhancedReducer,
+} from './gameReducer'
+import Game from '../model/model'
 
 const Container = styled.div`
   border: #5f3400 double thick;
@@ -15,77 +24,38 @@ const Container = styled.div`
   padding: 8px;
 `
 
-function BattleScreen({ monster, moves }) {
-  return (
-    <div>
-      <p>here can live the battle screen</p>
-      <p>{Game.CategoryNames[monster.category]}</p>
-      <Image
-        src={`/sprite_category_${monster.category}.png`}
-        width={200}
-        height={200}
-        alt="sprite"
-      />
-    </div>
-  )
-}
-
-function Actions({ moves, gameModel }) {
-  return (
-    <div>
-      <h3>Pick your move</h3>
-      {moves.map((move) => {
-        console.log
-        return (
-          <button
-            onClick={() => {
-              // here is the turn logic
-            }}
-          >
-            {gameModel.MoveNames[move.id]}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
-function Battle({ monster, moves, gameModel }) {
-  return (
-    <>
-      <BattleScreen monster={monster} />
-      <Actions moves={moves} gameModel={gameModel} />
-    </>
-  )
-}
-
 export default function GameComponent() {
   const [opening, setOpening] = useState(true)
-  const [gameState, dispatch, getState] = useEnhancedReducer(gameReducer, initialState);
+  const [gameState, dispatch, getState] = useEnhancedReducer(
+    gameReducer,
+    initialState,
+  )
 
-  const {
-    playerSelectMonster
-  } = getActions(dispatch, getState);
+  const { playerSelectMonster, selectMove } = getActions(dispatch, getState)
 
   return (
     <Container>
-      {opening ? (
-        <Opening setOpening={setOpening} />
-      ) : !gameState.playerState.id ? (
+      {opening && <Opening setOpening={setOpening} />}
+      {!opening && !gameState.playerState.id && (
         <MonsterPicker
           monsters={Game.Monsters}
           categoryNames={Game.CategoryNames}
-          setPickedMonsterId={playerSelectMonster}
+          playerSelectMonster={playerSelectMonster}
         />
-      ) : gameState.playerState.id ? (
-        <Battle
-          monster={gameState.playerState}
-          gameModel={Game}
-          moves={Game.Moves.filter((m) => {
-            return m.category === gameState.playerState.category
-          })}
-        />
-      ) : (
+      )}
+      {gameState.playerState.id &&
+        gameState.playerState.hp > 0 &&
+        gameState.npcState.hp > 0 && (
+          <Battle
+            playerState={gameState.playerState}
+            npcState={gameState.npcState}
+            latestConfirmedPlayerMove={gameState.latestConfirmedPlayerMove}
+            latestConfirmedNPCMove={gameState.latestConfirmedNPCMove}
+            Game={Game}
+            selectMove={selectMove}
+          />
+        )}
+      {(gameState.playerState.hp === 0 || gameState.npcState.hp === 0) && (
         <p>endgame</p>
       )}
     </Container>
