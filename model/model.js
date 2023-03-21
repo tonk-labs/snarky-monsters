@@ -63,13 +63,8 @@ const Moves = [
     type: MoveTypes.ATTACK,
   },
   {
-<<<<<<< HEAD
-    id: 5,
-    attack: 20,
-=======
     id: 4,
     attack: 10,
->>>>>>> 1de63a156d085ebcf996d91c6c57ceddd6939d43
     crit: 98,
     miss: 10,
     category: Category.REGULATOR,
@@ -229,6 +224,15 @@ const Monsters = [
       defense: 5,
     },
     category: Category.BITCOIN_MAXI,
+  },
+  {
+    id: 7,
+    hp: 100,
+    stats: {
+      attack: 10,
+      defense: 5,
+    },
+    category: Category.MOON_MATHER,
   }
 ]
 
