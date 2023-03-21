@@ -6,7 +6,14 @@ import Dialogue from '@/components/Dialogue'
 
 const Container = styled.div``
 
-export default function Battle({ playerState, Game, selectMove, npcState }) {
+export default function Battle({
+  playerState,
+  Game,
+  selectMove,
+  npcState,
+  latestConfirmedPlayerMove,
+  latestConfirmedNPCMove,
+}) {
   const [dialogue, setDialogue] = useState('')
   const [showActions, setShowActions] = useState(false)
   return (
@@ -14,6 +21,8 @@ export default function Battle({ playerState, Game, selectMove, npcState }) {
       <BattleScreen
         playerState={playerState}
         npcState={npcState}
+        latestConfirmedPlayerMove={latestConfirmedPlayerMove}
+        latestConfirmedNPCMove={latestConfirmedNPCMove}
         setDialogue={setDialogue}
       />
       {dialogue != '' && (

@@ -167,25 +167,61 @@ export const selectMove = (dispatch, getState) => (move, swappedMonsterId) => {
           getState().npcState,
         )
         const npcState = getState().npcState
-        npcState.hp = getState().npcState.hp - playerMoveDamage
+        npcState.hp = npcState.hp - playerMoveDamage
         dispatch({
           payload: {
             npcState: npcState,
           },
         })
         break
+      // haven't implemented death logic yet
     }
-    // update hp of npc
-    // death logic
 
-    // const npcMoveDamage = calculateDamage(
-    //   move,
-    //   npcRandomness,
-    //   getState().npcState,
-    //   getState().playerState,
-    // )
+    // when NPC move is executed, update state latestConfirmedPlayerMove and latestConfirmedNPCMove
+    // frontend can listen to when such a state update occurs and when it does, execute some animations
 
-    // add to previousMoves
+    switch (npcMove.type) {
+      //   case 0:
+      //     if (calculateSwap(npcMove, npcRandomness)) {
+      //       dispatch({
+      //         payload: {
+      //           npcState: hydrateMonster(??? HOW THIS GONNA WORK?),
+      //         },
+      //       })
+      //     }
+      //     break
+
+      case 1:
+        const heal = calculateHeal(npcMove, npcRandomness, getState().npcState)
+        var npcState = getState().npcState
+        npcState.hp = getState().npcState.hp + heal
+        dispatch({
+          payload: {
+            npcState: npcState,
+            latestConfirmedPlayerMove: move,
+            latestConfirmedNPCMove: npcMove,
+          },
+        })
+        break
+      case 2:
+        const npcMoveDamage = calculateDamage(
+          npcMove,
+          npcRandomness,
+          getState().npcState,
+          getState().playerState,
+        )
+        var playerState = getState().playerState
+        playerState.hp = playerState.hp - npcMoveDamage
+        dispatch({
+          payload: {
+            playerState: playerState,
+            latestConfirmedPlayerMove: move,
+            latestConfirmedNPCMove: npcMove,
+          },
+        })
+        break
+      // haven't implemented death logic yet
+    }
 
     // receive old state
     const previousState = {
@@ -229,7 +265,7 @@ export const selectMove = (dispatch, getState) => (move, swappedMonsterId) => {
         category: 10,
       },
     }
-  }, 500)
+  }, 3000)
 }
 
 // haven't stored old moves, old randomness etc. yet

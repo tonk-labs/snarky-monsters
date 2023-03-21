@@ -25,6 +25,8 @@ export default function BattleScreen({
   npcState,
   setDialogue,
   setShowActions,
+  latestConfirmedPlayerMove,
+  latestConfirmedNPCMove,
 }) {
   return (
     <Container>

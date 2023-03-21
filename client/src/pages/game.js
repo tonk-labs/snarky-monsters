@@ -49,6 +49,8 @@ export default function GameComponent() {
           <Battle
             playerState={gameState.playerState}
             npcState={gameState.npcState}
+            latestConfirmedPlayerMove={gameState.latestConfirmedPlayerMove}
+            latestConfirmedNPCMove={gameState.latestConfirmedNPCMove}
             Game={Game}
             selectMove={selectMove}
           />
