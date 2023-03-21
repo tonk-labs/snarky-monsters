@@ -15,7 +15,7 @@ template CheckHash(nMoves) {
 
     signal output hash;
 
-    component hasher = MultiMiMC7((nMoves*19 + 10), 5);
+    component hasher = MultiMiMC7((nMoves*19 + 10), 91);
     var stateIndex = 0;
     var hi = 0;
     for (var m = 0; m < nMoves; m++) {

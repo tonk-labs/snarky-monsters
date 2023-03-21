@@ -12,6 +12,7 @@
   "dependencies": {
     "@zefi/circomjs": "^1.0.5",
     "circomlib": "^2.0.5",
+    "circomlibjs": "^0.1.7",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
     "graphql": "^15.8.0",
