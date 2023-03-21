@@ -21,7 +21,7 @@ function execute(fileName, params, path) {
 }
 
 execute(modelExe, [
-    path.join(__dirname, 'scripts', 'model.js')
+    path.join(__dirname, 'src', 'model.js')
 ], path.dirname(modelExe)).then((accept, reject) => {
     if (reject) {
         console.error("Script failed: ", reject);

@@ -1,0 +1,16 @@
+{
+    "projectName": "snarky-monsters",
+    "outputDir": "./circuits/compiled",
+    "build": {
+      "inputDir": "./circuits",
+      "circuits": [
+        {
+          "cID": "game",
+          "fileName": "game.circom",
+          "proofType": "groth16",
+          "compilationMode": "c",
+          "powerOfTauFp": "./data/pot21_final.ptau"
+        }
+      ]
+    }
+  }
