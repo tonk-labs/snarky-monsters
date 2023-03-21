@@ -224,6 +224,15 @@ const Monsters = [
       defense: 5,
     },
     category: Category.BITCOIN_MAXI,
+  },
+  {
+    id: 7,
+    hp: 100,
+    stats: {
+      attack: 10,
+      defense: 5,
+    },
+    category: Category.MOON_MATHER,
   }
 ]
 

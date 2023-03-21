@@ -7,15 +7,15 @@ const Model = require('../src/model.js');
  * @param {*} engine 
  * @returns 
  */
-const mockCircuitInput = (engine) => {
+const mockCircuitInput = async (engine) => {
 
     //pad the end appropriately
     while(engine.previousMoves.length !== engine.moveLimit) {
-        engine.turn(Model.Moves[Model.Moves.length - 1]);
+        engine.turn(Model.Moves[Model.Moves.length - 1], 0);
     }
 
-    const gameHash = hashGameState(engine);
-    const sessionId = "9068058a-e432-4a2a-beaa-6b278e2bd481";
+    const { gameHash, gameEncoding } = await hashGameState(engine);
+    const sessionID = "0241008287272164729465721528295504357972";
 
     let stateArray = engine.previousState.map((state) => {
         return [
@@ -57,11 +57,14 @@ const mockCircuitInput = (engine) => {
     });
 
     const circuitInput = {
+        // gameEncoding,
+        // gameHash,
+        sessionID: sessionID,
         state: stateArray,
-        randomness: engine.previousRandomness,
+        randomness: engine.prevRandomness,
         moves: moveArray,
-        atkEff: engine.prevAtkEff,
-        defEff: engine.prevAtkEff
+        atkeff: engine.prevAtkEff,
+        defeff: engine.prevAtkEff
     }
 
     return JSON.stringify(circuitInput, null, 2);
@@ -73,8 +76,12 @@ const mockCircuitInput = (engine) => {
  * @param {*} writePath 
  */
 async function writeGameState (engine, writePath) {
-    const json = mockCircuitInput(engine);
-    await writeFile(outputPath, content);
+    const json = await mockCircuitInput(engine)
+    try {
+        await writeFile(writePath, json);
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 module.exports = { writeGameState };
