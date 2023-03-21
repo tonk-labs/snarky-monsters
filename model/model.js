@@ -47,7 +47,7 @@ const Moves = [
   //   type: MoveTypes.ATTACK,
   // },
   {
-    id: 3,
+    id: 2,
     attack: 10,
     crit: 98,
     miss: 10,
@@ -55,7 +55,7 @@ const Moves = [
     type: MoveTypes.ATTACK,
   },
   {
-    id: 4,
+    id: 3,
     attack: 20,
     crit: 98,
     miss: 60,
@@ -63,7 +63,7 @@ const Moves = [
     type: MoveTypes.ATTACK,
   },
   {
-    id: 5,
+    id: 4,
     attack: 10,
     crit: 98,
     miss: 10,
@@ -71,7 +71,7 @@ const Moves = [
     type: MoveTypes.ATTACK,
   },
   {
-    id: 6,
+    id: 5,
     attack: 20,
     crit: 98,
     miss: 60,
@@ -158,6 +158,16 @@ const Moves = [
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK,
   },
+  { //end game component also has id 6 :\ but we don't really use ID so...
+    //we're mostly just indexing into this array by category
+    //which is whack, actually
+    id: 6,
+    attack: 0,
+    crit: 0,
+    miss: 0,
+    category: Category.UNIVERSAL,
+    type: MoveTypes.END_GAME
+  },
 ]
 
 const Monsters = [
@@ -214,16 +224,7 @@ const Monsters = [
       defense: 5,
     },
     category: Category.BITCOIN_MAXI,
-  },
-  {
-    id: 7,
-    hp: 100,
-    stats: {
-      attack: 10,
-      defense: 5,
-    },
-    category: Category.MOON_MATHER,
-  },
+  }
 ]
 
 const CategoryNames =  {
