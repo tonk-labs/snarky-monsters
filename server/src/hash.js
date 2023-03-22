@@ -50,6 +50,21 @@ const decryptSecret = (key) => {
 }
 
 /**
+ * Creates mimc hash of an array and represents it in a way
+ * to agree with the circom hash code
+ * @param {*} arr 
+ * @returns 
+ */
+const mimcHashArray = async (arr) => {
+    const mimc7 = await buildMimc7();
+    const hash = mimc7.multiHash(arr, 0);
+    return BigInt(mimc7.F.toObject(hash)).toString();
+}
+
+
+
+/**
+ * Convenience function for hashing from the engine of the game
  * Outputs the MiMC Multihash of the game state necessary for the circuit input
  * @param {*} engine The engine should hold a completed game state. 
  */
@@ -58,11 +73,12 @@ const hashGameState = (engine) => {
     for (var i = 0; i < engine.moveLimit; i++) {
         const ithState = engine.previousState[i]; 
         const ithMove = engine.previousMoves[i];
-        gameArray.push(...[
+
+        const encoding = [
             ithState.player.id, 
             ithState.player.hp, 
             ithState.player.stats.attack,
-            ithState.player.stats.defense,
+            ithState.player.stats.defense,  
             ithState.player.category,
             ithState.npc.id, 
             ithState.npc.hp, 
@@ -78,9 +94,14 @@ const hashGameState = (engine) => {
             ithMove.type,
             engine.prevAtkEff[i],
             engine.prevDefEff[i]
-        ])
+        ].reduce((prev, current) => {
+            return prev + current.toString();
+        });
+
+        gameArray.push(BigInt(encoding))
     }
-    gameArray.push(...[
+
+    const encoding = [
         engine.player.id, 
         engine.player.hp, 
         engine.player.stats.attack,
@@ -91,20 +112,17 @@ const hashGameState = (engine) => {
         engine.npc.stats.attack,
         engine.npc.stats.defense,
         engine.npc.category,
-    ])
-    const result = CryptoJS.SHA256(Buffer.from(gameArray).toString());
-    const bytes = hexToBytes(result.toString(CryptoJS.enc.Hex))
-
-    return buildMimc7().then((mimc7) => {
-        const finalHash = mimc7.multiHash(bytes, 0);        
-        return {
-            gameEncoding: bytes,
-            gameHash: BigInt(mimc7.F.toObject(finalHash)).toString(),
-        }
+    ].reduce((prev, current) => {
+        return prev + current.toString();
     });
+
+    gameArray.push(BigInt(encoding));
+
+    return mimcHashArray(gameArray);
 }
 
-module.exports = { hashGameState };
+
+module.exports = { hashGameState, mimcHashArray };
 
 // const engine = new Engine(2,3,25);
 

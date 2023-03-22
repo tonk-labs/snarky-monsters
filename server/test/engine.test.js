@@ -14,7 +14,7 @@ test('swap success', () => {
 
     const move = model.Moves[0];
     move.category = model.Category.AGI;
-    engine.turn(move, 30);
+    engine.turn(move, 60);
 
     expect(engine.player.category).toBe(model.Category.AGI)
 

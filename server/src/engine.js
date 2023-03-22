@@ -6,7 +6,7 @@
 
 const model = require('./model.js');
 
-const calculateMoveEffectiveness = (target, move) => {
+const calculateMoveEffectiveness = (target, source, move) => {
     if (move.category === 0 || move.type === model.MoveTypes.SWAP) {
         return {
             atkEff: 1,
@@ -20,8 +20,8 @@ const calculateMoveEffectiveness = (target, move) => {
         }
     }
 
-    const atkEff = model.EffectivenessMatrix[move.category - 1][target.category - 1];
-    const defEff = model.EffectivenessMatrix[target.category - 1][move.category - 1];
+    const atkEff = model.EffectivenessMatrix[source.category - 1][target.category - 1];
+    const defEff = model.EffectivenessMatrix[target.category - 1][source.category - 1];
 
     return {
         atkEff,
@@ -30,7 +30,7 @@ const calculateMoveEffectiveness = (target, move) => {
 }
 
 const calculateCrit = (source, move, randomness) => {
-    return (randomness < move.crit) ? (
+    return (randomness <= move.crit) ? (
         0
     ) : (
         source.stats.attack * 2
@@ -57,6 +57,31 @@ class Engine {
         this.prevDefEff = [];
         this.prevRandomness = [];
         this.isPlayerMove = true;
+    }
+
+    /**
+     * assumes the game has been completed
+     * @param {*} input is a JSON object of { state, moves, randomness }
+     */
+    static rehydrateCompletedGame(input) {
+        const startPlayerID = input.state[0][4];
+        const startNPCID = input.state[0][9];
+        const engine = new Engine(startPlayerID, startNPCID, input.moves.length)
+        
+        input.moves.map((move, i) => {
+            const hydratedMove = {
+                id: move[0],
+                attack: move[1],
+                crit: move[2],
+                miss: move[3],
+                category: move[4],
+                type: move[5]
+            }
+
+            engine.turn(hydratedMove, input.randomness[i]);
+        });
+
+        return engine;
     }
 
     snapshotTurn = (move, randomness, atkEff, defEff) => {
@@ -86,14 +111,16 @@ class Engine {
     turn(move, randomness) {
         // the player always starts first
         this.isPlayerMove = !(this.previousMoves.length % 2);
-        const { atkEff, defEff } = calculateMoveEffectiveness(this.target, move);
+        const { atkEff, defEff } = calculateMoveEffectiveness(this.target, this.source, move);
 
         if (move.type === model.MoveTypes.END_GAME) {
             if (this.previousMoves.length === this.moveLimit) {
                 throw new Error("Move limit has been reached, no additional turns allowed");
             }
             this.snapshotTurn(move, randomness, atkEff, defEff);
-            return;
+            return {
+                gg: true,
+            };
         }
 
         if (move.type !== model.MoveTypes.SWAP && move.category !== 0 && move.category !== this.source.category) {

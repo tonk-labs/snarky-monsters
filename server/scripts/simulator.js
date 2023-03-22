@@ -48,58 +48,59 @@ program.prompt(questionsFighter).then((answer) => {
         if (engine.player.hp === 0 || engine.npc.hp === 0){
             console.log("GAME OVER!")
             writeGameState(engine, WRITE_PATH);
-            return;
-        }
-        console.log(`It's your move: ${isPlayerMove ? 'Player' : 'NPC'}`);
-        const index = isPlayerMove ? engine.player.category : engine.npc.category;
-        console.log(`
-        SWAP - 0
-        HEAL - 1
-        ATTACK - 2
-        CHANCE ATTACK - 3
-        `)
-        program.prompt(questionsMove).then((answer) => {
-            const number = parseInt(answer.move);
-            const pRand = Math.round(Math.random() * 100);
-            var report;
-            if (number === 0) {
-                program.prompt(questionsFighter).then((answer) => {
-                    report = engine.turn({
-                        ...Model.Moves[0],
-                        category: parseInt(answer.fighter),
-                    }, pRand);
-                    console.log("REPORT!!!", report);
-                    console.log("Player: ", engine.player);
-                    console.log("NPC: ", engine.npc);
+        } else {
+            console.log(`It's your move: ${isPlayerMove ? 'Player' : 'NPC'}`);
+            const index = isPlayerMove ? engine.player.category : engine.npc.category;
+            console.log(`
+            SWAP - 0
+            HEAL - 1
+            ATTACK - 2
+            CHANCE ATTACK - 3
+            `)
+            program.prompt(questionsMove).then((answer) => {
+                const number = parseInt(answer.move);
+                const pRand = Math.round(Math.random() * 100);
+                var report;
+                if (number === 0) {
+                    program.prompt(questionsFighter).then((answer) => {
+                        report = engine.turn({
+                            ...Model.Moves[0],
+                            category: parseInt(answer.fighter),
+                        }, pRand);
+                        console.log("REPORT!!!", report);
+                        console.log("Player: ", engine.player);
+                        console.log("NPC: ", engine.npc);
 
-                    if(moveCount === 25){
-                        console.log("GAME OVER!")
-                        return;
-                    }
+                        if(moveCount === 25){
+                            console.log("GAME OVER!")
+                            return;
+                        }
 
+                        round(!isPlayerMove, moveCount + 1);
+                    })
+                    return;
+                } else if (number === 1) {
+                    report = engine.turn(Model.Moves[1], pRand)
+                } else if (number === 2) {
+                    report = engine.turn(Model.Moves[index * 2], pRand)
+                } else if (number === 3) {
+                    report = engine.turn(Model.Moves[index * 2 + 1], pRand)
+                }
+
+                console.log("REPORT!!!", report);
+                console.log("Player: ", engine.player);
+                console.log("NPC: ", engine.npc);
+                console.log("MOVE COUNT: ", moveCount)
+
+                if(moveCount === 24){
+                    console.log("GAME OVER!")
+                    writeGameState(engine, WRITE_PATH);
+                    return;
+                } else {
                     round(!isPlayerMove, moveCount + 1);
-                })
-                return;
-            } else if (number === 1) {
-                report = engine.turn(Model.Moves[1], pRand)
-            } else if (number === 2) {
-                report = engine.turn(Model.Moves[index * 2], pRand)
-            } else if (number === 3) {
-                report = engine.turn(Model.Moves[index * 2 + 1], pRand)
-            }
-
-            console.log("REPORT!!!", report);
-            console.log("Player: ", engine.player);
-            console.log("NPC: ", engine.npc);
-            console.log("MOVE COUNT: ", moveCount)
-
-            if(moveCount === 25){
-                console.log("GAME OVER!")
-                writeGameState(engine, WRITE_PATH);
-                return;
-            }
-            round(!isPlayerMove, moveCount + 1);
-        })
+                }
+            })
+        }
     }
 
     round(true, 0);
