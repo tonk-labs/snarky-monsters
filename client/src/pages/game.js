@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styled from 'styled-components'
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Opening from '@/components/Opening.js'
 import MonsterPicker from '@/components/MonsterPicker.js'
 import BattleScreen from '@/components/BattleScreen.js'
@@ -31,7 +31,12 @@ export default function GameComponent() {
     initialState,
   )
 
-  const { playerSelectMonster, selectMove } = getActions(dispatch, getState)
+  const {
+    playerSelectMonster,
+    selectMove,
+    shiftAnimationQueue,
+    fetchNPC,
+  } = getActions(dispatch, getState)
 
   return (
     <Container>
@@ -39,25 +44,23 @@ export default function GameComponent() {
       {!opening && !gameState.playerState.id && (
         <MonsterPicker
           monsters={Game.Monsters}
-          categoryNames={Game.CategoryNames}
           playerSelectMonster={playerSelectMonster}
+          fetchNPC={fetchNPC}
         />
       )}
-      {gameState.playerState.id &&
-        gameState.playerState.hp > 0 &&
-        gameState.npcState.hp > 0 && (
-          <Battle
-            playerState={gameState.playerState}
-            npcState={gameState.npcState}
-            latestConfirmedPlayerMove={gameState.latestConfirmedPlayerMove}
-            latestConfirmedNPCMove={gameState.latestConfirmedNPCMove}
-            Game={Game}
-            selectMove={selectMove}
-          />
-        )}
-      {(gameState.playerState.hp === 0 || gameState.npcState.hp === 0) && (
-        <p>endgame</p>
+      {gameState.playerState.id && !gameState.gameOver && (
+        <Battle
+          playerState={gameState.playerState}
+          npcState={gameState.npcState}
+          animationQueue={gameState.animationQueue}
+          shiftAnimationQueue={shiftAnimationQueue}
+          report={gameState.report}
+          reportCounter={gameState.reportCounter}
+          Game={Game}
+          selectMove={selectMove}
+        />
       )}
+      {gameState.gameOver && <p>endgame</p>}
     </Container>
   )
 }

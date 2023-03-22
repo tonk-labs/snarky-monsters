@@ -1,30 +1,46 @@
 import styled from 'styled-components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { shiftAnimationQueue } from '@/pages/gameActions'
 
 const Container = styled.div``
 
-export default function MoveBox({ playerState, Game, selectMove }) {
+export default function MoveBox({
+  playerState,
+  Game,
+  selectMove,
+  shiftAnimationQueue,
+}) {
   const [moveIndex, updateMoveIndex] = useState(0)
   const [showSwapOptions, setShowSwapOptions] = useState(false)
-  const swapOptions = Game.Monsters.filter((m) => m.id != playerState.id)
+  const [swapOptions, setSwapOptions] = useState(
+    Game.Monsters.filter((monster) => monster.id != playerState.id),
+  )
+
+  useEffect(() => {
+    setSwapOptions(
+      Game.Monsters.filter((monster) => monster.id != playerState.id),
+    )
+  }, [setSwapOptions, Game.Monsters, playerState.id])
   return (
     <Container>
       <h3>Pick your move</h3>
       {showSwapOptions && (
         <div>
-          {swapOptions.map((m) => {
+          {swapOptions.map((monster) => {
+            console.log(playerState)
             return (
               <button
-                key={m.id}
+                key={monster.id}
                 onClick={() => {
                   setShowSwapOptions(false)
                   selectMove(
-                    playerState.moves.find((m) => m.type === 0),
-                    m.id,
+                    playerState.moves.find((move) => move.type === 0),
+                    monster,
                   )
+                  shiftAnimationQueue()
                 }}
               >
-                {Game.CategoryNames[m.category]}
+                {monster.categoryName}
               </button>
             )
           })}
@@ -35,6 +51,7 @@ export default function MoveBox({ playerState, Game, selectMove }) {
           if (move.type === 0) {
             return (
               <button
+                key={move.id}
                 onClick={() => {
                   setShowSwapOptions(true)
                 }}
@@ -48,6 +65,7 @@ export default function MoveBox({ playerState, Game, selectMove }) {
                 key={move.id}
                 onClick={() => {
                   selectMove(move)
+                  shiftAnimationQueue()
                 }}
               >
                 {move.name}

@@ -13,8 +13,8 @@ const Container = styled.div`
 
 export default function MonsterPicker({
   monsters,
-  categoryNames,
   playerSelectMonster,
+  fetchNPC,
 }) {
   const [carouselIndex, setCarouselIndex] = useState(0)
   return (
@@ -45,7 +45,7 @@ export default function MonsterPicker({
           height={200}
           alt="sprite"
         />
-        <h2>{categoryNames[monsters[carouselIndex].category]}</h2>
+        <h2>{monsters[carouselIndex].categoryName}</h2>
         <p>
           Some explainer text about this character. They're really great but
           watch out for X
@@ -53,6 +53,7 @@ export default function MonsterPicker({
         <button
           onClick={() => {
             playerSelectMonster(carouselIndex + 1)
+            fetchNPC()
           }}
         >
           Select fighter

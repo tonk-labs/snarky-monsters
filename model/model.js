@@ -28,6 +28,7 @@ const Moves = [
     crit: 100, // crits occur if the crit number is less than the randomness
     miss: 50, // misses occur if the randomness is less than the miss number
     category: Category.UNIVERSAL,
+    name: 'Re-train',
     type: MoveTypes.SWAP,
   },
   {
@@ -36,6 +37,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.UNIVERSAL,
+    name: 'Heal',
     type: MoveTypes.HEAL,
   },
   // {
@@ -52,6 +54,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.DEGEN,
+    name: 'Diamond Hands',
     type: MoveTypes.ATTACK,
   },
   {
@@ -60,19 +63,16 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.DEGEN,
+    name: 'Ape In',
     type: MoveTypes.ATTACK,
   },
   {
-<<<<<<< HEAD
-    id: 5,
-    attack: 20,
-=======
     id: 4,
     attack: 10,
->>>>>>> 1de63a156d085ebcf996d91c6c57ceddd6939d43
     crit: 98,
     miss: 10,
     category: Category.REGULATOR,
+    name: 'Use CBDC',
     type: MoveTypes.ATTACK,
   },
   {
@@ -81,6 +81,7 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.REGULATOR,
+    name: 'Wanton Arrest',
     type: MoveTypes.ATTACK,
   },
   {
@@ -89,6 +90,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.VC,
+    name: 'Take 10%',
     type: MoveTypes.ATTACK,
   },
   {
@@ -97,6 +99,7 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.VC,
+    name: 'FOMO',
     type: MoveTypes.ATTACK,
   },
   {
@@ -105,6 +108,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.NORMIE,
+    name: 'Soul Cycle',
     type: MoveTypes.ATTACK,
   },
   {
@@ -113,6 +117,7 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.NORMIE,
+    name: 'Boozy Brunch',
     type: MoveTypes.ATTACK,
   },
   {
@@ -121,6 +126,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.AGI,
+    name: 'Flash Crash',
     type: MoveTypes.ATTACK,
   },
   {
@@ -129,6 +135,7 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.AGI,
+    name: 'Unleash Waluigi',
     type: MoveTypes.ATTACK,
   },
   {
@@ -137,6 +144,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.BITCOIN_MAXI,
+    name: 'Angry Tweet',
     type: MoveTypes.ATTACK,
   },
   {
@@ -145,6 +153,7 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.BITCOIN_MAXI,
+    name: 'Hard Fork',
     type: MoveTypes.ATTACK,
   },
   {
@@ -153,6 +162,7 @@ const Moves = [
     crit: 98,
     miss: 10,
     category: Category.MOON_MATHER,
+    name: 'PlonK',
     type: MoveTypes.ATTACK,
   },
   {
@@ -161,9 +171,11 @@ const Moves = [
     crit: 98,
     miss: 60,
     category: Category.MOON_MATHER,
+    name: 'Brute Force',
     type: MoveTypes.ATTACK,
   },
-  { //end game component also has id 6 :\ but we don't really use ID so...
+  {
+    //end game component also has id 6 :\ but we don't really use ID so...
     //we're mostly just indexing into this array by category
     //which is whack, actually
     id: 6,
@@ -171,7 +183,7 @@ const Moves = [
     crit: 0,
     miss: 0,
     category: Category.UNIVERSAL,
-    type: MoveTypes.END_GAME
+    type: MoveTypes.END_GAME,
   },
 ]
 
@@ -184,6 +196,7 @@ const Monsters = [
       defense: 5,
     },
     category: Category.DEGEN,
+    categoryName: 'Degen',
   },
   {
     id: 2,
@@ -193,6 +206,7 @@ const Monsters = [
       defense: 5,
     },
     category: Category.REGULATOR,
+    categoryName: 'Regulator',
   },
   {
     id: 3,
@@ -202,6 +216,7 @@ const Monsters = [
       defense: 5,
     },
     category: Category.VC,
+    categoryName: 'Venture Capitalist',
   },
   {
     id: 4,
@@ -211,6 +226,7 @@ const Monsters = [
       defense: 5,
     },
     category: Category.NORMIE,
+    categoryName: 'Normie',
   },
   {
     id: 5,
@@ -220,6 +236,7 @@ const Monsters = [
       defense: 5,
     },
     category: Category.AGI,
+    categoryName: 'Artificial General Intelligence',
   },
   {
     id: 6,
@@ -229,7 +246,8 @@ const Monsters = [
       defense: 5,
     },
     category: Category.BITCOIN_MAXI,
-  }
+    categoryName: 'Bitcoin Maxi',
+  },
 ]
 
 const CategoryNames = {
@@ -240,13 +258,6 @@ const CategoryNames = {
   5: 'Artificial General Intelligence',
   6: 'Bitcoin Maxi',
   7: 'Moon Mather',
-}
-const MoveTypeNames = {
-  0: 'Re-train',
-  1: 'Heal',
-  2: 'Attack',
-  3: 'Buff',
-  4: 'Nerf',
 }
 
 const MoveNames = {
@@ -266,6 +277,14 @@ const MoveNames = {
   14: 'Hard Fork',
   15: 'PlonK',
   16: 'Brute Force',
+}
+
+const MoveTypeNames = {
+  0: 'Re-train',
+  1: 'Heal',
+  2: 'Attack',
+  3: 'Buff',
+  4: 'Nerf',
 }
 
 const degen = [1, 0, 3, 2, 1, 1, 1]
