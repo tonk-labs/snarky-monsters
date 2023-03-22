@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
+const path = require('node:path');
+
 const Engine = require('../src/engine.js');
 const Model = require('../src/model.js');
+const { writeGameState } = require('./genCircuitInput.js');
 
 const program = require('inquirer');
 
@@ -20,6 +23,7 @@ const questionsMove = [
     }
 ]
 
+const WRITE_PATH = path.join(__dirname, 'input.json');
 
 console.log('Welcome to Snarky Monsters Simulator!!');
 
@@ -43,6 +47,7 @@ program.prompt(questionsFighter).then((answer) => {
     function round(isPlayerMove, moveCount) {
         if (engine.player.hp === 0 || engine.npc.hp === 0){
             console.log("GAME OVER!")
+            writeGameState(engine, WRITE_PATH);
             return;
         }
         console.log(`It's your move: ${isPlayerMove ? 'Player' : 'NPC'}`);
@@ -90,6 +95,7 @@ program.prompt(questionsFighter).then((answer) => {
 
             if(moveCount === 25){
                 console.log("GAME OVER!")
+                writeGameState(engine, WRITE_PATH);
                 return;
             }
             round(!isPlayerMove, moveCount + 1);

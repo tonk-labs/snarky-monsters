@@ -248,6 +248,16 @@ const Monsters = [
     category: Category.BITCOIN_MAXI,
     categoryName: 'Bitcoin Maxi',
   },
+  {
+    id: 7,
+    hp: 100,
+    stats: {
+      attack: 10,
+      defense: 5,
+    },
+    category: Category.MOON_MATHER,
+    categoryName: 'Moon Mather',
+  },
 ]
 
 const CategoryNames = {

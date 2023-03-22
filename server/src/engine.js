@@ -12,6 +12,12 @@ const calculateMoveEffectiveness = (target, move) => {
             atkEff: 1,
             defEff: 1,
         }
+    } 
+    if (move.type === model.MoveTypes.END_GAME) {
+        return {
+            atkEff: 0,
+            defEff: 0,
+        }
     }
 
     const atkEff = model.EffectivenessMatrix[move.category - 1][target.category - 1];
@@ -80,11 +86,10 @@ class Engine {
     turn(move, randomness) {
         // the player always starts first
         this.isPlayerMove = !(this.previousMoves.length % 2);
-
         const { atkEff, defEff } = calculateMoveEffectiveness(this.target, move);
 
         if (move.type === model.MoveTypes.END_GAME) {
-            if (this.previousMoves.length === this.moveLimit - 1) {
+            if (this.previousMoves.length === this.moveLimit) {
                 throw new Error("Move limit has been reached, no additional turns allowed");
             }
             this.snapshotTurn(move, randomness, atkEff, defEff);
