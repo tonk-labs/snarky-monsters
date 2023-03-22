@@ -18,11 +18,7 @@ const Container = styled.div`
   }
 `
 
-export default function Dialogue({
-  nextAnimation,
-  shiftAnimationQueue,
-  setShowMoveBox,
-}) {
+export default function Dialogue({ nextAnimation, shiftAnimationQueue }) {
   const [displayText, setDisplayText] = useState('')
   const [showButton, setShowButton] = useState(false)
   const text = nextAnimation ? nextAnimation.content : ''
@@ -38,7 +34,7 @@ export default function Dialogue({
           setShowButton(true)
           clearInterval(timer)
         }
-      }, 10)
+      }, 20)
       return () => clearInterval(timer)
     }
   }, [text, nextAnimation])

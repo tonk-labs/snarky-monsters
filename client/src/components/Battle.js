@@ -4,7 +4,9 @@ import BattleScreen from '@/components/BattleScreen.js'
 import MoveBox from '@/components/MoveBox'
 import LoadingMoves from './LoadingMoves'
 
-const Container = styled.div``
+const Container = styled.div`
+  height: 100%;
+`
 
 export default function Battle({
   playerState,
@@ -36,7 +38,6 @@ export default function Battle({
       <BattleScreen
         playerState={playerState}
         npcState={npcState}
-        report={report}
         setShowMoveBox={setShowMoveBox}
         nextAnimation={animationQueue[0]}
         shiftAnimationQueue={shiftAnimationQueue}

@@ -43,10 +43,10 @@ export default function Header(props) {
       </Link>
       <div className="links">
         <a href="https://discord.gg/REF6tuZA7K" target="_blank">
-          <Image src={discord} height={20} />
+          <Image alt="social logo" src={discord} height={20} />
         </a>
         <a href="https://twitter.com/accessorlabs" target="_blank">
-          <Image src={twitter} height={20} />
+          <Image alt="social logo" src={twitter} height={20} />
         </a>
         <a href="https://accessorlabs.org" target="_blank">
           <span>

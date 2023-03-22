@@ -4,6 +4,12 @@ import Image from 'next/image.js'
 import Dialogue from '@/components/Dialogue'
 
 const Container = styled.div`
+  border-bottom: solid 2px brown;
+  height: 62%;
+  #top {
+    height: 90%auto;
+    border-bottom: solid 2px brown;
+  }
   .playerImg {
     background-color: red;
   }
@@ -62,7 +68,6 @@ const Container = styled.div`
 export default function BattleScreen({
   playerState,
   npcState,
-  report,
   setShowMoveBox,
   nextAnimation,
   shiftAnimationQueue,
@@ -104,73 +109,75 @@ export default function BattleScreen({
 
   return (
     <Container>
-      <div
-        id="playerCache"
-        onAnimationEnd={() => {
-          // this will be used to update hp, category name and sprite
-          setCachedPlayerState(playerState)
-        }}
-      >
+      <div id="top">
         <div
-          className={`playerImg ${
-            animatePlayerEntry ? 'animatePlayerEntry' : ''
-          } ${animatePlayerFlash ? 'flash-image' : ''}
+          id="playerCache"
+          onAnimationEnd={() => {
+            // this will be used to update hp, category name and sprite
+            setCachedPlayerState(playerState)
+          }}
+        >
+          <div
+            className={`playerImg ${
+              animatePlayerEntry ? 'animatePlayerEntry' : ''
+            } ${animatePlayerFlash ? 'flash-image' : ''}
           `}
-          onAnimationEnd={() => {
-            setAnimatePlayerEntry(false)
-            setAnimatePlayerFlash(false)
-            shiftAnimationQueue()
-          }}
-        >
-          {/* what is rendered on the UI needs to take its cue from the animation queue */}
-          {/* playerstate and npcstate will update separately to how you want the animation to run */}
-          {/* one option is to remove them as soon as you make the swap request */}
-          {/* another option is to change these references so that instead of reading from state they read from animation queue */}
-          {/* in which case animation queue would need to contain information about which monsters are currently in play */}
-          {/* and then locally you would cache this in the component as {cachedPlayerState} */}
-          {/* {cachedPlayerState} updates when a particular item comes up in the animation queue */}
+            onAnimationEnd={() => {
+              setAnimatePlayerEntry(false)
+              setAnimatePlayerFlash(false)
+              shiftAnimationQueue()
+            }}
+          >
+            {/* what is rendered on the UI needs to take its cue from the animation queue */}
+            {/* playerstate and npcstate will update separately to how you want the animation to run */}
+            {/* one option is to remove them as soon as you make the swap request */}
+            {/* another option is to change these references so that instead of reading from state they read from animation queue */}
+            {/* in which case animation queue would need to contain information about which monsters are currently in play */}
+            {/* and then locally you would cache this in the component as {cachedPlayerState} */}
+            {/* {cachedPlayerState} updates when a particular item comes up in the animation queue */}
 
-          <h3>{cachedPlayerState.categoryName}</h3>
-          <p>
-            <strong>HP: </strong>
-            {playerState.hp}
-          </p>
-          <Image
-            src={`/sprite_category_${cachedPlayerState.category}.png`}
-            width={50}
-            height={50}
-            alt="sprite"
-          />
+            <p>{cachedPlayerState.categoryName}</p>
+            <p>
+              <strong>HP: </strong>
+              {playerState.hp}
+            </p>
+            <Image
+              src={`/sprite_category_${cachedPlayerState.category}.png`}
+              width={50}
+              height={50}
+              alt="sprite"
+            />
+          </div>
         </div>
+        {npcState.categoryName != null && (
+          <div
+            className={`npcImg ${animateNPCEntry ? 'animateNPCEntry' : ''} ${
+              animateNPCFlash ? 'flash-image' : ''
+            }`}
+            onAnimationEnd={() => {
+              setAnimateNPCEntry(false)
+              setAnimateNPCFlash(false)
+              shiftAnimationQueue()
+            }}
+          >
+            <h3>{npcState.categoryName}</h3>
+            <p>
+              <strong>HP: </strong>
+              {npcState.hp}
+            </p>
+            <Image
+              src={`/sprite_category_${npcState.category}.png`}
+              width={50}
+              height={50}
+              alt="sprite"
+            />
+          </div>
+        )}
       </div>
-      {npcState.categoryName != null && (
-        <div
-          className={`npcImg ${animateNPCEntry ? 'animateNPCEntry' : ''} ${
-            animateNPCFlash ? 'flash-image' : ''
-          }`}
-          onAnimationEnd={() => {
-            setAnimateNPCEntry(false)
-            setAnimateNPCFlash(false)
-            shiftAnimationQueue()
-          }}
-        >
-          <h3>{npcState.categoryName}</h3>
-          <p>
-            <strong>HP: </strong>
-            {npcState.hp}
-          </p>
-          <Image
-            src={`/sprite_category_${npcState.category}.png`}
-            width={50}
-            height={50}
-            alt="sprite"
-          />
-        </div>
-      )}
+
       <Dialogue
         nextAnimation={nextAnimation}
         shiftAnimationQueue={shiftAnimationQueue}
-        setShowMoveBox={setShowMoveBox}
       />
     </Container>
   )
