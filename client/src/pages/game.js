@@ -48,7 +48,7 @@ export default function GameComponent() {
           fetchNPC={fetchNPC}
         />
       )}
-      {gameState.playerState.id && !gameState.gameOver && (
+      {gameState.playerState.id && (
         <Battle
           playerState={gameState.playerState}
           npcState={gameState.npcState}
@@ -60,7 +60,6 @@ export default function GameComponent() {
           selectMove={selectMove}
         />
       )}
-      {gameState.gameOver && <p>endgame</p>}
     </Container>
   )
 }

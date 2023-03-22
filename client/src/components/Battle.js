@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { useState, useEffect } from 'react'
 import BattleScreen from '@/components/BattleScreen.js'
 import MoveBox from '@/components/MoveBox'
+import LoadingMoves from './LoadingMoves'
 
 const Container = styled.div``
 
@@ -16,12 +17,15 @@ export default function Battle({
   shiftAnimationQueue,
 }) {
   const [showMoveBox, setShowMoveBox] = useState(false)
+  const [showGameOver, setShowGameOver] = useState(false)
+
   const [savedReportCounter, setSavedReportCounter] = useState(false)
   const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (animationQueue[0]) {
       setLoading(false)
       setShowMoveBox(animationQueue[0].type === 'showMoveBox')
+      setShowGameOver(animationQueue[0].type === 'gameOver')
     } else {
       setLoading(true)
       setShowMoveBox(false)
@@ -37,7 +41,7 @@ export default function Battle({
         nextAnimation={animationQueue[0]}
         shiftAnimationQueue={shiftAnimationQueue}
       />
-      {loading && <p>Loading...</p>}
+      {loading && <LoadingMoves />}
       {showMoveBox && (
         <MoveBox
           Game={Game}
@@ -46,6 +50,11 @@ export default function Battle({
           setShowMoveBox={setShowMoveBox}
           shiftAnimationQueue={shiftAnimationQueue}
         />
+      )}
+      {showGameOver && (
+        <div>
+          <h2>Game over!</h2> <p>Well done!</p>
+        </div>
       )}
     </Container>
   )

@@ -29,8 +29,6 @@ export const playerSelectMonster = (dispatch, getState) => (monsterId) => {
     content: 'You were walking down the street all happy one day...until!',
   })
 
-  console.log(hydrateMonster(monsterId))
-
   dispatch({
     payload: {
       playerState: hydrateMonster(monsterId),
@@ -203,7 +201,10 @@ export const selectMove = (dispatch, getState) => (
           content: 'But it missed. Bad luck.',
         })
       } else {
-        // TODO: flash animation
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animateNPCFlash',
+        })
         // TODO: hp animation
         if (report.didCrit) {
           animationQueue.push({
@@ -251,8 +252,13 @@ export const selectMove = (dispatch, getState) => (
     })
     // TODO: implement logic to handle if server says game is over
     if (mockServerResponse1.goodGame) {
+      animationQueue.push({
+        type: 'gameOver',
+        outcome: playerState > 0 ? 'Victory' : 'Defeat',
+      })
       dispatch({
         payload: {
+          animationQueue: animationQueue,
           gameOver: true,
         },
       })
@@ -347,7 +353,10 @@ export const selectMove = (dispatch, getState) => (
             content: 'But they missed. You lucky thing.',
           })
         } else {
-          // TODO: flash animation
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animatePlayerFlash',
+          })
           // TODO: hp animation
           if (report.didCrit) {
             animationQueue.push({
@@ -396,8 +405,13 @@ export const selectMove = (dispatch, getState) => (
       })
       // TODO: implement logic to handle if server says game is over
       if (mockServerResponse2.goodGame) {
+        animationQueue.push({
+          type: 'gameOver',
+          outcome: playerState > 0 ? 'Victory' : 'Defeat',
+        })
         dispatch({
           payload: {
+            animationQueue: animationQueue,
             gameOver: true,
           },
         })

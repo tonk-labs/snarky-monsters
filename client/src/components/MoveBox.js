@@ -27,7 +27,6 @@ export default function MoveBox({
       {showSwapOptions && (
         <div>
           {swapOptions.map((monster) => {
-            console.log(playerState)
             return (
               <button
                 key={monster.id}

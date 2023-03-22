@@ -39,6 +39,24 @@ const Container = styled.div`
       left: 0px;
     }
   }
+  .flash-image {
+    animation: flash 0.2s 3;
+  }
+
+  @keyframes flash {
+    25% {
+      opacity: 1;
+    }
+    26% {
+      opacity: 0;
+    }
+    75% {
+      opacity: 0;
+    }
+    76% {
+      opacity: 1;
+    }
+  }
 `
 
 export default function BattleScreen({
@@ -60,6 +78,7 @@ export default function BattleScreen({
   const [animatePlayerDepleteHP, setAnimatePlayerDepleteHP] = useState(false)
   const [animateVictory, setAnimateVictory] = useState(false)
   const [animateDefeat, setAnimateDefeat] = useState(false)
+  const [cachedPlayerState, setCachedPlayerState] = useState(playerState)
   // useEffect doesn't run if (1) a props changes where (2) the props is an array and (3) just the contents of the array change. We want
   useEffect(() => {
     if (nextAnimation && nextAnimation.type === 'visual') {
@@ -70,9 +89,14 @@ export default function BattleScreen({
         case 'animateNPCEntry':
           setAnimateNPCEntry(true)
           break
-
+        case 'animatePlayerFlash':
+          setAnimatePlayerFlash(true)
+          break
+        case 'animateNPCFlash':
+          setAnimateNPCFlash(true)
+          break
         case 'animatePlayerSwap':
-        // animate as usual,
+        // animate as usual, but playerState is changing too.
         // after animation ends, you will need to update locally cached playerstate
       }
     }
@@ -81,39 +105,52 @@ export default function BattleScreen({
   return (
     <Container>
       <div
-        className={`playerImg ${
-          animatePlayerEntry ? 'animatePlayerEntry' : ''
-        }`}
+        id="playerCache"
         onAnimationEnd={() => {
-          setAnimatePlayerEntry(false)
-          shiftAnimationQueue()
+          // this will be used to update hp, category name and sprite
+          setCachedPlayerState(playerState)
         }}
       >
-        {/* what is rendered on the UI needs to take its cue from the animation queue */}
-        {/* playerstate and npcstate will update separately to how you want the animation to run */}
-        {/* one option is to remove them as soon as you make the swap request */}
-        {/* another option is to change these references so that instead of reading from state they read from animation queue */}
-        {/* in which case animation queue would need to contain information about which monsters are currently in play */}
-        {/* and then locally you would cache this in the component as {cachedPlayerState} */}
-        {/* {cachedPlayerState} updates when a particular item comes up in the animation queue */}
-
-        <h3>{playerState.categoryName}</h3>
-        <p>
-          <strong>HP: </strong>
-          {playerState.hp}
-        </p>
-        <Image
-          src={`/sprite_category_${playerState.category}.png`}
-          width={50}
-          height={50}
-          alt="sprite"
-        />
-      </div>
-      {npcState.categoryName != null ? (
         <div
-          className={`npcImg ${animateNPCEntry ? 'animateNPCEntry' : ''}`}
+          className={`playerImg ${
+            animatePlayerEntry ? 'animatePlayerEntry' : ''
+          } ${animatePlayerFlash ? 'flash-image' : ''}
+          `}
+          onAnimationEnd={() => {
+            setAnimatePlayerEntry(false)
+            setAnimatePlayerFlash(false)
+            shiftAnimationQueue()
+          }}
+        >
+          {/* what is rendered on the UI needs to take its cue from the animation queue */}
+          {/* playerstate and npcstate will update separately to how you want the animation to run */}
+          {/* one option is to remove them as soon as you make the swap request */}
+          {/* another option is to change these references so that instead of reading from state they read from animation queue */}
+          {/* in which case animation queue would need to contain information about which monsters are currently in play */}
+          {/* and then locally you would cache this in the component as {cachedPlayerState} */}
+          {/* {cachedPlayerState} updates when a particular item comes up in the animation queue */}
+
+          <h3>{cachedPlayerState.categoryName}</h3>
+          <p>
+            <strong>HP: </strong>
+            {playerState.hp}
+          </p>
+          <Image
+            src={`/sprite_category_${cachedPlayerState.category}.png`}
+            width={50}
+            height={50}
+            alt="sprite"
+          />
+        </div>
+      </div>
+      {npcState.categoryName != null && (
+        <div
+          className={`npcImg ${animateNPCEntry ? 'animateNPCEntry' : ''} ${
+            animateNPCFlash ? 'flash-image' : ''
+          }`}
           onAnimationEnd={() => {
             setAnimateNPCEntry(false)
+            setAnimateNPCFlash(false)
             shiftAnimationQueue()
           }}
         >
@@ -129,8 +166,6 @@ export default function BattleScreen({
             alt="sprite"
           />
         </div>
-      ) : (
-        <p>Finding monster...</p>
       )}
       <Dialogue
         nextAnimation={nextAnimation}
