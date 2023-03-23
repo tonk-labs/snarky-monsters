@@ -1,5 +1,8 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
+
+const CryptoJS = require('crypto-js');
+
 const hash = require('../src/hash.js');
 const Engine = require('../src/engine.js');
 const Model = require('../src/model.js');
@@ -19,12 +22,34 @@ test('hashes array, acc test', () => {
 
 test('hashes array, perf test', () => {
     return expect(hash.mimcHashArray(testArrayBig)).resolves.toBe("17446969593660877771359094965958784803427043937083498145407095230194754007071");
-})
+});
 
+test('encrypts and decrypts randomness', () => {
+    const { key, ciphertext } = hash.createEncryptedSecret('not actually random');
+    const result = hash.decryptSecret(key, ciphertext, { enc: CryptoJS.enc.Utf8 });
+    expect(ciphertext).not.toEqual(result);
+    expect(result).toEqual('not actually random');
+});
 
-test('test game hash', () => {
-    return expect(feedEngineData('bad_input_2.json').then((engine) => hash.hashGameState(engine))).resolves.toBe("15080711618435363877749354773142612365775164170498976319737660533904581088277");    
-})
+test('combines randomness determinstically', () => {
+    const randomness = hash.generateRandomness();
+    const e = hash.createEncryptedSecret(randomness);
+    const decrypted = hash.decryptSecret(e.key, e.ciphertext);
+
+    const randomness2 = hash.generateRandomness();
+    const e2 = hash.createEncryptedSecret(randomness2);
+    const decrypted2 = hash.decryptSecret(e2.key, e2.ciphertext);
+
+    const oneway = hash.calculateCombinedRandomness(decrypted, randomness2);
+    const otherway = hash.calculateCombinedRandomness(randomness, decrypted2);
+
+    return expect(oneway).toEqual(otherway);
+});
+
+//** this test was mostly for debugging */
+// test('test game hash', () => {
+//     return expect(feedEngineData('bad_input_2.json').then((engine) => hash.hashGameState(engine))).resolves.toBe("15080711618435363877749354773142612365775164170498976319737660533904581088277");    
+// });
 
 const testArraySmol = [
     33, 64, 42, 17, 2, 80, 26, 74, 29, 65, 40, 21, 87, 53, 90, 45, 54, 81, 82, 51, 12, 18, 30, 55, 11, 78, 13, 96, 41, 76, 8, 84, 79, 28, 91, 94, 77, 52, 19, 57,

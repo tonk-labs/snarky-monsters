@@ -33,7 +33,7 @@ const Moves = [
   {
     id: 1,
     attack: 10,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.UNIVERSAL,
     type: MoveTypes.HEAL,
@@ -41,7 +41,7 @@ const Moves = [
   // {
   //   id: 2,
   //   attack: 15,
-  //   crit: 98,
+  //   crit: 97,
   //   miss: 0,
   //   category: Category.UNIVERSAL,
   //   type: MoveTypes.ATTACK,
@@ -49,7 +49,7 @@ const Moves = [
   {
     id: 2,
     attack: 10,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.DEGEN,
     type: MoveTypes.ATTACK,
@@ -57,7 +57,7 @@ const Moves = [
   {
     id: 3,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.DEGEN,
     type: MoveTypes.ATTACK,
@@ -65,7 +65,7 @@ const Moves = [
   {
     id: 4,
     attack: 10,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.REGULATOR,
     type: MoveTypes.ATTACK,
@@ -73,15 +73,15 @@ const Moves = [
   {
     id: 5,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.REGULATOR,
     type: MoveTypes.ATTACK,
   },
   {
     id: 7,
-    attack: 10,
-    crit: 98,
+    attack: 20,
+    crit: 97,
     miss: 10,
     category: Category.VC,
     type: MoveTypes.ATTACK,
@@ -89,15 +89,15 @@ const Moves = [
   {
     id: 8,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.VC,
     type: MoveTypes.ATTACK,
   },
   {
     id: 9,
-    attack: 10,
-    crit: 98,
+    attack: 20,
+    crit: 97,
     miss: 10,
     category: Category.NORMIE,
     type: MoveTypes.ATTACK,
@@ -105,15 +105,15 @@ const Moves = [
   {
     id: 10,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.NORMIE,
     type: MoveTypes.ATTACK,
   },
   {
     id: 11,
-    attack: 10,
-    crit: 98,
+    attack: 20,
+    crit: 97,
     miss: 10,
     category: Category.AGI,
     type: MoveTypes.ATTACK,
@@ -121,15 +121,15 @@ const Moves = [
   {
     id: 12,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.AGI,
     type: MoveTypes.ATTACK,
   },
   {
     id: 13,
-    attack: 10,
-    crit: 98,
+    attack: 20,
+    crit: 97,
     miss: 10,
     category: Category.BITCOIN_MAXI,
     type: MoveTypes.ATTACK,
@@ -137,15 +137,15 @@ const Moves = [
   {
     id: 14,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.BITCOIN_MAXI,
     type: MoveTypes.ATTACK,
   },
   {
     id: 15,
-    attack: 10,
-    crit: 98,
+    attack: 20,
+    crit: 97,
     miss: 10,
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK,
@@ -153,7 +153,7 @@ const Moves = [
   {
     id: 16,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.MOON_MATHER,
     type: MoveTypes.ATTACK,
@@ -236,7 +236,7 @@ const Monsters = [
   }
 ]
 
-const CategoryNames =  {
+const CategoryNames = {
   1: 'Degen',
   2: 'Regulator',
   3: 'Venture Capitalist',
@@ -254,6 +254,8 @@ const MoveTypeNames = {
 }
 
 const MoveNames = {
+  0: 'Re-train',
+  1: 'Heal',
   3: 'Diamond Hands',
   4: 'Ape In',
   5: 'Use CBDC',

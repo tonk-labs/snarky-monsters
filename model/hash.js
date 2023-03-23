@@ -32,7 +32,8 @@ function intsToHex(list) {
 
 /**
  * 
- * @param {*} randomness 
+ * @param {string} seed 
+ * @returns 
  */
 const createEncryptedSecret = (seed) => {
     const key = CryptoJS.lib.WordArray.random(16).toString();
@@ -43,16 +44,33 @@ const createEncryptedSecret = (seed) => {
     }
 }
 
+/**
+ * Why in the hell does enc as hex return utf8 representation of hex
+ * whereas when I encode as hex on the decryption it's completely different representation
+ * idk
+ * @returns random hex string
+ */
 const generateRandomness = () => CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex)
 
 /**
  * 
  * @param {*} key 
+ * @param {*} encrypted 
+ * @param {*} opts //Utf8 is the string representation of the hex because... see above
+ * @returns 
  */
 const decryptSecret = (key, encrypted, opts = { enc: CryptoJS.enc.Utf8 }) => {
     return CryptoJS.AES.decrypt(encrypted, key).toString(opts.enc);
 }
 
+/**
+ * there is a specific ordering that needs to be enforced here for the gameHash to be
+ * consistent across client and server
+ * 
+ * @param {*} randomness1  contribution from the source 
+ * @param {*} randomness2  contribution from the target
+ * @returns 
+ */
 const calculateCombinedRandomness = (randomness1, randomness2) => {
     return CryptoJS.SHA256(randomness1 + randomness2).words[0] % 101;
 }
