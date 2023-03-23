@@ -25,7 +25,8 @@ export const playerSelectMonster = (dispatch, getState) => (monsterId) => {
   })
   animationQueue.push({
     type: 'dialogue',
-    content: 'You were walking down the street all happy one day...until!',
+    content:
+      "You were minding your own business and catching up on Vitalik's blog, when suddenly...",
   })
 
   dispatch({
@@ -51,7 +52,7 @@ export const fetchNPC = (dispatch, getState) => () => {
 
     animationQueue.push({
       type: 'dialogue',
-      content: `Watch out! A wild ${npcState.categoryName} appeared!`,
+      content: `A wild ${npcState.categoryName} appeared!`,
     })
     animationQueue.push({
       type: 'visual',
@@ -95,7 +96,8 @@ export const selectMove = (dispatch, getState) => (
   setTimeout(() => {
     var playerState = getState().playerState
     if (attemptedSwapTarget) {
-      playerState.categoryName = attemptedSwapTarget.categoryName
+      const target = hydrateMonster(attemptedSwapTarget.id)
+      playerState = target
     }
     var npcState = getState().npcState
     npcState.hp = npcState.hp - 5
@@ -105,7 +107,7 @@ export const selectMove = (dispatch, getState) => (
     var didMiss = randomBoolean()
     var didCrit = randomBoolean() && !didMiss
     var goodGame = npcState.hp <= 0
-    var npcMove = npcState.moves[1]
+    var npcMove = npcState.moves[0]
     const mockServerResponse1 = {
       newState: {
         playerState: playerState,
@@ -120,7 +122,7 @@ export const selectMove = (dispatch, getState) => (
       },
       npcMove: npcMove,
       commitment: '',
-      goodGame: goodGame,
+      goodGame: true,
     }
 
     var report = mockServerResponse1.newState.report
@@ -138,16 +140,14 @@ export const selectMove = (dispatch, getState) => (
           content: "But it didn't work this time. Bad luck.",
         })
       } else {
-        // // heal anim
         animationQueue.push({
           type: 'visual',
           animation: 'animatePlayerHeal',
         })
-        // // hp anim
-        // animationQueue.push({
-        //   type: 'visual',
-        //   animation: '',
-        // })
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animatePlayerHP',
+        })
         if (report.didCrit) {
           animationQueue.push({
             type: 'dialogue',
@@ -156,7 +156,6 @@ export const selectMove = (dispatch, getState) => (
         }
       }
     } else if (report.lastMove.name === 'Re-train') {
-      // implement swap animations
       animationQueue.push({
         type: 'dialogue',
         content: `You took the plunge and decided to re-train and achieve your dream of becoming a...`,
@@ -165,7 +164,10 @@ export const selectMove = (dispatch, getState) => (
         type: 'dialogue',
         content: `...${attemptedSwapTarget.categoryName}!`,
       })
-      // pulse animation
+      animationQueue.push({
+        type: 'visual',
+        animation: 'animatePlayerPulse',
+      })
       if (report.didMiss) {
         animationQueue.push({
           type: 'dialogue',
@@ -173,18 +175,22 @@ export const selectMove = (dispatch, getState) => (
             'But it was too hard and you got distracted. Better luck next time! #PersistencePays.',
         })
       } else {
-        // leave animation
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animatePlayerExit',
+        })
         dispatch({
           payload: {
             playerState: mockServerResponse1.newState.playerState,
           },
         })
-        // join animation
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animatePlayerEntry',
+        })
         animationQueue.push({
           type: 'dialogue',
-          content: `You successfully re-trained and re-branded as a ${
-            getState().playerState.categoryName
-          }. Have you updated your Twitter yet?`,
+          content: `You successfully re-trained and re-branded as a ${playerState.categoryName}. Have you updated your Twitter yet?`,
         })
       }
     } else {
@@ -206,7 +212,10 @@ export const selectMove = (dispatch, getState) => (
           type: 'visual',
           animation: 'animateNPCFlash',
         })
-        // TODO: hp animation
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animateNPCHP',
+        })
         if (report.didCrit) {
           animationQueue.push({
             type: 'dialogue',
@@ -255,7 +264,7 @@ export const selectMove = (dispatch, getState) => (
     if (mockServerResponse1.goodGame) {
       animationQueue.push({
         type: 'gameOver',
-        outcome: playerState > 0 ? 'Victory' : 'Defeat',
+        outcome: playerState.hp > 0 ? 'Victory' : 'Defeat',
       })
       dispatch({
         payload: {
@@ -285,7 +294,7 @@ export const selectMove = (dispatch, getState) => (
           },
         },
         key: '',
-        goodGame: goodGame,
+        goodGame: true,
       }
 
       report = mockServerResponse2.newState.report
@@ -300,16 +309,14 @@ export const selectMove = (dispatch, getState) => (
             content: "But it didn't work!",
           })
         } else {
-          // // heal anim
           animationQueue.push({
             type: 'visual',
             animation: 'animateNPCHeal',
           })
-          // // hp anim
-          // animationQueue.push({
-          //   type: 'visual',
-          //   animation: '',
-          // })
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animateNPCHP',
+          })
           if (report.didCrit) {
             animationQueue.push({
               type: 'dialogue',
@@ -318,25 +325,33 @@ export const selectMove = (dispatch, getState) => (
           }
         }
       } else if (report.lastMove.name === 'Re-train') {
-        // implement swap animations
         animationQueue.push({
           type: 'dialogue',
           content: `${npcState.categoryName} took the plunge and decided to re-train.`,
         })
-        // pulse animation
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animateNPCPulse',
+        })
         if (report.didMiss) {
           animationQueue.push({
             type: 'dialogue',
             content: `But it was too hard and they got distracted. It's a tough world out there...`,
           })
         } else {
-          // leave animation
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animateNPCExit',
+          })
           dispatch({
             payload: {
               npcState: mockServerResponse2.newState.npcState,
             },
           })
-          // join animation
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animateNPCEntry',
+          })
           animationQueue.push({
             type: 'dialogue',
             content: `They successfully re-trained and re-branded as a ${npcState.categoryName}. Maybe they'll blog about it.`,
@@ -361,7 +376,10 @@ export const selectMove = (dispatch, getState) => (
             type: 'visual',
             animation: 'animatePlayerFlash',
           })
-          // TODO: hp animation
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animatePlayerHP',
+          })
           if (report.didCrit) {
             animationQueue.push({
               type: 'dialogue',
@@ -411,7 +429,7 @@ export const selectMove = (dispatch, getState) => (
       if (mockServerResponse2.goodGame) {
         animationQueue.push({
           type: 'gameOver',
-          outcome: playerState > 0 ? 'Victory' : 'Defeat',
+          outcome: playerState.hp > 0 ? 'Victory' : 'Defeat',
         })
         dispatch({
           payload: {

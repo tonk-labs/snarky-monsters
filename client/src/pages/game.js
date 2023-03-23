@@ -56,7 +56,6 @@ export default function GameComponent() {
   )
   const audioRef = useRef(null)
   function playMusic() {
-    console.log('hello')
     audioRef.current.play()
   }
 
