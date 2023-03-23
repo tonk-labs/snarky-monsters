@@ -34,7 +34,7 @@ const Moves = [
   {
     id: 1,
     attack: 10,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.UNIVERSAL,
     name: 'Heal',
@@ -43,7 +43,7 @@ const Moves = [
   // {
   //   id: 2,
   //   attack: 15,
-  //   crit: 98,
+  //   crit: 97,
   //   miss: 0,
   //   category: Category.UNIVERSAL,
   //   type: MoveTypes.ATTACK,
@@ -51,7 +51,7 @@ const Moves = [
   {
     id: 2,
     attack: 10,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.DEGEN,
     name: 'Diamond Hands',
@@ -60,7 +60,7 @@ const Moves = [
   {
     id: 3,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.DEGEN,
     name: 'Ape In',
@@ -69,7 +69,7 @@ const Moves = [
   {
     id: 4,
     attack: 10,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.REGULATOR,
     name: 'Use CBDC',
@@ -78,7 +78,7 @@ const Moves = [
   {
     id: 5,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.REGULATOR,
     name: 'Wanton Arrest',
@@ -87,7 +87,7 @@ const Moves = [
   {
     id: 7,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.VC,
     name: 'Take 10%',
@@ -96,7 +96,7 @@ const Moves = [
   {
     id: 8,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.VC,
     name: 'FOMO',
@@ -105,7 +105,7 @@ const Moves = [
   {
     id: 9,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.NORMIE,
     name: 'Soul Cycle',
@@ -114,7 +114,7 @@ const Moves = [
   {
     id: 10,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.NORMIE,
     name: 'Boozy Brunch',
@@ -123,7 +123,7 @@ const Moves = [
   {
     id: 11,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.AGI,
     name: 'Flash Crash',
@@ -132,7 +132,7 @@ const Moves = [
   {
     id: 12,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.AGI,
     name: 'Unleash Waluigi',
@@ -141,7 +141,7 @@ const Moves = [
   {
     id: 13,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.BITCOIN_MAXI,
     name: 'Angry Tweet',
@@ -150,7 +150,7 @@ const Moves = [
   {
     id: 14,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.BITCOIN_MAXI,
     name: 'Hard Fork',
@@ -159,7 +159,7 @@ const Moves = [
   {
     id: 15,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 10,
     category: Category.MOON_MATHER,
     name: 'PlonK',
@@ -168,7 +168,7 @@ const Moves = [
   {
     id: 16,
     attack: 20,
-    crit: 98,
+    crit: 97,
     miss: 60,
     category: Category.MOON_MATHER,
     name: 'Brute Force',

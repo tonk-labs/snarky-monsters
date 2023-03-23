@@ -84,6 +84,17 @@ class Engine {
         return engine;
     }
 
+    static fromJSON(gameJson) {
+        const engine = new Engine(gameJson.player.category, gameJson.npc.category, gameJson.moveLimit);
+        engine.previousMoves = gameJson.previousMoves;
+        engine.previousState = gameJson.previousState;
+        engine.prevAtkEff = gameJson.prevAtkEff;
+        engine.prevDefEff = gameJson.prevDefEff;
+        engine.prevRandomness = gameJson.prevRandomness;
+        engine.isPlayerMove = gameJson.isPlayerMove;
+        return engine;
+    }
+
     snapshotTurn = (move, randomness, atkEff, defEff) => {
         this.previousState.push({
             player: { 
