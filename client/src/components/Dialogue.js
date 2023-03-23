@@ -3,6 +3,13 @@ import { useEffect, useState } from 'react'
 import next from 'next'
 
 const Container = styled.div`
+  position: relative;
+  height: 20%;
+  background-color: #cda882;
+  p {
+    margin: 0;
+    padding: 3% 5%;
+  }
   .fadeIn {
     animation-duration: 0.1s;
     animation-name: fadeIn;
@@ -15,6 +22,20 @@ const Container = styled.div`
       opacity: 1;
     }
   }
+  .nextButton {
+    background-color: #cda882;
+    display: inline-block;
+    padding: 0.5%;
+    border: 2px solid #5f3400;
+    border-radius: 4px;
+    filter: brightness(1);
+    position: absolute;
+    bottom: 10%;
+    right: 3%;
+    &:hover {
+      cursor: pointer;
+      filter: brightness(1.1);
+    }
   }
 `
 
@@ -38,25 +59,28 @@ export default function Dialogue({ nextAnimation, shiftAnimationQueue }) {
       return () => clearInterval(timer)
     }
   }, [text, nextAnimation])
-  if (nextAnimation && nextAnimation.type === 'dialogue') {
-    return (
-      <Container>
-        {displayText === 'What will you do?' && (
-          <p className="fadeIn">{displayText}</p>
-        )}
-        {displayText != 'What will you do?' && <p>{displayText}</p>}
+  return (
+    <Container>
+      {nextAnimation && nextAnimation.type === 'dialogue' && (
+        <div id="inner">
+          {displayText === 'What will you do?' && (
+            <p className="fadeIn">{displayText}</p>
+          )}
+          {displayText != 'What will you do?' && <p>{displayText}</p>}
 
-        {showButton && (
-          <button
-            onClick={() => {
-              setShowButton(false)
-              shiftAnimationQueue()
-            }}
-          >
-            Next
-          </button>
-        )}
-      </Container>
-    )
-  }
+          {showButton && (
+            <div
+              className="nextButton"
+              onClick={() => {
+                setShowButton(false)
+                shiftAnimationQueue()
+              }}
+            >
+              NEXT
+            </div>
+          )}
+        </div>
+      )}
+    </Container>
+  )
 }

@@ -14,18 +14,18 @@ const Container = styled.div`
     width: 50%;
     background-color: #cda882;
     margin-top: 10%;
-    border: 2px solid black;
+    border: 2px solid #5f3400;
     border-radius: 4px;
     filter: brightness(1);
     font-weight: bolder;
     &:hover {
       cursor: pointer;
-      filter: brightness(1.01);
+      filter: brightness(1.1);
     }
   }
 `
 
-export default function Opening({ setOpening }) {
+export default function Opening({ setOpening, playMusic }) {
   return (
     <Container>
       <h1>WELCOME!</h1>
@@ -43,7 +43,13 @@ export default function Opening({ setOpening }) {
         is verified on the blockchain using zero-knowledge proofs. something
         more about why this is cool.
       </p>
-      <div className="button" onClick={() => setOpening(false)}>
+      <div
+        className="button"
+        onClick={() => {
+          setOpening(false)
+          playMusic()
+        }}
+      >
         LET'S PLAY!
       </div>
     </Container>

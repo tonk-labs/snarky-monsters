@@ -18,7 +18,6 @@ function hydrateMonster(id) {
   return monsterState
 }
 export const playerSelectMonster = (dispatch, getState) => (monsterId) => {
-  // add to animationQueue
   const animationQueue = getState().animationQueue
   animationQueue.push({
     type: 'visual',
@@ -106,8 +105,7 @@ export const selectMove = (dispatch, getState) => (
     var didMiss = randomBoolean()
     var didCrit = randomBoolean() && !didMiss
     var goodGame = npcState.hp <= 0
-    var npcMove =
-      npcState.moves[Math.floor(Math.random() * (npcState.moves.length - 1))]
+    var npcMove = npcState.moves[1]
     const mockServerResponse1 = {
       newState: {
         playerState: playerState,
@@ -141,10 +139,10 @@ export const selectMove = (dispatch, getState) => (
         })
       } else {
         // // heal anim
-        // animationQueue.push({
-        //   type: 'visual',
-        //   animation: '',
-        // })
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animatePlayerHeal',
+        })
         // // hp anim
         // animationQueue.push({
         //   type: 'visual',
@@ -194,7 +192,10 @@ export const selectMove = (dispatch, getState) => (
         type: 'dialogue',
         content: `You used ${report.lastMove.name}!`,
       })
-      // TODO: Attk animation
+      animationQueue.push({
+        type: 'visual',
+        animation: 'animatePlayerAttack',
+      })
       if (report.didMiss) {
         animationQueue.push({
           type: 'dialogue',
@@ -300,10 +301,10 @@ export const selectMove = (dispatch, getState) => (
           })
         } else {
           // // heal anim
-          // animationQueue.push({
-          //   type: 'visual',
-          //   animation: '',
-          // })
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animateNPCHeal',
+          })
           // // hp anim
           // animationQueue.push({
           //   type: 'visual',
@@ -346,7 +347,10 @@ export const selectMove = (dispatch, getState) => (
           type: 'dialogue',
           content: `${npcState.categoryName} used ${report.lastMove.name}!`,
         })
-        // attk animation
+        animationQueue.push({
+          type: 'visual',
+          animation: 'animateNPCAttack',
+        })
         if (report.didMiss) {
           animationQueue.push({
             type: 'dialogue',

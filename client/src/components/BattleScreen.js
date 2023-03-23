@@ -4,45 +4,153 @@ import Image from 'next/image.js'
 import Dialogue from '@/components/Dialogue'
 
 const Container = styled.div`
-  border-bottom: solid 2px brown;
+  border-bottom: solid 2px #5f3400;
   height: 62%;
+  position: relative;
+  p {
+    margin: 0;
+  }
   #top {
-    height: 90%auto;
-    border-bottom: solid 2px brown;
+    height: 80%;
+    border-bottom: solid 2px #5f3400;
+    display: flex;
+    overflow: hidden;
+    #playerCache {
+      width: 50%;
+    }
+    #npcCache {
+      width: 50%;
+    }
+    .statusBar {
+      background-color: #eadbcb;
+      padding: 1%;
+      border: solid 2px #dcc1a7;
+      position: absolute;
+
+      .health-bar {
+        margin-top: 3%;
+        width: 80%;
+        height: 4px;
+        border: 1px solid #9c6c3b;
+        border-radius: 3px;
+        background-color: #e3ceb9;
+        overflow: hidden;
+      }
+
+      .health-bar-progress {
+        height: 100%;
+        background-color: #cda882;
+        transition: width 0.3s ease-in-out;
+      }
+      &.npc {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        width: 35%;
+        border-right: none;
+        top: 51%;
+        right: 0%;
+        font-size: 70%;
+        padding-right: 5%;
+        .health-bar {
+          display: flex;
+          justify-content: end;
+        }
+      }
+      &.player {
+        width: 42%;
+
+        border-left: none;
+        top: 30%;
+        left: 0%;
+        padding-left: 5%;
+      }
+    }
   }
   .playerImg {
-    background-color: red;
+    position: absolute;
+    top: 47%;
+    left: 12%;
+    width: 0%;
   }
   .npcImg {
-    background-color: blue;
-    position: relative;
-    left: 100px;
+    img {
+      position: absolute;
+      top: 25%;
+      right: 17%;
+      width: 0%;
+      transform: scaleX(-1);
+    }
   }
   .animatePlayerEntry {
-    background-color: red;
-    animation-duration: 5s;
-    animation-name: playerAppears;
+    animation: 2s playerAppears forwards;
   }
   @keyframes playerAppears {
-    from {
-      margin-left: 100%;
-      width: 300%;
+    0% {
+      width: 0;
+      height: 0;
     }
-    to {
-      margin-left: 0%;
-      width: 100%;
+    100% {
+      width: 29%;
+      transform: rotate(720deg) scale(1);
     }
   }
   .animateNPCEntry {
-    animation-duration: 2s;
-    animation-name: enemyAppears;
+    animation: 2s enemyAppears forwards;
   }
   @keyframes enemyAppears {
-    from {
-      left: 100px;
+    0% {
+      width: 0;
+      height: 0;
+      transform: translate(-50%, -50%) rotate(0) scale(0);
     }
-    to {
-      left: 0px;
+    100% {
+      width: 20%;
+      transform: translate(0%, 0%) rotate(-720deg) scaleX(-1);
+    }
+  }
+  .animatePlayerAttack {
+    animation-duration: 2s;
+    animation-name: playerAttack;
+  }
+  @keyframes playerAttack {
+    50% {
+      transform: translate(-20%, 20%);
+    }
+    55% {
+      transform: translate(90%, -80%);
+      transform: rotate(25deg);
+    }
+    65% {
+      transform: translate(90%, -80%);
+    }
+  }
+
+  .animateNPCAttack {
+    animation-duration: 2s;
+    animation-name: NPCAttack;
+  }
+  @keyframes NPCAttack {
+    50% {
+      transform: translate(20%, -20%);
+    }
+    55% {
+      transform: translate(-120%, 80%);
+      transform: rotate(-15deg);
+    }
+    65% {
+      transform: translate(-120%, 80%);
+    }
+  }
+  .animatePlayerHeal,
+  .animateNPCHeal {
+    animation-duration: 2s;
+    animation-name: heal;
+  }
+  @keyframes heal {
+    50% {
+      filter: grayscale(100%) brightness(200%);
     }
   }
   .flash-image {
@@ -73,7 +181,10 @@ export default function BattleScreen({
   shiftAnimationQueue,
 }) {
   const [animatePlayerEntry, setAnimatePlayerEntry] = useState(false)
+  const [playerEntered, setPlayerEntered] = useState(false)
   const [animateNPCEntry, setAnimateNPCEntry] = useState(false)
+  const [animatePlayerHeal, setAnimatePlayerHeal] = useState(false)
+  const [animateNPCHeal, setAnimateNPCHeal] = useState(false)
   const [animateHealthBarEntry, setAnimateHealthBarEntry] = useState(false)
   const [animatePlayerAttack, setAnimatePlayerAttack] = useState(false)
   const [animateNPCAttack, setAnimateNPCAttack] = useState(false)
@@ -84,6 +195,9 @@ export default function BattleScreen({
   const [animateVictory, setAnimateVictory] = useState(false)
   const [animateDefeat, setAnimateDefeat] = useState(false)
   const [cachedPlayerState, setCachedPlayerState] = useState(playerState)
+  const [cachedNPCState, setCachedNPCState] = useState(npcState)
+  const [rand, setRand] = useState(Math.floor(Math.random() * 4) + 1)
+
   // useEffect doesn't run if (1) a props changes where (2) the props is an array and (3) just the contents of the array change. We want
   useEffect(() => {
     if (nextAnimation && nextAnimation.type === 'visual') {
@@ -92,6 +206,7 @@ export default function BattleScreen({
           setAnimatePlayerEntry(true)
           break
         case 'animateNPCEntry':
+          setCachedNPCState(npcState)
           setAnimateNPCEntry(true)
           break
         case 'animatePlayerFlash':
@@ -99,6 +214,18 @@ export default function BattleScreen({
           break
         case 'animateNPCFlash':
           setAnimateNPCFlash(true)
+          break
+        case 'animatePlayerAttack':
+          setAnimatePlayerAttack(true)
+          break
+        case 'animateNPCAttack':
+          setAnimateNPCAttack(true)
+          break
+        case 'animatePlayerHeal':
+          setAnimatePlayerHeal(true)
+          break
+        case 'animateNPCHeal':
+          setAnimateNPCHeal(true)
           break
         case 'animatePlayerSwap':
         // animate as usual, but playerState is changing too.
@@ -109,7 +236,16 @@ export default function BattleScreen({
 
   return (
     <Container>
-      <div id="top">
+      <div
+        id="top"
+        style={{
+          backgroundImage: `url(../../battleBackground_${rand}.png)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          width: '100%',
+          height: '80%',
+        }}
+      >
         <div
           id="playerCache"
           onAnimationEnd={() => {
@@ -117,64 +253,97 @@ export default function BattleScreen({
             setCachedPlayerState(playerState)
           }}
         >
-          <div
-            className={`playerImg ${
-              animatePlayerEntry ? 'animatePlayerEntry' : ''
-            } ${animatePlayerFlash ? 'flash-image' : ''}
-          `}
-            onAnimationEnd={() => {
-              setAnimatePlayerEntry(false)
-              setAnimatePlayerFlash(false)
-              shiftAnimationQueue()
-            }}
-          >
-            {/* what is rendered on the UI needs to take its cue from the animation queue */}
-            {/* playerstate and npcstate will update separately to how you want the animation to run */}
-            {/* one option is to remove them as soon as you make the swap request */}
-            {/* another option is to change these references so that instead of reading from state they read from animation queue */}
-            {/* in which case animation queue would need to contain information about which monsters are currently in play */}
-            {/* and then locally you would cache this in the component as {cachedPlayerState} */}
-            {/* {cachedPlayerState} updates when a particular item comes up in the animation queue */}
-
-            <p>{cachedPlayerState.categoryName}</p>
+          <div className="statusBar player">
             <p>
-              <strong>HP: </strong>
+              <strong>{cachedPlayerState.categoryName}</strong>
+            </p>
+            <p>
+              HP:<span> </span>
               {playerState.hp}
             </p>
-            <Image
-              src={`/sprite_category_${cachedPlayerState.category}.png`}
-              width={50}
-              height={50}
-              alt="sprite"
-            />
+            <div className="health-bar">
+              <div
+                className="health-bar-progress"
+                style={{ width: `${cachedPlayerState.hp}%` }}
+              />
+            </div>
           </div>
+
+          <img
+            src={`/sprite_category_${cachedPlayerState.category}.png`}
+            alt="sprite"
+            className={`
+                playerImg
+                ${animatePlayerAttack ? 'animatePlayerAttack' : ''}
+                ${animatePlayerHeal ? 'animatePlayerHeal' : ''}
+                ${animatePlayerEntry ? 'animatePlayerEntry' : ''}
+                ${animatePlayerFlash ? 'flash-image' : ''}
+              `}
+            onAnimationEnd={() => {
+              if (animatePlayerAttack) {
+                setAnimatePlayerAttack(false)
+              }
+              if (animatePlayerHeal) {
+                setAnimatePlayerHeal(false)
+              }
+              if (animatePlayerEntry && !playerEntered) {
+                setPlayerEntered(true)
+                // setAnimatePlayerEntry(false)
+              }
+              if (animatePlayerFlash) {
+                setAnimatePlayerFlash(false)
+              }
+              shiftAnimationQueue()
+            }}
+          />
         </div>
         {npcState.categoryName != null && (
           <div
-            className={`npcImg ${animateNPCEntry ? 'animateNPCEntry' : ''} ${
-              animateNPCFlash ? 'flash-image' : ''
-            }`}
+            id="npcCache"
             onAnimationEnd={() => {
-              setAnimateNPCEntry(false)
-              setAnimateNPCFlash(false)
-              shiftAnimationQueue()
+              // this will be used to update hp, category name and sprite
+              setCachedNPCState(npcState)
             }}
           >
-            <h3>{npcState.categoryName}</h3>
-            <p>
-              <strong>HP: </strong>
-              {npcState.hp}
-            </p>
-            <Image
-              src={`/sprite_category_${npcState.category}.png`}
-              width={50}
-              height={50}
-              alt="sprite"
-            />
+            <div
+              className={`npcImg  ${animateNPCFlash ? 'flash-image' : ''}`}
+              onAnimationEnd={() => {
+                setAnimateNPCFlash(false)
+                shiftAnimationQueue()
+              }}
+            >
+              <img
+                src={`/sprite_category_${cachedNPCState.category}.png`}
+                alt="sprite"
+                className={`${animateNPCAttack ? 'animateNPCAttack' : ''}
+                 ${animateNPCHeal ? 'animateNPCHeal' : ''}
+                ${animateNPCEntry ? 'animateNPCEntry' : ''}
+
+`}
+                onAnimationEnd={() => {
+                  setAnimateNPCAttack(false)
+                  shiftAnimationQueue()
+                }}
+              />
+            </div>
+            <div className="statusBar npc">
+              <p>
+                <strong>{cachedNPCState.categoryName}</strong>
+              </p>
+              <p>
+                HP:<span> </span>
+                {npcState.hp}
+              </p>
+              <div className="health-bar">
+                <div
+                  className="health-bar-progress"
+                  style={{ width: `${cachedPlayerState.hp}%` }}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
-
       <Dialogue
         nextAnimation={nextAnimation}
         shiftAnimationQueue={shiftAnimationQueue}

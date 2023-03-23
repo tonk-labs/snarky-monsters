@@ -1,7 +1,11 @@
 import styled from 'styled-components'
 import { useState, useEffect } from 'react'
 
-const Container = styled.div``
+const Container = styled.div`
+  text-align: center;
+  position: relative;
+  top: 5%;
+`
 
 export default function LoadingMoves() {
   const [dots, setDots] = useState('')

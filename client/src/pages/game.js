@@ -54,6 +54,11 @@ export default function GameComponent() {
     gameReducer,
     initialState,
   )
+  const audioRef = useRef(null)
+  function playMusic() {
+    console.log('hello')
+    audioRef.current.play()
+  }
 
   const {
     playerSelectMonster,
@@ -72,7 +77,7 @@ export default function GameComponent() {
     <Container>
       <div ref={parentRef} id="inner">
         <Child ref={childRef}>
-          {opening && <Opening setOpening={setOpening} />}
+          {opening && <Opening setOpening={setOpening} playMusic={playMusic} />}
           {!opening && !gameState.playerState.id && (
             <MonsterPicker
               monsters={Game.Monsters}
@@ -94,6 +99,18 @@ export default function GameComponent() {
           )}
         </Child>
       </div>
+      <audio
+        loop
+        ref={audioRef}
+        credit="Epic Cyberpunk | Glory by Alex-Productions | https://onsound.eu/
+Music promoted by https://www.chosic.com/free-music/all/
+Creative Commons CC BY 3.0
+https://creativecommons.org/licenses/by/3.0/
+ "
+      >
+        <source src="/glory.mp3" ntype="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </Container>
   )
 }
