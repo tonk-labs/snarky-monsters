@@ -113,24 +113,18 @@ describe("SnarkyMonstersGame contract", function () {
       const gameHash2 = ethers.utils.formatBytes32String("gamehash");
       const gameHash3 = ethers.utils.formatBytes32String("gamehash");
       
-      const ownerC = await hhSnarky.connect(owner);
-      const addrC = await hhSnarky.connect(addr1);
-      await expect(ownerC.submitSession(1, gameHash1)).to.emit(
-        hhSnarky, "SessionSubmitted").withArgs(1);
-      await expect(ownerC.submitSession(2, gameHash2)).to.emit(
+      await expect(hhSnarky.connect(owner).submitSession(2, gameHash1)).to.emit(
         hhSnarky, "SessionSubmitted").withArgs(2);
-      await expect(addrC.submitSession(3, gameHash3)).to.emit(
+      await expect(hhSnarky.connect(owner).submitSession(3, gameHash2)).to.emit(
         hhSnarky, "SessionSubmitted").withArgs(3);
+      await expect(hhSnarky.connect(addr1).submitSession(4, gameHash3)).to.emit(
+        hhSnarky, "SessionSubmitted").withArgs(4);
 
-      const tx = await hhSnarky.certifyGame(1, [0x0], [0, 0, 0]);
-      await tx.wait();
-      const tx2 = await hhSnarky.certifyGame(2, [0x0], [0, 0, 0]);
-      await tx2.wait();
-      const tx3 = await hhSnarky.certifyGame(3, [0x0], [0,0,0]);
-      await tx3.wait();
+      await hhSnarky.certifyGame(2, [0x0], [0, 0, 0]);      
+      await hhSnarky.certifyGame(3, [0x0], [0, 0, 0]);      
+      await hhSnarky.certifyGame(4, [0x0], [0,0,0]);
 
       const topScores = await hhSnarky.getTopScores();
-
       const decodedScores = topScores.map((entry) => {
         return {
           user: entry[0],
@@ -139,68 +133,10 @@ describe("SnarkyMonstersGame contract", function () {
         }
       });
 
-      console.log(decodedScores)
+      console.log(decodedScores);
 
+      expect(decodedScores.length).equal(2);
+      expect(decodedScores[0].wins).equal(BigInt(2));
     });
   });
-
-
-  //   it("Should assign the total supply of tokens to the owner", async function () {
-  //     const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
-  //     const ownerBalance = await hardhatToken.balanceOf(owner.address);
-  //     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
-  //   });
-  // });
-
-  // describe("Transactions", function () {
-  //   it("Should transfer tokens between accounts", async function () {
-  //     const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-  //     // Transfer 50 tokens from owner to addr1
-  //     await expect(
-  //       hardhatToken.transfer(addr1.address, 50)
-  //     ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
-
-  //     // Transfer 50 tokens from addr1 to addr2
-  //     // We use .connect(signer) to send a transaction from another account
-  //     await expect(
-  //       hardhatToken.connect(addr1).transfer(addr2.address, 50)
-  //     ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
-  //   });
-
-  //   it("Should emit Transfer events", async function () {
-  //     const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-
-  //     // Transfer 50 tokens from owner to addr1
-  //     await expect(hardhatToken.transfer(addr1.address, 50))
-  //       .to.emit(hardhatToken, "Transfer")
-  //       .withArgs(owner.address, addr1.address, 50);
-
-  //     // Transfer 50 tokens from addr1 to addr2
-  //     // We use .connect(signer) to send a transaction from another account
-  //     await expect(hardhatToken.connect(addr1).transfer(addr2.address, 50))
-  //       .to.emit(hardhatToken, "Transfer")
-  //       .withArgs(addr1.address, addr2.address, 50);
-  //   });
-
-  //   it("Should fail if sender doesn't have enough tokens", async function () {
-  //     const { hardhatToken, owner, addr1 } = await loadFixture(
-  //       deployTokenFixture
-  //     );
-  //     const initialOwnerBalance = await hardhatToken.balanceOf(owner.address);
-
-  //     // Try to send 1 token from addr1 (0 tokens) to owner.
-  //     // `require` will evaluate false and revert the transaction.
-  //     await expect(
-  //       hardhatToken.connect(addr1).transfer(owner.address, 1)
-  //     ).to.be.revertedWith("Not enough tokens");
-
-  //     // Owner balance shouldn't have changed.
-  //     expect(await hardhatToken.balanceOf(owner.address)).to.equal(
-  //       initialOwnerBalance
-  //     );
-  //   });
 })

@@ -1,5 +1,6 @@
 pragma solidity ^0.8.9;
 
+// import "hardhat/console.sol";
 import "./Verifier.sol"; // Import the Verifier contract with the verifyProof function
 
 contract SnarkyMonstersGame {
@@ -17,7 +18,6 @@ contract SnarkyMonstersGame {
 
 
     BoardEntry[] topScores;
-    address[] private addresses;
     mapping(uint256 => Session) public sessions;
     mapping(address => BoardEntry) public leaderboard;
 
@@ -30,12 +30,6 @@ contract SnarkyMonstersGame {
         verifierContract = Verifier(verifierAddress);
     }
 
-    function addAddress(address _addr) private {
-        if(!leaderboard[_addr].isEntry) {
-            addresses.push(_addr);
-        }
-    }
-
     function addToLeaderBoard(BoardEntry memory entry) private {
         if(!leaderboard[entry.user].isEntry) {
             leaderboard[entry.user] = entry;
@@ -45,6 +39,7 @@ contract SnarkyMonstersGame {
     function submitSession(uint256 sessionId, bytes32 gameHash) external {
         require(sessions[sessionId].user == address(0), "Session already exists");
 
+        // console.log("Submitting session for session %s and user %s", sessionId, msg.sender);
         sessions[sessionId] = Session({
             user: msg.sender,
             gameHash: gameHash,
@@ -55,18 +50,37 @@ contract SnarkyMonstersGame {
     }
 
     function updateTopScores(BoardEntry memory entry) private {
-        // Check if the new score is greater than the lowest score in topScores
-        if (topScores.length == 0 || entry.wins > topScores[topScores.length-1].wins) {
-            // Check if the user already has an entry in topScores
+        if (topScores.length < 20 || entry.wins > topScores[0].wins) {
+            int256 existingEntry = -1;
             for (uint i = 0; i < topScores.length; i++) {
+                //update the existing entry
                 if (topScores[i].user == entry.user) {
                     // Update the user's entry
+                    existingEntry = int(i);
                     topScores[i].wins = entry.wins;
+                    // console.log("Found existing entry for %s", entry.user);
+                }
+            } 
+            
+            // maybe will need to reorder with its neighbors
+            if (existingEntry != -1) {
+                uint index = uint(existingEntry);
+
+                if (index == 0) {
                     return;
                 }
+                //swap with the neighbor if it's now bigger 
+                while (topScores[index].wins > topScores[index - 1].wins && index > 0) {
+                    // console.log("swapping to %s for user %s", index- 1, entry.user);
+                    BoardEntry memory tmp = topScores[index - 1];
+                    topScores[index - 1] = topScores[index];
+                    topScores[index] = tmp;
+                    index--;
+                }
+                return;
             }
-            
-            // Insert the new entry in the correct position in topScores
+
+            // otherwise we'll find a spot to insert it 
             uint insertIndex = 0;
             for (uint i = 0; i < topScores.length; i++) {
                 if (entry.wins > topScores[i].wins) {
@@ -74,21 +88,27 @@ contract SnarkyMonstersGame {
                     break;
                 }
             }
-            topScores.push(); // Append a new element to the end of the array to make space
-            for (uint i = topScores.length-1; i > insertIndex; i--) {
-                topScores[i] = topScores[i-1]; // Shift the elements to the right
+
+            // in this case, it's the smallest number of an array < 20
+            if (insertIndex == 0 && topScores.length != 0) {
+                insertIndex = topScores.length;
             }
-            topScores[insertIndex] = entry; // Insert the new element
-        }
-        else {
-            // The new score is not high enough to be a top score, so do nothing.
+
+            // shift all elements over to the right
+            topScores.push();
+            for (uint i = topScores.length-1; i > insertIndex; i--) {
+                topScores[i] = topScores[i-1];
+            }
+            topScores[insertIndex] = entry;
+            // console.log("insertIndex %s for user %s", insertIndex, entry.user);
+
+            if (topScores.length > 20) {
+                delete topScores[topScores.length - 1];
+                topScores.pop();
+            }
+
+        } else {
             return;
-        }
-        
-        // If topScores now has more than 20 entries, remove the lowest entry.
-        if (topScores.length > 20) {
-            delete topScores[topScores.length-1];
-            topScores.pop();
         }
     }
 
@@ -103,8 +123,9 @@ contract SnarkyMonstersGame {
 
         if (isValid) {
             address user = sessions[sessionId].user;
-            addAddress(user);
             BoardEntry memory entry = leaderboard[user]; 
+            sessions[sessionId].verified = true;
+            // console.log("Retrieved entry for user %s", entry.user);
             if (entry.isEntry) {
                 leaderboard[user].wins += 1;
             } else {
@@ -113,10 +134,10 @@ contract SnarkyMonstersGame {
                 entry.user = user;
                 addToLeaderBoard(entry);
             }
-            updateTopScores(entry);
+            // console.log("updating entry for address: %s", leaderboard[user].user);
+            updateTopScores(leaderboard[user]);
         }
         
-        sessions[sessionId].verified = true;
         emit SessionCertification(sessionId, isValid);
     }
 
