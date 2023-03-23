@@ -45,7 +45,6 @@ export default function Dialogue({ nextAnimation, shiftAnimationQueue }) {
   const text = nextAnimation ? nextAnimation.content : ''
   useEffect(() => {
     if (nextAnimation && nextAnimation.type === 'dialogue') {
-      console.log(nextAnimation.content)
       let currentIndex = 0
       let timer = setInterval(() => {
         if (currentIndex < text.length) {

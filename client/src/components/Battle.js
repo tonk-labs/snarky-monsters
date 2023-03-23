@@ -53,7 +53,14 @@ export default function Battle({
         />
       )}
       {showGameOver && (
-        <div>
+        <div
+          style={{
+            textAlign: 'center',
+            color: 'white',
+            position: 'relative',
+            top: '-45%',
+          }}
+        >
           <h2>Game over!</h2> <p>Well done!</p>
         </div>
       )}

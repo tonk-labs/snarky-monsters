@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { useEffect, useState } from 'react'
 import Image from 'next/image.js'
 import Dialogue from '@/components/Dialogue'
+import next from 'next'
 
 const Container = styled.div`
   border-bottom: solid 2px #5f3400;
@@ -15,13 +16,20 @@ const Container = styled.div`
     border-bottom: solid 2px #5f3400;
     display: flex;
     overflow: hidden;
+    transition: opacity 1s ease-in-out;
     #playerCache {
       width: 50%;
     }
     #npcCache {
       width: 50%;
     }
+
     .statusBar {
+      opacity: 0;
+      transition: 2s;
+      &.animateHealthBarEntry {
+        opacity: 1 !important;
+      }
       background-color: #eadbcb;
       padding: 1%;
       border: solid 2px #dcc1a7;
@@ -75,40 +83,11 @@ const Container = styled.div`
     width: 0%;
   }
   .npcImg {
-    img {
-      position: absolute;
-      top: 25%;
-      right: 17%;
-      width: 0%;
-      transform: scaleX(-1);
-    }
-  }
-  .animatePlayerEntry {
-    animation: 2s playerAppears forwards;
-  }
-  @keyframes playerAppears {
-    0% {
-      width: 0;
-      height: 0;
-    }
-    100% {
-      width: 29%;
-      transform: rotate(720deg) scale(1);
-    }
-  }
-  .animateNPCEntry {
-    animation: 2s enemyAppears forwards;
-  }
-  @keyframes enemyAppears {
-    0% {
-      width: 0;
-      height: 0;
-      transform: translate(-50%, -50%) rotate(0) scale(0);
-    }
-    100% {
-      width: 20%;
-      transform: translate(0%, 0%) rotate(-720deg) scaleX(-1);
-    }
+    position: absolute;
+    top: 21%;
+    right: 14%;
+    width: 25%;
+    transform: rotate(0) scaleX(-1);
   }
   .animatePlayerAttack {
     animation-duration: 2s;
@@ -171,6 +150,100 @@ const Container = styled.div`
       opacity: 1;
     }
   }
+  .animatePlayerEntry {
+    animation: 2s playerEntry;
+  }
+  @keyframes playerEntry {
+    50% {
+      width: 0%;
+    }
+    100% {
+      width: 29%;
+    }
+  }
+  .playerEntered {
+    width: 29%;
+  }
+  .animateNPCEntry {
+    animation: 1s npcEntry;
+  }
+  @keyframes npcEntry {
+    0% {
+      width: 0%;
+      transform: rotate(0) translateX(-1);
+    }
+    100% {
+      width: 25%;
+      transform: rotate(360deg) translateX(-1);
+    }
+  }
+  .npcEntered {
+    width: 25%;
+    transform: rotate(1000deg) translateX(-1);
+  }
+  .animatePlayerExit {
+    animation: 1s playerExit;
+  }
+  @keyframes playerExit {
+    0% {
+      width: 29%;
+    }
+    100% {
+      width: 0%;
+    }
+  }
+  .playerExited {
+    display: none;
+  }
+  .animateNPCExit {
+    animation: 1s npcExit;
+  }
+  @keyframes npcExit {
+    0% {
+      width: 25%;
+    }
+    100% {
+      width: 0%;
+    }
+  }
+  .npcExited {
+    display: none;
+  }
+  .pulse {
+    animation: 1.2s pulse;
+  }
+  @keyframes pulse {
+    20% {
+      transform: scale(110%, 110%);
+    }
+    25% {
+      transform: scale(115%, 115%);
+    }
+    30% {
+      transform: scale(110%, 110%);
+    }
+    50% {
+      transform: scale(110%, 110%);
+    }
+    55% {
+      transform: scale(115%, 115%);
+    }
+    60% {
+      transform: scale(110%, 110%);
+    }
+    80% {
+      transform: scale(110%, 110%);
+    }
+    85% {
+      transform: scale(115%, 115%);
+    }
+    90% {
+      transform: scale(110%, 110%);
+    }
+  }
+  .victory {
+    opacity: 0;
+  }
 `
 
 export default function BattleScreen({
@@ -183,30 +256,50 @@ export default function BattleScreen({
   const [animatePlayerEntry, setAnimatePlayerEntry] = useState(false)
   const [playerEntered, setPlayerEntered] = useState(false)
   const [animateNPCEntry, setAnimateNPCEntry] = useState(false)
+  const [npcEntered, setNPCEntered] = useState(false)
+  const [animatePlayerExit, setAnimatePlayerExit] = useState(false)
+  const [playerExited, setPlayerExited] = useState(true)
+  const [animateNPCExit, setAnimateNPCExit] = useState(false)
+  const [npcExited, setNPCExited] = useState(true)
   const [animatePlayerHeal, setAnimatePlayerHeal] = useState(false)
   const [animateNPCHeal, setAnimateNPCHeal] = useState(false)
+  const [animatePlayerPulse, setAnimatePlayerPulse] = useState(false)
+  const [animateNPCPulse, setAnimateNPCPulse] = useState(false)
   const [animateHealthBarEntry, setAnimateHealthBarEntry] = useState(false)
   const [animatePlayerAttack, setAnimatePlayerAttack] = useState(false)
   const [animateNPCAttack, setAnimateNPCAttack] = useState(false)
   const [animatePlayerFlash, setAnimatePlayerFlash] = useState(false)
   const [animateNPCFlash, setAnimateNPCFlash] = useState(false)
-  const [animateNPCDepleteHP, setAnimateNPCDepleteHP] = useState(false)
-  const [animatePlayerDepleteHP, setAnimatePlayerDepleteHP] = useState(false)
   const [animateVictory, setAnimateVictory] = useState(false)
   const [animateDefeat, setAnimateDefeat] = useState(false)
-  const [cachedPlayerState, setCachedPlayerState] = useState(playerState)
-  const [cachedNPCState, setCachedNPCState] = useState(npcState)
+  const [animateTimeout, setAnimateTimeout] = useState(false)
+  const [cachedPlayerState, setCachedPlayerState] = useState({ ...playerState })
+  const [cachedNPCState, setCachedNPCState] = useState({ ...npcState })
   const [rand, setRand] = useState(Math.floor(Math.random() * 4) + 1)
 
   // useEffect doesn't run if (1) a props changes where (2) the props is an array and (3) just the contents of the array change. We want
   useEffect(() => {
+    if (nextAnimation && nextAnimation.type === 'gameOver') {
+      if (nextAnimation.outcome === 'Victory') {
+        console.log('hit')
+        setAnimateVictory(true)
+      } else if (nextAnimation.outcome === 'Defeat') {
+        setAnimateDefeat(true)
+      } else if (nextAnimation.outcome === 'timeout') {
+        setAnimateTimeout(true)
+      }
+    }
     if (nextAnimation && nextAnimation.type === 'visual') {
+      console.log(nextAnimation.animation)
       switch (nextAnimation.animation) {
         case 'animatePlayerEntry':
+          setCachedPlayerState({ ...playerState })
+          setPlayerExited(false)
           setAnimatePlayerEntry(true)
           break
         case 'animateNPCEntry':
-          setCachedNPCState(npcState)
+          setCachedNPCState({ ...npcState })
+          setNPCExited(false)
           setAnimateNPCEntry(true)
           break
         case 'animatePlayerFlash':
@@ -227,39 +320,63 @@ export default function BattleScreen({
         case 'animateNPCHeal':
           setAnimateNPCHeal(true)
           break
-        case 'animatePlayerSwap':
-        // animate as usual, but playerState is changing too.
-        // after animation ends, you will need to update locally cached playerstate
+        case 'animatePlayerHP':
+          setCachedPlayerState({ ...playerState })
+          shiftAnimationQueue()
+          break
+        case 'animateNPCHP':
+          setCachedNPCState({ ...npcState })
+          shiftAnimationQueue()
+          break
+        case 'animatePlayerPulse':
+          setAnimatePlayerPulse(true)
+          break
+        case 'animatePlayerExit':
+          setAnimatePlayerExit(true)
+          setPlayerEntered(false)
+          break
+        case 'animateNPCPulse':
+          setAnimateNPCPulse(true)
+          break
+        case 'animateNPCExit':
+          setAnimateNPCExit(true)
+          setNPCEntered(false)
+          break
       }
     }
-  }, [setAnimatePlayerEntry, nextAnimation])
+  }, [
+    setAnimatePlayerEntry,
+    nextAnimation,
+    npcState,
+    shiftAnimationQueue,
+    playerState,
+  ])
 
   return (
     <Container>
-      <div
-        id="top"
-        style={{
-          backgroundImage: `url(../../battleBackground_${rand}.png)`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          width: '100%',
-          height: '80%',
-        }}
-      >
+      <div style={{ backgroundColor: 'black', height: '100%' }}>
         <div
-          id="playerCache"
-          onAnimationEnd={() => {
-            // this will be used to update hp, category name and sprite
-            setCachedPlayerState(playerState)
+          id="top"
+          style={{
+            backgroundImage: `url(../../battleBackground_${rand}.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            width: '100%',
+            height: '80%',
           }}
+          className={`${animateVictory ? 'victory' : ''}`}
         >
-          <div className="statusBar player">
+          <div
+            className={`statusBar player ${
+              animateHealthBarEntry ? 'animateHealthBarEntry' : ''
+            }`}
+          >
             <p>
               <strong>{cachedPlayerState.categoryName}</strong>
             </p>
             <p>
               HP:<span> </span>
-              {playerState.hp}
+              {cachedPlayerState.hp}
             </p>
             <div className="health-bar">
               <div
@@ -271,83 +388,121 @@ export default function BattleScreen({
 
           <img
             src={`/sprite_category_${cachedPlayerState.category}.png`}
-            alt="sprite"
+            alt=""
             className={`
-                playerImg
-                ${animatePlayerAttack ? 'animatePlayerAttack' : ''}
-                ${animatePlayerHeal ? 'animatePlayerHeal' : ''}
-                ${animatePlayerEntry ? 'animatePlayerEntry' : ''}
-                ${animatePlayerFlash ? 'flash-image' : ''}
-              `}
+          playerImg
+          ${animatePlayerEntry ? 'animatePlayerEntry' : ''}
+          ${playerEntered ? 'playerEntered' : ''}
+          ${animatePlayerExit ? 'animatePlayerExit' : ''}
+          ${playerExited ? 'playerExited' : ''}
+          ${animatePlayerAttack ? 'animatePlayerAttack' : ''}
+          ${animatePlayerHeal ? 'animatePlayerHeal' : ''}
+          ${animatePlayerFlash ? 'flash-image' : ''}
+          ${animatePlayerPulse ? 'pulse' : ''}
+          
+          `}
             onAnimationEnd={() => {
+              if (animatePlayerEntry) {
+                setPlayerEntered(true)
+                setAnimatePlayerEntry(false)
+                shiftAnimationQueue()
+              }
+              if (animatePlayerExit) {
+                setPlayerExited(true)
+                setAnimatePlayerExit(false)
+                shiftAnimationQueue()
+              }
               if (animatePlayerAttack) {
                 setAnimatePlayerAttack(false)
+                shiftAnimationQueue()
               }
               if (animatePlayerHeal) {
                 setAnimatePlayerHeal(false)
-              }
-              if (animatePlayerEntry && !playerEntered) {
-                setPlayerEntered(true)
-                // setAnimatePlayerEntry(false)
+                shiftAnimationQueue()
               }
               if (animatePlayerFlash) {
                 setAnimatePlayerFlash(false)
+                shiftAnimationQueue()
               }
-              shiftAnimationQueue()
+              if (animatePlayerPulse) {
+                setAnimatePlayerPulse(false)
+                shiftAnimationQueue()
+              }
             }}
           />
-        </div>
-        {npcState.categoryName != null && (
-          <div
-            id="npcCache"
-            onAnimationEnd={() => {
-              // this will be used to update hp, category name and sprite
-              setCachedNPCState(npcState)
-            }}
-          >
-            <div
-              className={`npcImg  ${animateNPCFlash ? 'flash-image' : ''}`}
-              onAnimationEnd={() => {
-                setAnimateNPCFlash(false)
-                shiftAnimationQueue()
-              }}
-            >
+          {npcState.categoryName != null && (
+            <>
               <img
                 src={`/sprite_category_${cachedNPCState.category}.png`}
-                alt="sprite"
-                className={`${animateNPCAttack ? 'animateNPCAttack' : ''}
-                 ${animateNPCHeal ? 'animateNPCHeal' : ''}
-                ${animateNPCEntry ? 'animateNPCEntry' : ''}
-
-`}
+                alt=""
+                className={`
+              npcImg
+              ${animateNPCEntry ? 'animateNPCEntry' : ''}
+              ${npcEntered ? 'npcEntered' : ''}
+              ${animateNPCExit ? 'animateNPCExit' : ''}
+              ${npcExited ? 'npcExited' : ''}
+              ${animateNPCAttack ? 'animateNPCAttack' : ''}
+              ${animateNPCHeal ? 'animateNPCHeal' : ''}
+              ${animateNPCFlash ? 'flash-image' : ''}
+              ${animateNPCPulse ? 'pulse' : ''}
+              `}
                 onAnimationEnd={() => {
-                  setAnimateNPCAttack(false)
-                  shiftAnimationQueue()
+                  if (animateNPCEntry) {
+                    setNPCEntered(true)
+                    setAnimateNPCEntry(false)
+                    setAnimateHealthBarEntry(true)
+                    shiftAnimationQueue()
+                  }
+                  if (animateNPCExit) {
+                    setNPCExited(true)
+                    setAnimateNPCExit(false)
+                    shiftAnimationQueue()
+                  }
+                  if (animateNPCAttack) {
+                    setAnimateNPCAttack(false)
+                    shiftAnimationQueue()
+                  }
+                  if (animateNPCHeal) {
+                    setAnimateNPCHeal(false)
+                    shiftAnimationQueue()
+                  }
+                  if (animateNPCFlash) {
+                    setAnimateNPCFlash(false)
+                    shiftAnimationQueue()
+                  }
+                  if (animateNPCPulse) {
+                    setAnimateNPCPulse(false)
+                    shiftAnimationQueue()
+                  }
                 }}
               />
-            </div>
-            <div className="statusBar npc">
-              <p>
-                <strong>{cachedNPCState.categoryName}</strong>
-              </p>
-              <p>
-                HP:<span> </span>
-                {npcState.hp}
-              </p>
-              <div className="health-bar">
-                <div
-                  className="health-bar-progress"
-                  style={{ width: `${cachedPlayerState.hp}%` }}
-                />
+              <div
+                className={`statusBar npc ${
+                  animateHealthBarEntry ? 'animateHealthBarEntry' : ''
+                }`}
+              >
+                <p>
+                  <strong>{cachedNPCState.categoryName}</strong>
+                </p>
+                <p>
+                  HP:<span> </span>
+                  {cachedNPCState.hp}
+                </p>
+                <div className="health-bar">
+                  <div
+                    className="health-bar-progress"
+                    style={{ width: `${cachedNPCState.hp}%` }}
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
+        <Dialogue
+          nextAnimation={nextAnimation}
+          shiftAnimationQueue={shiftAnimationQueue}
+        />
       </div>
-      <Dialogue
-        nextAnimation={nextAnimation}
-        shiftAnimationQueue={shiftAnimationQueue}
-      />
     </Container>
   )
 }
