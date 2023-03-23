@@ -1,7 +1,14 @@
-var express = require('express')
-var { graphqlHTTP } = require('express-graphql')
-var { buildSchema } = require('graphql')
-const Game = require('./scripts/model.js')
+var express = require('express');
+const cors = require('cors');
+var { graphqlHTTP } = require('express-graphql');
+var { buildSchema } = require('graphql');
+const Game = require('./src/model.js');
+
+const PORT = process.env.PORT || 8080;
+const HOST = '0.0.0.0';
+
+var app = express();
+app.use(cors());
 
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -32,7 +39,7 @@ var schema = buildSchema(`
     monsters: [Monster]
     moves: [Move]
   }
-`)
+`);
 
 // The root provides a resolver function for each API endpoint
 var root = {
@@ -49,15 +56,24 @@ var root = {
   },
 }
 
-var app = express()
-app.use(
-  '/graphql',
-  graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true,
-  }),
-)
+const graphqlRouter = graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true,
+});
+
+app.use('/graphql', graphqlRouter);
+
+const restRouter = express.Router();
+restRouter.get('/', (req, res) => {
+  res.send('hello world')
+});
+
+app.use('/api', restRouter);
+
+
+
+// REST route for authors
 
 // app.use(
 //   '/battle',
@@ -77,5 +93,6 @@ app.use(
 //   // 2. communicating that back to the client?
 // )
 
-app.listen(4000)
-console.log('Running a GraphQL API server at http://localhost:4000/graphql')
+app.listen(PORT, HOST, () => {
+  console.log(`Running on http://${HOST}:${PORT}`);
+});
