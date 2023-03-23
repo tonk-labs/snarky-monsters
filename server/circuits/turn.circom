@@ -5,9 +5,12 @@ include "../node_modules/circomlib/circuits/mux1.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
 include "../node_modules/circomlib/circuits/mux2.circom";
 
-// include "https://github.com/0xPARC/circom-secp256k1/blob/master/circuits/bigint.circom";
-
 // outputs 0 if a <= b else 1
+
+//5 -> 6
+//category 2 vs 5
+//randomness: 30
+//4, 10, 98, 10, 2, 2
 template LEQ() {
     signal input a;
     signal input b;
@@ -61,6 +64,14 @@ template Turn (selfIndex, otherIndex) {
     component isSwap = IsZero();
     isSwap.in <== move[movtypeoff];
 
+    // will be equal to 1 if it's a health move, otherwise 0
+    component isHealth = IsEqual();
+    isHealth.in <== [move[movtypeoff], 1];
+
+    component isUniversal = Mux2();
+    isUniversal.c <== [0, 1, 1, 0]; //can't be both swap and health
+    isUniversal.s <== [isHealth.out, isSwap.out];
+
     // log(isSwap.out);
 
     component pSwapMux = Mux1();
@@ -74,18 +85,15 @@ template Turn (selfIndex, otherIndex) {
     pCritMux.s <== [pCrit.out, endGameFlag.out];
 
     // log(pCritMux.out);
-
-    component pCatSelector = IsZero();
-    pCatSelector.in <== move[movcatoff];
-    component pCatMux = Mux1(); //this mux chooses to match players category with itself if the category of the move is universal (ie. 0)
-    pCatMux.c <== [move[movcatoff], state[0][selfIndex + catoff]];
-    pCatMux.s <== pCatSelector.out;
+    
+    //this mux chooses to match players category with itself if the category of the move is universal (ie. 0)
+    //if pCatSelector is 1 (ie. move type is SWAP == 0) then the condition of 1,1 is undefined
+    //00 10 01 11
+    component pCatMux = Mux2(); 
+    pCatMux.c <== [move[movcatoff], state[0][selfIndex + catoff], state[0][selfIndex + catoff], 10000];
+    pCatMux.s <== [isUniversal.out, endGameFlag.out];
 
     // log(pCatMux.out);
-
-    // will be equal to 1 if it's a health move, otherwise 0
-    component isHealth = IsEqual();
-    isHealth.in <== [move[movtypeoff], 1];
 
     // log(isHealth.out);
 
@@ -94,6 +102,8 @@ template Turn (selfIndex, otherIndex) {
     state[1][selfIndex + catoff] === pSwapMux.out;
 
     // assert the move cat matches the player category
+    // log(state[0][selfIndex + catoff]);
+    // log(pCatMux.out);
     state[0][selfIndex + catoff] === pCatMux.out;
 
     // HEALING checks
@@ -123,12 +133,16 @@ template Turn (selfIndex, otherIndex) {
     atkEffMux.c <== [move[movatkoff] * atkeff, 2];
     atkEffMux.s <== atkEffSelector.out;
 
+    // log(defeff);
     component defEffSelector = IsZero();
     defEffSelector.in <== defeff;
     component defEffMux = Mux1();
     defEffMux.c <== [state[0][otherIndex + defoff], 2];
     defEffMux.s <== defEffSelector.out;
 
+    // log(pCritMux.out);
+    // log(atkEffMux.out);
+    // log(defEffMux.out);
     component targetMux = Mux1();
     var reducedHP = state[0][otherIndex + hpoff] - (pCritMux.out + atkEffMux.out - defEffMux.out) * pMiss.out;
     var sameHP = state[0][otherIndex + hpoff];
@@ -156,6 +170,7 @@ template Turn (selfIndex, otherIndex) {
     KOMux.s <== bits.out[253];
 
     // log(KOMux.out);
+    // log(state[1][otherIndex + hpoff]);
 
     state[1][otherIndex + hpoff] === KOMux.out;
 
@@ -165,82 +180,45 @@ template Turn (selfIndex, otherIndex) {
 
 
 
-// component main { public [ ] } = Example();
+// component main { public [ state, move, randomness, atkeff, defeff ] } = Turn(0, 5);
 // component main = ManyRounds();
 
 /* INPUT = {
-    "state": [
-        [
-            1, 100, 5, 5, 6,
-            2, 100, 5, 5, 2
-        ],
-        [
-            1, 100, 5, 5, 6,
-            2, 87, 5, 5, 2
-        ],
-        [
-            1, 100, 5, 5, 6, 
-            2, 87, 5, 5, 2
-        ],
-        [
-            1, 100, 5, 5, 6,
-            2, 74, 5, 5, 2
-        ],
-        [
-            1, 100, 5, 5, 6,
-            2, 74, 5, 5, 2
-        ],
-        [
-            1, 100, 5, 5, 6,
-            2, 61, 5, 5, 2
-        ]
+        "state": [
+            [
+      2,
+      100,
+      10,
+      5,
+      2,
+      1,
+      100,
+      10,
+      5,
+      1
     ],
-    "randomness": [32, 8, 40, 50],
-    "moves": [
-        [3, 5, 98, 10, 6, 2],
-        [5, 5, 98, 10, 2, 2],
-        [3, 5, 98, 10, 6, 2],
-        [3, 5, 98, 10, 6, 2]
-    ],
-    "atkeff": [3, 0, 3, 1],
-    "defeff": [0, 1, 0, 1]
-} */
-
-    // "player": [
-    //     1, 100, 10, 10, 1, 
-    //     1, 90, 10, 10, 1,
-    //     1, 80, 10, 10, 1, 
-    //     1, 70, 10, 10, 1
-    // ],
-    // "npc": [
-    //     2, 100, 10, 10, 2,
-    //     2, 90, 10, 10, 2,
-    //     2, 80, 10, 10, 2, 
-    //     2, 70, 10, 10, 2
-    // ],
-
-
-    //     "state": [
-    //     //start state
-    //     [
-    //         1, 100, 10, 10, 1, //player
-    //         2, 100, 10, 10, 2 //npc 
-    //     ],
-    //     //player 1 moves
-    //     [
-    //         1, 100, 10, 10, 1, //player
-    //         2, 90, 10, 10, 2  //npc
-    //     ],
-    //     //npc moves, reach end state
-    //     [
-    //         1, 90, 10, 10, 1, //player
-    //         2, 90, 10, 10, 2  //npc
-    //     ]
-    // ],
-        //     [32, 8],
-        // [40, 50]
-    // "randomness": [32, 8],
-    // "moves": [
-    //     3, 10, 98, 10, 1, 2, 
-    //     3, 10, 98, 10, 1, 2
-    // ]
+    [
+      2,
+      100,
+      10,
+      5,
+      2,
+      1,
+      72,
+      10,
+      5,
+      1
+    ]
+        ],
+        "move": [
+            4,
+      10,
+      98,
+      10,
+      2,
+      2
+        ],
+        "randomness": "30",
+        "atkeff": "3",
+        "defeff": "3"
+    }*/
