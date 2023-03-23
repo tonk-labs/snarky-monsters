@@ -10,6 +10,9 @@ const { expect } = require("chai");
 // Using this simplifies your tests and makes them run faster, by taking
 // advantage of Hardhat Network's snapshot functionality.
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
+const { describe } = require("node:test");
+const { waffle } = require('hardhat')
+const { deployMockContract } = waffle;
 
 // `describe` is a Mocha function that allows you to organize your tests.
 // Having your tests organized makes debugging them easier. All Mocha
@@ -27,93 +30,177 @@ describe("SnarkyMonstersGame contract", function () {
     const SnarkyMonstersGame = await ethers.getContractFactory("SnarkyMonstersGame");
     const [owner, addr1, addr2] = await ethers.getSigners();
 
-    // To deploy our contract, we just have to call Token.deploy() and await
-    // its deployed() method, which happens once its transaction has been
-    // mined.
-    const hhSnarky = await Token.deploy();
+    const myVerifier = require('../artifacts/contracts/Verifier.sol/Verifier.json');
+    const mockedVerifier = await deployMockContract(owner, myVerifier.abi);
+    await mockedVerifier.deployed();
 
+    const hhSnarky = await SnarkyMonstersGame.deploy(mockedVerifier.address);
     await hhSnarky.deployed();
 
     // Fixtures can return anything you consider useful for your tests
-    return { SnarkyMonstersGame, hhSnarky, owner, addr1, addr2 };
+    return { mockedVerifier, hhSnarky, owner, addr1, addr2 };
   }
 
   // You can nest describe calls to create subsections.
-  describe("Deployment", function () {
-    // `it` is another Mocha function. This is the one you use to define each
-    // of your tests. It receives the test name, and a callback function.
-    //
-    // If the callback function is async, Mocha will `await` it.
-    it("Should set the right verifier address", async function () {
-      // We use loadFixture to setup our environment, and then assert that
-      // things went well
-      const { owner } = await loadFixture(deploySnarkyFixture);
+  describe("Session Submission", function () {
+    it("Should submit a session", async function () {
+      const { hhSnarky, owner } = await loadFixture(deploySnarkyFixture);
+      const gameHash = ethers.utils.formatBytes32String("gamehash");
+      const sessionId = 1;
 
-      // `expect` receives a value and wraps it in an assertion object. These
-      // objects have a lot of utility methods to assert values.
-
-      // This test expects the owner variable stored in the contract to be
-      // equal to our Signer's owner.
-      expect(await hhSnarky.owner()).to.equal(owner.address);
+      await expect(hhSnarky.submitSession(sessionId, gameHash)).to.emit(
+        hhSnarky, "SessionSubmitted").withArgs(1);
     });
 
-    it("Should assign the total supply of tokens to the owner", async function () {
-      const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
-      const ownerBalance = await hardhatToken.balanceOf(owner.address);
-      expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+    it("Cannot double submit session", async function () {
+      const { hhSnarky } = await loadFixture(deploySnarkyFixture);
+      const gameHash = ethers.utils.formatBytes32String("gamehash");
+      const sessionId = 1;
+
+      await hhSnarky.submitSession(sessionId, gameHash);
+
+      await expect(hhSnarky.submitSession(sessionId, gameHash)).to.be.revertedWith("Session already exists");
     });
   });
 
-  describe("Transactions", function () {
-    it("Should transfer tokens between accounts", async function () {
-      const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
-        deployTokenFixture
-      );
-      // Transfer 50 tokens from owner to addr1
-      await expect(
-        hardhatToken.transfer(addr1.address, 50)
-      ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
+  describe("Game certification", function() {
+    it("Verifies a game correct", async function (){
+      const { hhSnarky, mockedVerifier } = await loadFixture(deploySnarkyFixture);
 
-      // Transfer 50 tokens from addr1 to addr2
-      // We use .connect(signer) to send a transaction from another account
-      await expect(
-        hardhatToken.connect(addr1).transfer(addr2.address, 50)
-      ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
+      await mockedVerifier.mock.verifyProof.returns(true);
+
+      await expect(hhSnarky.certifyGame(1, [0x0], [0, 0, 0])).to.emit(
+        hhSnarky, "SessionCertification").withArgs(1, true);
     });
+    it("Verifies a game incorrect", async function (){
+      const { hhSnarky, mockedVerifier } = await loadFixture(deploySnarkyFixture);
 
-    it("Should emit Transfer events", async function () {
-      const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
-        deployTokenFixture
-      );
+      await mockedVerifier.mock.verifyProof.returns(false);
 
-      // Transfer 50 tokens from owner to addr1
-      await expect(hardhatToken.transfer(addr1.address, 50))
-        .to.emit(hardhatToken, "Transfer")
-        .withArgs(owner.address, addr1.address, 50);
-
-      // Transfer 50 tokens from addr1 to addr2
-      // We use .connect(signer) to send a transaction from another account
-      await expect(hardhatToken.connect(addr1).transfer(addr2.address, 50))
-        .to.emit(hardhatToken, "Transfer")
-        .withArgs(addr1.address, addr2.address, 50);
-    });
-
-    it("Should fail if sender doesn't have enough tokens", async function () {
-      const { hardhatToken, owner, addr1 } = await loadFixture(
-        deployTokenFixture
-      );
-      const initialOwnerBalance = await hardhatToken.balanceOf(owner.address);
-
-      // Try to send 1 token from addr1 (0 tokens) to owner.
-      // `require` will evaluate false and revert the transaction.
-      await expect(
-        hardhatToken.connect(addr1).transfer(owner.address, 1)
-      ).to.be.revertedWith("Not enough tokens");
-
-      // Owner balance shouldn't have changed.
-      expect(await hardhatToken.balanceOf(owner.address)).to.equal(
-        initialOwnerBalance
-      );
+      await expect(hhSnarky.certifyGame(1, [0x0], [0, 0, 0])).to.emit(
+        hhSnarky, "SessionCertification").withArgs(1, false);
     });
   });
-});
+
+  describe("Updating and retrieving leaderboard", function() {
+    it("Correctly adds new entry to the leaderboard", async function() {
+      const { hhSnarky, mockedVerifier } = await loadFixture(deploySnarkyFixture);
+      await mockedVerifier.mock.verifyProof.returns(true);
+
+      const tx = await hhSnarky.certifyGame(1, [0x0], [0, 0, 0]);
+      await tx.wait();
+
+      expect(await hhSnarky.checkSessionVerified(1)).to.equal(true);
+      const topScores = await hhSnarky.getTopScores();
+
+      const decodedScores = topScores.map((entry) => {
+        return {
+          user: entry[0],
+          wins: BigInt(entry[1]._hex),
+          isEntry: entry[2]
+        }
+      });
+
+      expect(decodedScores[0].wins).equal(BigInt(1));
+
+    });
+
+    it("Correctly adds and sorts entries on the leaderboard", async function() {
+      const { hhSnarky, mockedVerifier, owner, addr1 } = await loadFixture(deploySnarkyFixture);
+      await mockedVerifier.mock.verifyProof.returns(true);
+
+      const gameHash1 = ethers.utils.formatBytes32String("gamehash");
+      const gameHash2 = ethers.utils.formatBytes32String("gamehash");
+      const gameHash3 = ethers.utils.formatBytes32String("gamehash");
+      
+      const ownerC = await hhSnarky.connect(owner);
+      const addrC = await hhSnarky.connect(addr1);
+      await expect(ownerC.submitSession(1, gameHash1)).to.emit(
+        hhSnarky, "SessionSubmitted").withArgs(1);
+      await expect(ownerC.submitSession(2, gameHash2)).to.emit(
+        hhSnarky, "SessionSubmitted").withArgs(2);
+      await expect(addrC.submitSession(3, gameHash3)).to.emit(
+        hhSnarky, "SessionSubmitted").withArgs(3);
+
+      const tx = await hhSnarky.certifyGame(1, [0x0], [0, 0, 0]);
+      await tx.wait();
+      const tx2 = await hhSnarky.certifyGame(2, [0x0], [0, 0, 0]);
+      await tx2.wait();
+      const tx3 = await hhSnarky.certifyGame(3, [0x0], [0,0,0]);
+      await tx3.wait();
+
+      const topScores = await hhSnarky.getTopScores();
+
+      const decodedScores = topScores.map((entry) => {
+        return {
+          user: entry[0],
+          wins: BigInt(entry[1]._hex),
+          isEntry: entry[2]
+        }
+      });
+
+      console.log(decodedScores)
+
+    });
+  });
+
+
+  //   it("Should assign the total supply of tokens to the owner", async function () {
+  //     const { hardhatToken, owner } = await loadFixture(deployTokenFixture);
+  //     const ownerBalance = await hardhatToken.balanceOf(owner.address);
+  //     expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
+  //   });
+  // });
+
+  // describe("Transactions", function () {
+  //   it("Should transfer tokens between accounts", async function () {
+  //     const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+  //     // Transfer 50 tokens from owner to addr1
+  //     await expect(
+  //       hardhatToken.transfer(addr1.address, 50)
+  //     ).to.changeTokenBalances(hardhatToken, [owner, addr1], [-50, 50]);
+
+  //     // Transfer 50 tokens from addr1 to addr2
+  //     // We use .connect(signer) to send a transaction from another account
+  //     await expect(
+  //       hardhatToken.connect(addr1).transfer(addr2.address, 50)
+  //     ).to.changeTokenBalances(hardhatToken, [addr1, addr2], [-50, 50]);
+  //   });
+
+  //   it("Should emit Transfer events", async function () {
+  //     const { hardhatToken, owner, addr1, addr2 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+
+  //     // Transfer 50 tokens from owner to addr1
+  //     await expect(hardhatToken.transfer(addr1.address, 50))
+  //       .to.emit(hardhatToken, "Transfer")
+  //       .withArgs(owner.address, addr1.address, 50);
+
+  //     // Transfer 50 tokens from addr1 to addr2
+  //     // We use .connect(signer) to send a transaction from another account
+  //     await expect(hardhatToken.connect(addr1).transfer(addr2.address, 50))
+  //       .to.emit(hardhatToken, "Transfer")
+  //       .withArgs(addr1.address, addr2.address, 50);
+  //   });
+
+  //   it("Should fail if sender doesn't have enough tokens", async function () {
+  //     const { hardhatToken, owner, addr1 } = await loadFixture(
+  //       deployTokenFixture
+  //     );
+  //     const initialOwnerBalance = await hardhatToken.balanceOf(owner.address);
+
+  //     // Try to send 1 token from addr1 (0 tokens) to owner.
+  //     // `require` will evaluate false and revert the transaction.
+  //     await expect(
+  //       hardhatToken.connect(addr1).transfer(owner.address, 1)
+  //     ).to.be.revertedWith("Not enough tokens");
+
+  //     // Owner balance shouldn't have changed.
+  //     expect(await hardhatToken.balanceOf(owner.address)).to.equal(
+  //       initialOwnerBalance
+  //     );
+  //   });
+})
