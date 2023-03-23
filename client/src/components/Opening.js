@@ -1,34 +1,57 @@
 import styled from 'styled-components'
 
 const Container = styled.div`
+  height: 100%;
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+  .button {
+    padding: 5%;
+    width: 50%;
+    background-color: #cda882;
+    margin-top: 10%;
+    border: 2px solid #5f3400;
+    border-radius: 4px;
+    filter: brightness(1);
+    font-weight: bolder;
+    &:hover {
+      cursor: pointer;
+      filter: brightness(1.1);
+    }
+  }
 `
 
-export default function Opening({ setOpening }) {
+export default function Opening({ setOpening, playMusic }) {
   return (
     <Container>
-      <h2>Welcome to snarky monsters</h2>
+      <h1>WELCOME!</h1>
       <p>
-        Get ready to dive into the world of Web3 and battle it out for ultimate
-        dominance in this thrilling new video game! As a player, you'll face off
-        against some of the toughest opponents the Web3 has to offer, using your
-        wits, strategy, and a little bit of luck to emerge victorious.
+        Snarky Monsters is a turn-based combat game quite unlike anything you've
+        seen before. Start your journey in the world of web3 and fight off the
+        many enemies you'll meet.
       </p>
       <p>
-        With each NPC opponent you face, you'll need to carefully study their
-        play patterns and learn their strengths and weaknesses in order to
-        defeat them. But don't get too comfortable - the Web3 is constantly
-        evolving, and you'll need to stay on your toes if you want to come out
-        on top. Whether you prefer to use brute force or cunning tactics, this
-        game has something for everyone.{' '}
+        Pick your moves wisely and rise to the top - with enough luck, skill and
+        cunning, you too can take your place at the top of the crypto world.
       </p>
-      <button
+      <p>
+        Under the hood, this game is completely trustless - all in-game activity
+        is verified on the blockchain using zero-knowledge proofs. something
+        more about why this is cool.
+      </p>
+      <div
+        className="button"
         onClick={() => {
           setOpening(false)
+          playMusic()
         }}
       >
-        begin
-      </button>
+        LET'S PLAY!
+      </div>
     </Container>
   )
 }

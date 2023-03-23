@@ -1,43 +1,61 @@
 import styled from 'styled-components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import BattleScreen from '@/components/BattleScreen.js'
 import MoveBox from '@/components/MoveBox'
-import Dialogue from '@/components/Dialogue'
+import LoadingMoves from './LoadingMoves'
 
-const Container = styled.div``
+const Container = styled.div`
+  height: 100%;
+`
 
 export default function Battle({
   playerState,
+  npcState,
   Game,
   selectMove,
-  npcState,
-  latestConfirmedPlayerMove,
-  latestConfirmedNPCMove,
+  report,
+  reportCounter,
+  animationQueue,
+  shiftAnimationQueue,
 }) {
-  const [dialogue, setDialogue] = useState('')
-  const [showActions, setShowActions] = useState(false)
+  const [showMoveBox, setShowMoveBox] = useState(false)
+  const [showGameOver, setShowGameOver] = useState(false)
+
+  const [savedReportCounter, setSavedReportCounter] = useState(false)
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    if (animationQueue[0]) {
+      setLoading(false)
+      setShowMoveBox(animationQueue[0].type === 'showMoveBox')
+      setShowGameOver(animationQueue[0].type === 'gameOver')
+    } else {
+      setLoading(true)
+      setShowMoveBox(false)
+    }
+  })
   return (
     <Container>
       <BattleScreen
         playerState={playerState}
         npcState={npcState}
-        latestConfirmedPlayerMove={latestConfirmedPlayerMove}
-        latestConfirmedNPCMove={latestConfirmedNPCMove}
-        setDialogue={setDialogue}
+        setShowMoveBox={setShowMoveBox}
+        nextAnimation={animationQueue[0]}
+        shiftAnimationQueue={shiftAnimationQueue}
       />
-      {dialogue != '' && (
-        <Dialogue
-          dialogue={dialogue}
-          setDialogue={setDialogue}
-          setShowActions={setShowActions}
-        />
-      )}
-      {showActions && (
+      {loading && <LoadingMoves />}
+      {showMoveBox && (
         <MoveBox
           Game={Game}
           selectMove={selectMove}
           playerState={playerState}
+          setShowMoveBox={setShowMoveBox}
+          shiftAnimationQueue={shiftAnimationQueue}
         />
+      )}
+      {showGameOver && (
+        <div>
+          <h2>Game over!</h2> <p>Well done!</p>
+        </div>
       )}
     </Container>
   )

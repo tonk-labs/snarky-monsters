@@ -1,28 +1,33 @@
 import { useCallback, useReducer, useRef } from 'react'
 import {
-  ACTION_TYPES, //this will only be needed if we decide to do something fancy on the reducer side
+  ACTION_TYPES,
+  shiftAnimationQueue, //this will only be needed if we decide to do something fancy on the reducer side
   playerSelectMonster,
   selectMove,
+  fetchNPC,
 } from './gameActions'
 
 export const initialState = {
+  sessionID: '',
   playerState: {},
   npcState: {},
-  sessionID: '',
-  randomness: null,
-  latestConfirmedPlayerMove: {},
-  latestConfirmedNPCMove: {},
+  report: {},
+  reportCounter: 0,
+  animationQueue: [],
+  gameOver: false,
   previousMoves: [],
   previousStates: [],
   previousRandomness: [],
-  currentMoveEffectiveness: null,
-  previousEffectiveness: [],
+  previousMoveEffs: [],
+  previousDefEffs: [],
 }
 
 export const getActions = (dispatch, getState) => {
   return {
     playerSelectMonster: playerSelectMonster(dispatch, getState),
     selectMove: selectMove(dispatch, getState),
+    shiftAnimationQueue: shiftAnimationQueue(dispatch, getState),
+    fetchNPC: fetchNPC(dispatch, getState),
   }
 }
 
