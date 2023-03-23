@@ -7,9 +7,9 @@
         {
           "cID": "game",
           "fileName": "game.circom",
-          "proofType": "groth16",
+          "proofType": "plonk",
           "compilationMode": "c",
-          "powerOfTauFp": "./data/pot21_final.ptau"
+          "powerOfTauFp": "./data/powersOfTau28_hez_final_19.ptau"
         }
       ]
     }
