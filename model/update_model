@@ -18,9 +18,21 @@ if (args.length === 0) {
 }
 
 const modelPath = path.join(__dirname, 'model.js');
+const hashPath = path.join(__dirname, 'hash.js');
+const enginePath = path.join(__dirname, 'engine.js');
 
-const copyPath = args[0];
+const copyDir = args[0];
 
-fs.copyFile(modelPath, copyPath, (err) => {
+const modelCp = path.join(copyDir, 'model.js');
+const engineCp = path.join(copyDir, 'engine.js');
+const hashCp = path.join(copyDir, 'hash.js');
+
+fs.copyFile(modelPath, modelCp, (err) => {
+    if (err) throw err;
+});
+fs.copyFile(hashPath, hashCp, (err) => {
+    if (err) throw err;
+});
+fs.copyFile(enginePath, engineCp, (err) => {
     if (err) throw err;
 });

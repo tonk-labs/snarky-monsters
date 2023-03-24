@@ -1,6 +1,4 @@
 import Game from '../model/model'
-import { sha256 } from '@aws-crypto/sha256-js'
-import seedrandom from 'seedrandom'
 
 export const ACTION_TYPES = {}
 

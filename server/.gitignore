@@ -132,3 +132,4 @@ dist
 .pnp.*
 
 circuit_final.zkey
+storage/*

@@ -34,7 +34,7 @@ const Moves = [
   {
     id: 1,
     attack: 10,
-    crit: 97,
+    crit: 100,
     miss: 10,
     category: Category.UNIVERSAL,
     name: 'Heal',
@@ -298,12 +298,12 @@ const MoveTypeNames = {
 }
 
 const degen = [1, 0, 3, 2, 1, 1, 1]
-const reg = [3, 1, 1, 2, 1, 0, 1]
-const vc = [0, 1, 1, 1, 3, 2, 1]
-const norm = [1, 1, 2, 1, 1, 3, 0]
-const agi = [1, 2, 0, 1, 1, 1, 3]
-const btcm = [1, 3, 1, 0, 1, 1, 2]
-const mm = [1, 2, 1, 3, 0, 1, 1]
+const reg =   [3, 1, 1, 2, 1, 0, 1]
+const vc =    [0, 1, 1, 1, 3, 2, 1]
+const norm =  [1, 1, 2, 1, 1, 3, 0]
+const agi =   [1, 2, 0, 1, 1, 1, 3]
+const btcm =  [1, 3, 1, 0, 1, 1, 2]
+const mm =    [1, 2, 1, 3, 0, 1, 1]
 
 const EffectivenessMatrix = [degen, reg, vc, norm, agi, btcm, mm]
 

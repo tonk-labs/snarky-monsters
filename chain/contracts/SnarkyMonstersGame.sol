@@ -119,6 +119,11 @@ contract SnarkyMonstersGame {
     ) external {
         require(!sessions[sessionId].verified, "Session already verified");
 
+        //@TODO first 32 bytes of the pubSignals should be the gameHash
+        //We need to perform a check here to make sure the sessionId matches the gameHash
+        //In theory we could also make sure the correct sessionID is included
+        //to prevent man-in-middle-attack on the certification
+
         bool isValid = verifierContract.verifyProof(proof, pubSignals);
 
         if (isValid) {
