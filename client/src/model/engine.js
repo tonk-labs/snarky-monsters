@@ -60,7 +60,7 @@ class Engine {
     }
 
     /**
-     * assumes the game has been completed
+     * assumes the game has been completed 
      * @param {*} input is a JSON object of { state, moves, randomness }
      */
     static rehydrateCompletedGame(input) {
@@ -81,6 +81,17 @@ class Engine {
             engine.turn(hydratedMove, input.randomness[i]);
         });
 
+        return engine;
+    }
+
+    static fromJSON(gameJson) {
+        const engine = new Engine(gameJson.player.category, gameJson.npc.category, gameJson.moveLimit);
+        engine.previousMoves = gameJson.previousMoves;
+        engine.previousState = gameJson.previousState;
+        engine.prevAtkEff = gameJson.prevAtkEff;
+        engine.prevDefEff = gameJson.prevDefEff;
+        engine.prevRandomness = gameJson.prevRandomness;
+        engine.isPlayerMove = gameJson.isPlayerMove;
         return engine;
     }
 
@@ -132,24 +143,27 @@ class Engine {
 
             //move failed
             return {
-                isMiss: true,
+                didMiss: true,
             };
         }
         var report = {
-            isMiss: isMiss(move, randomness),
+            didMiss: isMiss(move, randomness),
+            attkEff: atkEff,
+            defEff: defEff,
+            lastMove: move
         }
         switch (move.type) {
             case model.MoveTypes.SWAP: {
                 report = {
                     ...report,
-                    ...this.swap(move)
+                    ...this.swap(move),
                 }
                 break;
             }
             case  model.MoveTypes.HEAL: {
                 report = {
                     ...report,
-                    ...this.heal(move)
+                    ...this.heal(move),
                 }
                 break;
             }
@@ -178,7 +192,7 @@ class Engine {
                 category: move.category
             }
             return {
-                swapped: move.category,
+                didSwap: move.category,
             }
         } else {
             this.npc = {
@@ -189,7 +203,7 @@ class Engine {
                 category: move.category
             }
             return {
-                swapped: move.category,
+                didSwap: move.category,
             }
         }
     }
@@ -201,7 +215,7 @@ class Engine {
                 hp: Math.min(this.player.hp + move.attack, 100), 
             }
             return {
-                healed: move.attack
+                didHeal: move.attack
             }
         } else {
             this.npc = {
@@ -209,7 +223,7 @@ class Engine {
                 hp: Math.min(this.npc.hp + move.attack, 100), 
             }
             return {
-                healed: move.attack
+                didHeal: move.attack
             }
         }
     }
@@ -227,8 +241,8 @@ class Engine {
                 hp: Math.min(Math.max(0, this.npc.hp - dmg + resistance), 100),
             }
             return {
-                dmg,
-                critMod
+                didDmg: dmg,
+                didCrit: critMod !== 0
             }
         } else {
             this.player = {
@@ -236,8 +250,8 @@ class Engine {
                 hp: Math.min(Math.max(0, this.player.hp - dmg + resistance), 100),
             }
             return {
-                dmg,
-                critMod
+                didDmg: dmg,
+                didCrit: critMod !== 0
             }
         }
     }

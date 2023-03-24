@@ -64,7 +64,7 @@ function createServer() {
   const respondEndGame = (game, res) => {
     if (game.numMoves >= 25) {
       res.send({
-        gg: true,
+        goodGame: true,
       });
       return true;
     }
@@ -89,12 +89,13 @@ function createServer() {
         }
 
         // the player 
-        const engine = Engine.fromJSON(game);
+        const engine = Engine.fromJSON(game.engine);
         const npcMove = NpcBrain.selectMove(engine);
         const commit = createEncryptedSecret();
 
         storage.setItem(gameId, {
           ...game,
+          key: commit.key,
           commit: commit.ciphertext,
           move: npcMove,
           lastCommitByPlayer: false,
@@ -109,7 +110,7 @@ function createServer() {
       })
       // player is making a commitment
     } else {
-      const r = generateRandomness();
+      const randomness = generateRandomness();
       storage.getItem(gameId).then((game) => {
         if (respondEndGame(res, game)) {
           return;
@@ -123,11 +124,11 @@ function createServer() {
           ...game,
           commit: commitRandomness,
           move: playerMove,
-          rand: r,
+          rand: randomness,
           lastCommitByPlayer: true,
         });
         res.send({
-          randomness: r,
+          randomness,
           lastConfirmedMove: game.lastConfirmedMove,
           numMoves: game.numMoves,
         });
@@ -136,7 +137,7 @@ function createServer() {
   });
 
   restRouter.post('/battle/open', (req,res) => {
-    const { key, randomness } = req.body;
+    const { key, randomness, gameId } = req.body;
     // we are opening the players move
     storage.getItem(gameId).then((game) => {
       if (respondEndGame(res, game)) {
@@ -172,12 +173,12 @@ function createServer() {
       res.send({
         lastConfirmedMove: game.move,
         numMoves: game.numMoves + 1,
+        key: k,
       });
     });
   });
 
   app.use('/api', restRouter);
-
 
   // REST route for authors
 

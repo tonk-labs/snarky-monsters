@@ -1,5 +1,4 @@
 import Game from '../model/model'
-import { helloWorld } from './apiClient';
 
 export const ACTION_TYPES = {}
 

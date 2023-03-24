@@ -1,8 +1,5 @@
 const SERVER_URL = 'http://0.0.0.0:8080'
 
-const GET_HELLO_WORLD = `${SERVER_URL}/api`
-
-
 const POST_PLAY = `${SERVER_URL}/api/play`
 const POST_COMMIT = `${SERVER_URL}/api/battle/commit`
 const POST_OPEN = `${SERVER_URL}/api/battle/open`
@@ -16,13 +13,6 @@ const sendPost = (url, data) => {
         },
         body: JSON.stringify(data)
     });
-}
-
-// this is a file to communicate with the server
-export const helloWorld = async () => {
-    const response = await fetch(GET_HELLO_WORLD)
-    const data = await response.json()
-    console.log(data)
 }
 
 export const playGame = async (playerState) => { 
@@ -58,7 +48,7 @@ export const commitNpcMove = async (gameId) => {
 }
 
 export const openNpcMove = async (randomness, gameId) => {
-    const response = await sendPost(POST_OPEN, { gameId })
+    const response = await sendPost(POST_OPEN, { randomness, gameId })
     const data = await response.json();
     return {
         ...data,

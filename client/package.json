@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-crypto/sha256-js": "^4.0.0",
     "circomlibjs": "^0.1.7",
     "crypto-js": "^4.1.1",
     "eslint": "8.36.0",
