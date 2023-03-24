@@ -161,14 +161,11 @@ function createServer() {
       const r = calculateCombinedRandomness(d, rand);
       engine.turn(game.move, r);
       storage.setItem(gameId, {
-        ...game,
+        ...Game,
         engine,
-        rand: null,
-        commit: null,
-        move: null,
-        key: null,
         lastConfirmedMove: game.move,
         numMoves: game.numMoves + 1,
+        lastCommitByPlayer: game.lastCommitByPlayer,
       });
       res.send({
         lastConfirmedMove: game.move,
