@@ -43,16 +43,16 @@ function createServer() {
    *
    */
   restRouter.post('/play', (req, res) => {
-    const { playerState } = req.body
-    const gameId = generateUUID()
-    const npcId = NpcBrain.selectRandomNPC()
-    const engine = new Engine(playerState.category, npcId, 25)
-    storage.setItem(gameId, { ...Game, engine })
+    const { playerState } = req.body;
+    const gameId = generateUUID();
+    const npcId = NpcBrain.selectRandomNPC();
+    const engine = new Engine(playerState.category, npcId, 25);
+    storage.setItem(gameId, { ...Game, engine });
     res.send({
       gameId,
       npcState: engine.npc,
-    })
-  })
+    });
+  });
 
   restRouter.get('/play/:gameId', (req, res) => {
     storage.getItem(req.params.gameId).then((data) => {
@@ -61,9 +61,9 @@ function createServer() {
         gameId: req.params.gameId,
         playerState: engine.player,
         npcState: engine.npc,
-      })
-    })
-  })
+      });
+    });
+  });
 
   const respondEndGame = (game, res) => {
     if (game.numMoves >= 25) {
