@@ -265,6 +265,7 @@ const Container = styled.div`
     }
     .endgameButton {
       padding: 2% 5%;
+      margin-bottom: 20px;
       border: 2px solid white;
       border-radius: 2px;
       filter: brightness(1);
@@ -351,13 +352,13 @@ export default function BattleScreen({
           setAnimateNPCHeal(true)
           break
         case 'animatePlayerHP':
-          console.log("new cached player state", npcState)
-          setCachedPlayerState({ ...playerState })
+          console.log("new cached player state", playerState)
+          setCachedPlayerState({ ...nextAnimation.playerState })
           shiftAnimationQueue()
           break
         case 'animateNPCHP':
           console.log("new cached npc state", npcState)
-          setCachedNPCState({ ...npcState })
+          setCachedNPCState({ ...nextAnimation.npcState })
           shiftAnimationQueue()
           break
         case 'animatePlayerPulse':
@@ -404,6 +405,14 @@ export default function BattleScreen({
               className={`endgameButton`}
               onClick={() => {
                 // GAVIN TODO: add logic for signing tx to Scroll
+              }}
+            >
+              SUBMIT PROOF OF WIN
+            </div>
+            <div
+              className={`endgameButton`}
+              onClick={() => {
+                location.reload()
               }}
             >
               PLAY AGAIN

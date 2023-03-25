@@ -82,6 +82,9 @@ export const selectMove = (dispatch, getState) => (
           animationQueue.push({
             type: 'visual',
             animation: 'animatePlayerHP',
+            playerState: {
+              ...playerState,
+            }
           })
           if (report.didCrit) {
             animationQueue.push({
@@ -150,6 +153,7 @@ export const selectMove = (dispatch, getState) => (
           animationQueue.push({
             type: 'visual',
             animation: 'animateNPCHP',
+            npcState: { ...npcState },
           })
           if (report.didCrit) {
             animationQueue.push({
@@ -234,6 +238,7 @@ export const selectMove = (dispatch, getState) => (
             animationQueue.push({
               type: 'visual',
               animation: 'animateNPCHP',
+              npcState: { ...npcState } 
             })
             if (report.didCrit) {
               animationQueue.push({
@@ -297,6 +302,9 @@ export const selectMove = (dispatch, getState) => (
             animationQueue.push({
               type: 'visual',
               animation: 'animatePlayerHP',
+              playerState: {
+                ...playerState
+              }
             })
             if (report.didCrit) {
               animationQueue.push({

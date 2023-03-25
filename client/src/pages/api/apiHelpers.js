@@ -14,6 +14,8 @@ import {
   openNpcMove,
 } from './apiClient'
 
+import Web3ConnectManager from './web3ConnectManager'
+
 import Engine from '../../model/engine'
 
 import Game from '../../model/model'
@@ -31,21 +33,25 @@ function hydrateMonster(monsterState) {
   return monster
 }
 
+const clearGame = () => localStorage.setItem('game', "")
+const getGames = () => JSON.parse(localStorage.getItem('games') || "[]")
+const setGames = (games) => localStorage.setItem('games', JSON.stringify(games))
+const getGame = () => JSON.parse(localStorage.getItem('game') || "{}")
+const setGame = (engineData, gameId) => localStorage.setItem('game', JSON.stringify({
+  engineData,
+  gameId
+}))
+
+
 export const startGame = async (playerState) => {
   const { gameId, npcState } = await playGame(playerState)
   const engine = new Engine(playerState.category, npcState.category, 25)
-  localStorage.setItem(
-    'game',
-    JSON.stringify({
-      engineData: engine,
-      gameId,
-    }),
-  )
+  setGame(engine, gameId)
   return { gameId, npcState }
 }
 
 export const makePlayerMove = async (move) => {
-  const { engineData, gameId } = JSON.parse(localStorage.getItem('game'))
+  const { engineData, gameId } = getGame()
   const { key, ciphertext } = createEncryptedSecret()
   const { randomness, goodGame } = await commitPlayerMove(
     move,
@@ -69,13 +75,7 @@ export const makePlayerMove = async (move) => {
   console.log("Player HP: " + engine.player.hp)
 
   report.lastMove = move
-  localStorage.setItem(
-    'game',
-    JSON.stringify({
-      gameId,
-      engineData: engine,
-    }),
-  )
+  setGame(engine, gameId)
 
   return {
     report,
@@ -85,7 +85,7 @@ export const makePlayerMove = async (move) => {
 }
 
 export const getNpcMove = async () => {
-  const { gameId, engineData } = JSON.parse(localStorage.getItem('game'))
+  const { gameId, engineData } = getGame()
   const engine = Engine.fromJSON(engineData)
   const { move, commitRandomness, goodGame } = await commitNpcMove(gameId)
   if (goodGame) {
@@ -103,13 +103,7 @@ export const getNpcMove = async () => {
 
   report.lastMove = move
 
-  localStorage.setItem(
-    'game',
-    JSON.stringify({
-      gameId,
-      engineData: engine,
-    }),
-  )
+  setGame(engine, gameId)
 
   return {
     report,
@@ -118,12 +112,84 @@ export const getNpcMove = async () => {
   }
 }
 
-export const getGameHashAndId = async () => {
-  const { gameId, engineData } = JSON.parse(localStorage.getItem('game'))
+export const submitGame = async () => {
+  const game = getGame()
+  if (!game) {
+    return {
+      error: "game doesn't exist"
+    }
+  }
+  const { gameId, engineData } = game
   const engine = Engine.fromJSON(engineData)
   const hash = await hashGameState(engine)
+  // victory condition!
+  if (engine.npc.hp === 0) {
+    let games = getGames()
+    
+    const existed = games.find((game) => {
+      if (game.gameId === gameId) {
+        //it already exists
+        return true
+      }
+    })
+    if (existed) {
+      if (!existed.submitted) {
+        //we'll try and submit again
+      }
+    } else {
+      // make a call to the server and if success we push the game in and implement logic below
+      games.push({
+        engine,
+        gameId,
+        submitted: true,
+        verified: false,
+      })
+      setGames(games)
+      clearGame()
+    }
+    return {
+      gameId,
+      hash,
+    }
+  } else {
+    clearGame()
+  }
+
   return {
-    gameId,
-    hash,
+    error: "game exists, but it wasn't a victory"
+  }
+
+}
+
+/**
+ * Will check the verification of all games stored locally that haven't been verified
+ * @returns 
+ */
+export const checkVerification = async () => {
+  const games = getGames()
+  let updated = []
+  let numberOfWins = 0;
+  let pendingGames = 0;
+  for (var game of games) {
+    if (!game.verified) {
+      pendingGames += 1;
+      //make a call to check if the game has been certified
+      //if it has, update it and 
+      //if it hasn't just continue on
+      const isVerified = await Web3ConnectManager.getInstance().checkGameVerified(game.gameId)
+      if (isVerified) {
+        numberOfWins += 1;
+        game.verified = true
+      }
+    } else {
+      numberOfWins += 1;
+    }
+    updated.push(game)
+  }
+
+  return {
+    games: updated,
+    numberOfWins,
+    pendingGames
   }
 }

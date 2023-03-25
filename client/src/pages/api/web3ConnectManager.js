@@ -61,11 +61,19 @@ class Web3ConnectManager {
         this.contract = null;
     }
 
+    /**
+     * 
+     * @returns Web3ConnectManager
+     */
     static getInstance() {
         if (!Web3ConnectManager.instance) {
             Web3ConnectManager.instance = new Web3ConnectManager()
         }
         return Web3ConnectManager.instance
+    }
+
+    hasConnected() {
+        return localStorage.getItem("hasConnected")
     }
 
     async connectWallet() {
@@ -89,6 +97,7 @@ class Web3ConnectManager {
             // console.log('Connected to account:', this.account);
 
             this.contract =  new Contract(LOCAL_CONTRACT_ADDRESS, SnarkyMonstersGame.abi, this.provider)
+            localStorage.setItem("hasConnected", true)
         }
     }
 
