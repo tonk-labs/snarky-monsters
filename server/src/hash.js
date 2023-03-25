@@ -101,7 +101,7 @@ const hashGameState = (engine) => {
   let gameArray = []
   // pad the engine state if it hasn't already been padded
   while(engine.previousMoves.length < engine.moveLimit) {
-      this.turn(Model.Moves[Model.Moves.length - 1], 0);
+      engine.turn(Model.Moves[Model.Moves.length - 1], 0);
   }
   for (var i = 0; i < engine.moveLimit; i++) {
     const ithState = engine.previousState[i]
