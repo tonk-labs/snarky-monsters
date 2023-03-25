@@ -12,16 +12,37 @@ const Container = styled.div`
     padding: 8px;
     margin: 8px;
   }
-  @media (max-width: 800px) {
+  @media (max-width: 1000px) {
     flex-direction: column;
     .bigBox {
       width: auto;
     }
   }
-  /* at 375px width, you should still be able to have space for 8px padding either side of game - 359 game width */
 `
 
-const Preview = styled.div``
+const Preview = styled.div`
+  filter: brightness(1);
+  &:hover {
+    background-color: #e3ceb9;
+    filter: brightness(1.1);
+  }
+  div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+    img {
+      max-width: 100%;
+      @media (max-width: 1000px) {
+        width: 400px;
+        max-width: 90%;
+        margin: auto;
+      }
+      border: 1px solid #e3ceb9;
+    }
+  }
+`
 
 const About = styled.div``
 
@@ -30,9 +51,12 @@ export default function Home() {
     <Container>
       <Leaderboard />
       <Preview className="bigBox">
-        <h2>Here's a nice preview of the game</h2>
         <Link href="/game">
-          <button>Play game</button>
+          <div>
+            <h1>PLAY NOW</h1>
+
+            <img src="preview.png" alt="game preview" />
+          </div>
         </Link>
       </Preview>
       <About className="bigBox">

@@ -5,8 +5,11 @@ const Container = styled.div`
   padding: 8px;
   margin: 8px;
   width: 33%;
-  @media (max-width: 800px) {
+  @media (max-width: 1000px) {
     width: auto;
+  }
+  li {
+    font-size: 16px;
   }
 `
 
@@ -26,10 +29,6 @@ export default function Leaderboard(props) {
         <li>DOM</li>
         <li>CEC</li>
       </ol>
-      <hr />
-      <h3>Check proof</h3>
-      <p>has my proof been uploaded yet?</p>
-      <button>my performance</button>
     </Container>
   )
 }
