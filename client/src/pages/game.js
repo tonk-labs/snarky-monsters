@@ -59,12 +59,10 @@ export default function GameComponent() {
     audioRef.current.play()
   }
 
-  const {
-    playerSelectMonster,
-    selectMove,
-    shiftAnimationQueue,
-    fetchNPC,
-  } = getActions(dispatch, getState)
+  const { playerSelectMonster, selectMove, shiftAnimationQueue } = getActions(
+    dispatch,
+    getState,
+  )
 
   useEffect(() => {
     const parentWidth = parentRef.current.offsetWidth
@@ -81,7 +79,6 @@ export default function GameComponent() {
             <MonsterPicker
               monsters={Game.Monsters}
               playerSelectMonster={playerSelectMonster}
-              fetchNPC={fetchNPC}
             />
           )}
           {gameState.playerState.id && (

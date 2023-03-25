@@ -16,7 +16,8 @@ const Container = styled.div`
     border-bottom: solid 2px #5f3400;
     display: flex;
     overflow: hidden;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 3s ease-in-out;
+    opacity: 1;
     #playerCache {
       width: 50%;
     }
@@ -241,8 +242,23 @@ const Container = styled.div`
       transform: scale(110%, 110%);
     }
   }
-  .victory {
+  .ending {
     opacity: 0;
+  }
+  .endgame {
+    display: none;
+    z-index: 10;
+    width: 100%;
+    position: absolute;
+    color: white;
+    text-align: center;
+    height: 80%;
+    &.display {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
   }
 `
 
@@ -285,7 +301,7 @@ export default function BattleScreen({
         setAnimateVictory(true)
       } else if (nextAnimation.outcome === 'Defeat') {
         setAnimateDefeat(true)
-      } else if (nextAnimation.outcome === 'timeout') {
+      } else if (nextAnimation.outcome === 'Timeout') {
         setAnimateTimeout(true)
       }
     }
@@ -354,6 +370,36 @@ export default function BattleScreen({
 
   return (
     <Container>
+      <div
+        className={`endgame ${
+          animateVictory || animateDefeat || animateTimeout ? 'display' : ''
+        }`}
+      >
+        {animateVictory && (
+          <>
+            <h2>somethung</h2>
+            <p>something else</p>
+          </>
+        )}
+        {animateDefeat && (
+          <>
+            <h2>somethung</h2>
+            <p>something else</p>
+            <div className={`reloadButton`} onClick={() => location.reload()}>
+              Try again
+            </div>
+          </>
+        )}
+        {animateTimeout && (
+          <>
+            <h2>somethung</h2>
+            <p>something else</p>
+            <div className={`reloadButton`} onClick={() => location.reload()}>
+              Try again
+            </div>
+          </>
+        )}
+      </div>
       <div style={{ backgroundColor: 'black', height: '100%' }}>
         <div
           id="top"
@@ -364,7 +410,9 @@ export default function BattleScreen({
             width: '100%',
             height: '80%',
           }}
-          className={`${animateVictory ? 'victory' : ''}`}
+          className={`${
+            animateVictory || animateDefeat || animateTimeout ? 'ending' : ''
+          }`}
         >
           <div
             className={`statusBar player ${
