@@ -75,7 +75,7 @@ const decryptSecret = (key, encrypted, opts = { enc: CryptoJS.enc.Utf8 }) => {
  * @returns
  */
 const calculateCombinedRandomness = (randomness1, randomness2) => {
-  return CryptoJS.SHA256(randomness1 + randomness2).words[0] % 101
+  return Math.abs(CryptoJS.SHA256(randomness1 + randomness2).words[0]) % 101
 }
 
 /**

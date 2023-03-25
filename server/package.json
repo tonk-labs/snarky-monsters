@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
-    "test:server": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/server.test.js --detectOpenHandles"
+    "test:server": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/server.test.js --detectOpenHandles",
+    "test:hash": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/hash.test.js --detectOpenHandles"
   },
   "author": "Goblin Oats",
   "license": "MIT",

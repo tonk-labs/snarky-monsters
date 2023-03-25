@@ -46,6 +46,24 @@ test('combines randomness determinstically', () => {
     return expect(oneway).toEqual(otherway);
 });
 
+test('test the randomness is combined properly', () => {
+    const d = "23f3e884a09dbffb79b357a630ee3efc"
+    const randomness = "6faa995dd1e47cd138b5e540d4cc7e42"
+
+    const r = hash.calculateCombinedRandomness(d, randomness);
+
+    expect(r >= 0).toEqual(true)
+})
+
+test('the combined randomness is decently distributed', () => {
+    let average = 0;
+    for (var i = 0; i < 10000; i++) {
+        average += hash.calculateCombinedRandomness(hash.generateRandomness(), hash.generateRandomness())
+    }
+    average = average/10000;
+    expect(Math.round(average)).toEqual(50)
+})
+
 //** this test was mostly for debugging */
 // test('test game hash', () => {
 //     return expect(feedEngineData('bad_input_2.json').then((engine) => hash.hashGameState(engine))).resolves.toBe("15080711618435363877749354773142612365775164170498976319737660533904581088277");    

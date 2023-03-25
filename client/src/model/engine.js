@@ -34,7 +34,8 @@ const calculateMoveEffectiveness = (target, source, move) => {
 const calculateCrit = (source, move, randomness) => {
   return randomness <= move.crit ? 0 : source.stats.attack * 2
 }
-export const isMiss = (move, randomness) => {
+
+const isMiss = (move, randomness) => {
   return randomness <= move.miss
 }
 
