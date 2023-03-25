@@ -5,22 +5,22 @@ const isProd = process.env.NODE_ENV === "production"
 const PROD_ENDPOINT = ""
 const LOCAL_ENDPOINT = "http://localhost:8545"
 
-const LOCAL_CHAIN_ID = 31337
-const SCROLL_ALPHANET_CHAIN_ID = 534353
+const LOCAL_CHAIN_ID = 1337n
+const SCROLL_ALPHANET_CHAIN_ID = 534353n
 
 const CHAIN_ID = isProd ? SCROLL_ALPHANET_CHAIN_ID : LOCAL_CHAIN_ID
 
 const PROD_CONTRACT_ADDRESS = ''
-const LOCAL_CONTRACT_ADDRESS = '0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9'
+const LOCAL_CONTRACT_ADDRESS = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
 
-const requestSwitchNetwork = async (provider) => {
+const requestSwitchNetwork = async (provider) => {        
     try {
         if (isProd) {
-            await provider.request({
+            await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
                 params: [
                     {
-                        chainId: '534353', 
+                        chainId: ethers.toQuantity(SCROLL_ALPHANET_CHAIN_ID), 
                         chainName:'Scroll Alpha Testnet',
                         rpcUrls:['https://alpha-rpc.scroll.io/l2'],                   
                         blockExplorerUrls:['https://blockscout.scroll.io'],  
@@ -32,14 +32,13 @@ const requestSwitchNetwork = async (provider) => {
                 ]
             });
         } else {
-            await provider.request({
+            await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
                 params: [
                     {
-                        chainId: '31337', 
+                        chainId: ethers.toQuantity(LOCAL_CHAIN_ID), 
                         chainName:'Localhost',
                         rpcUrls:['http://localhost:8545'],                   
-                        blockExplorerUrls:[],  
                         nativeCurrency: { 
                         symbol:'ETH',   
                         decimals: 18

@@ -64,7 +64,6 @@ export const selectMove = (dispatch, getState) => (
   var animationQueue = getState().animationQueue
   makePlayerMove(move)
     .then(({ playerState, npcState, report }) => {
-      playerState.hp = 0
       if (report.lastMove.name === 'Heal') {
         animationQueue.push({
           type: 'dialogue',

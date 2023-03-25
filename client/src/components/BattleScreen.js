@@ -388,7 +388,7 @@ export default function BattleScreen({
     <Container>
       <div
         className={`endgame ${
-          animateVictory || animateDefeat || animateTimeout ? 'display' : ''
+          (animateVictory || animateDefeat || animateTimeout) ? 'display' : ''
         }`}
       >
         {animateVictory && (
