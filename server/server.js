@@ -80,8 +80,8 @@ function createServer() {
   //   });
   // });
 
-  const respondEndGame = (game, res) => {
-    if (game.numMoves >= 25) {
+  const respondEndGame = (res, game) => {
+    if (game.numMoves >= 25 || game.engine.npc.hp === 0 || game.engine.player.hp === 0) {
       res.send({
         goodGame: true,
       })
@@ -99,16 +99,16 @@ function createServer() {
     // asking NPC for commit
     if (!playerMove) {
       storage.getItem(gameId).then((game) => {
-        if (respondEndGame(res, game)) {
-          return
-        }
-        if (!game.lastCommitByPlayer) {
-          res.status(400);
-          res.send({ error: "The player needs to first open their commit"})
-          return;
-        }
 
         try {
+          if (respondEndGame(res, game)) {
+            return
+          }
+          if (!game.lastCommitByPlayer) {
+            res.status(400);
+            res.send({ error: "The player needs to first open their commit"})
+            return;
+          }
           // the player
           const engine = Engine.fromJSON(game.engine)
           const npcMove = NpcBrain.selectMove(engine)
@@ -144,15 +144,15 @@ function createServer() {
     } else {
       const randomness = generateRandomness()
       storage.getItem(gameId).then((game) => {
-        if (respondEndGame(res, game)) {
-          return
-        }
-        if (game.lastCommitByPlayer) {
-          res.status(400);
-          res.send({ error: "The npc needs to first open their commit"})
-          return;
-        }
         try {
+          if (respondEndGame(res, game)) {
+            return
+          }
+          if (game.lastCommitByPlayer) {
+            res.status(400);
+            res.send({ error: "The npc needs to first open their commit"})
+            return;
+          }
           storage.setItem(gameId, {
             ...game,
             commit: commitRandomness,

@@ -52,6 +52,7 @@ export const startGame = async (playerState) => {
 
 export const makePlayerMove = async (move) => {
   const { engineData, gameId } = getGame()
+  const engine = Engine.fromJSON(engineData)
   const { key, ciphertext } = createEncryptedSecret()
   const { randomness, goodGame } = await commitPlayerMove(
     move,
@@ -60,6 +61,8 @@ export const makePlayerMove = async (move) => {
   )
   if (goodGame) {
     return {
+      playerState: hydrateMonster(engine.player),
+      npcState: hydrateMonster(engine.npc),
       goodGame,
     }
   }
@@ -69,10 +72,10 @@ export const makePlayerMove = async (move) => {
   // we can do some error checking here potentially with lastConfirmedMove and numMoves
   const { lastConfirmedMove } = await openPlayerMove(key, gameId)
 
-  const engine = Engine.fromJSON(engineData)
   const report = engine.turn(move, r)
 
   console.log("Player HP: " + engine.player.hp)
+  console.log("NPC HP: " + engine.npc.hp)
 
   report.lastMove = move
   setGame(engine, gameId)
@@ -90,6 +93,8 @@ export const getNpcMove = async () => {
   const { move, commitRandomness, goodGame } = await commitNpcMove(gameId)
   if (goodGame) {
     return {
+      playerState: hydrateMonster(engine.player),
+      npcState: hydrateMonster(engine.npc),
       goodGame,
     }
   }
@@ -99,7 +104,8 @@ export const getNpcMove = async () => {
   const r = calculateCombinedRandomness(d, randomness)
   const report = engine.turn(move, r)
 
-  console.log("NPC HP: " + engine.player.hp)
+  console.log("Player HP: " + engine.player.hp)
+  console.log("NPC HP: " + engine.npc.hp)
 
   report.lastMove = move
 

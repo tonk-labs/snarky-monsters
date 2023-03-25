@@ -123,6 +123,7 @@ contract SnarkyMonstersGame {
         //We need to perform a check here to make sure the gameId matches the gameHash
         //In theory we could also make sure the correct gameId is included
         //to prevent man-in-middle-attack on the certification
+        require(pubSignals[0] == games[gameId].gameHash, "Game hash do not match");
         require(pubSignals[1] == gameId, "Game id should match the public signal");
 
         bool isValid = verifierContract.verifyProof(proof, pubSignals);

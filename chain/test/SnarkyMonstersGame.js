@@ -85,6 +85,7 @@ describe("SnarkyMonstersGame contract", function () {
 
       await mockedVerifier.mock.verifyProof.returns(true);
 
+      await hhSnarky.submitGame(1, 1);
       await expect(hhSnarky.certifyGame(1, [0x0], [1, 1])).to.emit(
         hhSnarky, "GameCertification").withArgs(1, true);
     });
@@ -93,6 +94,7 @@ describe("SnarkyMonstersGame contract", function () {
 
       await mockedVerifier.mock.verifyProof.returns(false);
 
+      await hhSnarky.submitGame(1, 0);
       await expect(hhSnarky.certifyGame(1, [0x0], [0, 1])).to.emit(
         hhSnarky, "GameCertification").withArgs(1, false);
     });
@@ -103,6 +105,7 @@ describe("SnarkyMonstersGame contract", function () {
       const { hhSnarky, mockedVerifier } = await loadFixture(deploySnarkyFixture);
       await mockedVerifier.mock.verifyProof.returns(true);
 
+      await hhSnarky.submitGame(1, 0);
       const tx = await hhSnarky.certifyGame(1, [0x0], [0, 1]);
       await tx.wait();
 
@@ -125,15 +128,11 @@ describe("SnarkyMonstersGame contract", function () {
       const { hhSnarky, mockedVerifier, owner, addr1 } = await loadFixture(deploySnarkyFixture);
       await mockedVerifier.mock.verifyProof.returns(true);
 
-      const gameHash1 = ethers.utils.formatBytes32String("gamehash");
-      const gameHash2 = ethers.utils.formatBytes32String("gamehash");
-      const gameHash3 = ethers.utils.formatBytes32String("gamehash");
-      
-      await expect(hhSnarky.connect(owner).submitGame(2, gameHash1)).to.emit(
+      await expect(hhSnarky.connect(owner).submitGame(2, 2)).to.emit(
         hhSnarky, "GameSubmitted").withArgs(2);
-      await expect(hhSnarky.connect(owner).submitGame(3, gameHash2)).to.emit(
+      await expect(hhSnarky.connect(owner).submitGame(3, 3)).to.emit(
         hhSnarky, "GameSubmitted").withArgs(3);
-      await expect(hhSnarky.connect(addr1).submitGame(4, gameHash3)).to.emit(
+      await expect(hhSnarky.connect(addr1).submitGame(4, 4)).to.emit(
         hhSnarky, "GameSubmitted").withArgs(4);
 
       await hhSnarky.certifyGame(2, [0x0], [2, 2]);   
