@@ -2,7 +2,7 @@ import  { ethers, Contract } from "ethers"
 
 import SnarkyMonstersGame from "./SnarkyMonstersGame.json"
 const isProd = process.env.NODE_ENV === "production"
-const PROD_ENDPOINT = ""
+const PROD_ENDPOINT =  'https://alpha-rpc.scroll.io/l2'
 const LOCAL_ENDPOINT = "http://localhost:8545"
 
 const LOCAL_CHAIN_ID = 31337n
@@ -10,12 +10,12 @@ const SCROLL_ALPHANET_CHAIN_ID = 534353n
 
 const CHAIN_ID = isProd ? SCROLL_ALPHANET_CHAIN_ID : LOCAL_CHAIN_ID
 
-const PROD_CONTRACT_ADDRESS = ''
+const PROD_CONTRACT_ADDRESS = '0xE6A653d510A0a4a72d081E8d0c5b4B65a4bEF9F8'
 const LOCAL_CONTRACT_ADDRESS = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
 
 const requestSwitchNetwork = async (provider) => {        
     try {
-        if (isProd) {
+        if (!isProd) {
             await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
                 params: [
