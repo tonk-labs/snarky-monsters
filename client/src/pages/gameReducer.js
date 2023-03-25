@@ -4,7 +4,6 @@ import {
   shiftAnimationQueue, //this will only be needed if we decide to do something fancy on the reducer side
   playerSelectMonster,
   selectMove,
-  fetchNPC,
 } from './gameActions'
 
 export const initialState = {
@@ -27,7 +26,6 @@ export const getActions = (dispatch, getState) => {
     playerSelectMonster: playerSelectMonster(dispatch, getState),
     selectMove: selectMove(dispatch, getState),
     shiftAnimationQueue: shiftAnimationQueue(dispatch, getState),
-    fetchNPC: fetchNPC(dispatch, getState),
   }
 }
 

@@ -52,18 +52,6 @@ export default function Battle({
           shiftAnimationQueue={shiftAnimationQueue}
         />
       )}
-      {showGameOver && (
-        <div
-          style={{
-            textAlign: 'center',
-            color: 'white',
-            position: 'relative',
-            top: '-45%',
-          }}
-        >
-          <h2>Game over!</h2> <p>Well done!</p>
-        </div>
-      )}
     </Container>
   )
 }

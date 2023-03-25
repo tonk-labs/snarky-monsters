@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Image from 'next/image.js'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Container = styled.div`
   text-align: center;
@@ -60,6 +60,7 @@ export default function MonsterPicker({
   fetchNPC,
 }) {
   const [carouselIndex, setCarouselIndex] = useState(0)
+
   return (
     <Container>
       <h2 style={{ marginTop: '0' }}>CHOOSE FIGHTER</h2>
@@ -108,7 +109,6 @@ export default function MonsterPicker({
           className="button"
           onClick={() => {
             playerSelectMonster(carouselIndex + 1)
-            fetchNPC()
           }}
         >
           BEGIN

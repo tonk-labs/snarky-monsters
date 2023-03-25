@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
     "test:server": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/server.test.js --detectOpenHandles"
   },
