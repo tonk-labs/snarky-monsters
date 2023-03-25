@@ -1,6 +1,8 @@
 const { buildMimc7 } = require('circomlibjs')
 const CryptoJS = require('crypto-js')
 
+const Model = require('./model');
+
 /**
  * For (i = 0; i < NMoves; i++) {
     Hash(State_i), Hash(Randomness_i), Hash(Move_i), Hash(AttackEff_i), Hash(DefEff_i)
@@ -97,6 +99,10 @@ const mimcHashArray = async (arr) => {
  */
 const hashGameState = (engine) => {
   let gameArray = []
+  // pad the engine state if it hasn't already been padded
+  while(engine.previousMoves.length < engine.moveLimit) {
+      this.turn(Model.Moves[Model.Moves.length - 1], 0);
+  }
   for (var i = 0; i < engine.moveLimit; i++) {
     const ithState = engine.previousState[i]
     const ithMove = engine.previousMoves[i]

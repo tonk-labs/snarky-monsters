@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image.js'
 import Dialogue from '@/components/Dialogue'
 import next from 'next'
+import { submitGame } from '@/pages/api/apiHelpers'
 
 const Container = styled.div`
   border-bottom: solid 2px #5f3400;
@@ -404,7 +405,7 @@ export default function BattleScreen({
             <div
               className={`endgameButton`}
               onClick={() => {
-                // GAVIN TODO: add logic for signing tx to Scroll
+                submitGame()
               }}
             >
               SUBMIT PROOF OF WIN

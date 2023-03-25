@@ -112,8 +112,16 @@ export const getNpcMove = async () => {
   }
 }
 
+const submitTxnToCertify = async (gameId, hash) => {
+  const manager = Web3ConnectManager.getInstance()
+  await manager.connectWallet()
+  await manager.submitCertification(gameId, hash)
+}
+
 export const submitGame = async () => {
   const game = getGame()
+  // localStorage.setItem("sneakySaveyGame", JSON.stringify(game))
+  // const game = JSON.parse(localStorage.getItem("sneakySaveyGame"))
   if (!game) {
     return {
       error: "game doesn't exist"
@@ -122,37 +130,42 @@ export const submitGame = async () => {
   const { gameId, engineData } = game
   const engine = Engine.fromJSON(engineData)
   const hash = await hashGameState(engine)
-  // victory condition!
-  if (engine.npc.hp === 0) {
-    let games = getGames()
-    
-    const existed = games.find((game) => {
-      if (game.gameId === gameId) {
-        //it already exists
-        return true
+  try {
+    // victory condition!
+    if (engine.npc.hp === 0) {
+      let games = getGames()
+      
+      const existed = games.find((game) => {
+        if (game.gameId === gameId) {
+          //it already exists
+          return true
+        }
+      })
+      if (existed) {
+        if (!existed.submitted) {
+          //we'll try and submit again
+        }
+      } else {
+        // make a call to the server and if success we push the game in and implement logic below
+        await submitTxnToCertify(gameId, hash)
+        // games.push({
+        //   engine,
+        //   gameId,
+        //   submitted: true,
+        //   verified: false,
+        // })
+        // setGames(games)
+        // clearGame()
       }
-    })
-    if (existed) {
-      if (!existed.submitted) {
-        //we'll try and submit again
+      return {
+        gameId,
+        hash,
       }
     } else {
-      // make a call to the server and if success we push the game in and implement logic below
-      games.push({
-        engine,
-        gameId,
-        submitted: true,
-        verified: false,
-      })
-      setGames(games)
-      clearGame()
+      // clearGame()
     }
-    return {
-      gameId,
-      hash,
-    }
-  } else {
-    clearGame()
+  } catch (e) {
+    console.error("something went wrong when submitting game", e)
   }
 
   return {
@@ -167,6 +180,8 @@ export const submitGame = async () => {
  */
 export const checkVerification = async () => {
   const games = getGames()
+  // const game = JSON.parse(localStorage.getItem("sneakySaveyGame"))
+  // games.push(gameSneaky)
   let updated = []
   let numberOfWins = 0;
   let pendingGames = 0;

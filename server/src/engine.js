@@ -206,6 +206,7 @@ class Engine {
           ...model.Monsters[move.category - 1].stats,
         },
         category: move.category,
+        categoryName: model.Monsters[move.category - 1].categoryName
       }
       return {
         didSwap: move.category,
@@ -217,6 +218,7 @@ class Engine {
           ...model.Monsters[move.category - 1].stats,
         },
         category: move.category,
+        categoryName: model.Monsters[move.category - 1].categoryName
       }
       return {
         didSwap: move.category,

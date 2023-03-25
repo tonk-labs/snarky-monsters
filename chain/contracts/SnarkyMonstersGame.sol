@@ -6,7 +6,7 @@ import "./Verifier.sol"; // Import the Verifier contract with the verifyProof fu
 contract SnarkyMonstersGame {
     struct Game {
         address user;
-        bytes32 gameHash;
+        uint gameHash;
         bool verified;
     }
 
@@ -36,7 +36,7 @@ contract SnarkyMonstersGame {
         }
     }
 
-    function submitGame(uint256 gameId, bytes32 gameHash) external {
+    function submitGame(uint256 gameId, uint gameHash) external {
         require(games[gameId].user == address(0), "Game already exists");
 
         // console.log("Submitting Game for Game %s and user %s", gameId, msg.sender);

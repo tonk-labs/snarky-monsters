@@ -5,13 +5,13 @@ const isProd = process.env.NODE_ENV === "production"
 const PROD_ENDPOINT = ""
 const LOCAL_ENDPOINT = "http://localhost:8545"
 
-const LOCAL_CHAIN_ID = 1337n
+const LOCAL_CHAIN_ID = 31337n
 const SCROLL_ALPHANET_CHAIN_ID = 534353n
 
 const CHAIN_ID = isProd ? SCROLL_ALPHANET_CHAIN_ID : LOCAL_CHAIN_ID
 
 const PROD_CONTRACT_ADDRESS = ''
-const LOCAL_CONTRACT_ADDRESS = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+const LOCAL_CONTRACT_ADDRESS = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
 
 const requestSwitchNetwork = async (provider) => {        
     try {
@@ -101,12 +101,15 @@ class Web3ConnectManager {
         }
     }
 
-    async sendConfirmation(gameId, gameHash) {
+    async submitCertification(gameId, gameHash) {
         try {
-            const transaction = await this.contract.submitGame(gameId, gameHash)
-            const tx = await transaction.wait()
+            const tx = await this.contract.connect(this.signer).submitGame(
+                gameId, 
+                ethers.toBeHex(gameHash)
+            )
+            await this.provider.waitForTransaction(tx, 1);
         } catch (e) {
-            console.error(error);
+            console.error(e);
         }
     }
 
