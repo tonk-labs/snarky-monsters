@@ -43,16 +43,16 @@ function createServer() {
    *
    */
   restRouter.post('/play', (req, res) => {
-    const { playerState } = req.body
-    const gameId = generateUUID()
-    const npcId = NpcBrain.selectRandomNPC()
-    const engine = new Engine(playerState.category, npcId, 25)
-    storage.setItem(gameId, { ...Game, engine })
+    const { playerState } = req.body;
+    const gameId = generateUUID();
+    const npcId = NpcBrain.selectRandomNPC();
+    const engine = new Engine(playerState.category, npcId, 25);
+    storage.setItem(gameId, { ...Game, engine });
     res.send({
       gameId,
       npcState: engine.npc,
-    })
-  })
+    });
+  });
 
   restRouter.get('/play/:gameId', (req, res) => {
     storage.getItem(req.params.gameId).then((data) => {
@@ -61,9 +61,9 @@ function createServer() {
         gameId: req.params.gameId,
         playerState: engine.player,
         npcState: engine.npc,
-      })
-    })
-  })
+      });
+    });
+  });
 
   const respondEndGame = (game, res) => {
     if (game.numMoves >= 25) {
@@ -87,9 +87,9 @@ function createServer() {
           return
         }
         if (!game.lastCommitByPlayer) {
-          res.status(400)
-          res.send({ error: 'The player needs to first open their commit' })
-          return
+          res.status(400);
+          res.send({ error: "The player needs to first open their commit"})
+          return;
         }
 
         // the player
@@ -120,9 +120,9 @@ function createServer() {
           return
         }
         if (game.lastCommitByPlayer) {
-          res.status(400)
-          res.send({ error: 'The npc needs to first open their commit' })
-          return
+          res.status(400);
+          res.send({ error: "The npc needs to first open their commit"})
+          return;
         }
         storage.setItem(gameId, {
           ...game,
@@ -171,14 +171,11 @@ function createServer() {
       const r = calculateCombinedRandomness(d, rand)
       engine.turn(game.move, r)
       storage.setItem(gameId, {
-        ...game,
+        ...Game,
         engine,
-        rand: null,
-        commit: null,
-        move: null,
-        key: null,
         lastConfirmedMove: game.move,
         numMoves: game.numMoves + 1,
+        lastCommitByPlayer: game.lastCommitByPlayer,
       })
       res.send({
         lastConfirmedMove: game.move,

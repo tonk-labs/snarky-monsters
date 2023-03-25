@@ -13,6 +13,7 @@ const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 const { describe } = require("node:test");
 const { waffle } = require('hardhat')
 const { deployMockContract } = waffle;
+const { test1 } = require('./test_calldata')
 
 // `describe` is a Mocha function that allows you to organize your tests.
 // Having your tests organized makes debugging them easier. All Mocha
@@ -41,25 +42,40 @@ describe("SnarkyMonstersGame contract", function () {
     return { mockedVerifier, hhSnarky, owner, addr1, addr2 };
   }
 
+  async function deploySnarkyFixtureLegit() {
+    const SnarkyMonstersGame = await ethers.getContractFactory("SnarkyMonstersGame");
+    const [owner, addr1, addr2] = await ethers.getSigners();
+
+    const Verifier = await ethers.getContractFactory("Verifier");
+    const verifier = await Verifier.deploy();
+    await verifier.deployed();
+
+    const hhSnarky = await SnarkyMonstersGame.deploy(verifier.address);
+    await hhSnarky.deployed();
+
+    // Fixtures can return anything you consider useful for your tests
+    return { verifier, hhSnarky, owner, addr1, addr2 };
+  }
+
   // You can nest describe calls to create subsections.
-  describe("Session Submission", function () {
-    it("Should submit a session", async function () {
+  describe("Game Submission", function () {
+    it("Should submit a game", async function () {
       const { hhSnarky, owner } = await loadFixture(deploySnarkyFixture);
       const gameHash = ethers.utils.formatBytes32String("gamehash");
-      const sessionId = 1;
+      const gameId = 1;
 
-      await expect(hhSnarky.submitSession(sessionId, gameHash)).to.emit(
-        hhSnarky, "SessionSubmitted").withArgs(1);
+      await expect(hhSnarky.submitGame(gameId, gameHash)).to.emit(
+        hhSnarky, "GameSubmitted").withArgs(1);
     });
 
-    it("Cannot double submit session", async function () {
+    it("Cannot double submit game", async function () {
       const { hhSnarky } = await loadFixture(deploySnarkyFixture);
       const gameHash = ethers.utils.formatBytes32String("gamehash");
-      const sessionId = 1;
+      const gameId = 1;
 
-      await hhSnarky.submitSession(sessionId, gameHash);
+      await hhSnarky.submitGame(gameId, gameHash);
 
-      await expect(hhSnarky.submitSession(sessionId, gameHash)).to.be.revertedWith("Session already exists");
+      await expect(hhSnarky.submitGame(gameId, gameHash)).to.be.revertedWith("Game already exists");
     });
   });
 
@@ -69,16 +85,16 @@ describe("SnarkyMonstersGame contract", function () {
 
       await mockedVerifier.mock.verifyProof.returns(true);
 
-      await expect(hhSnarky.certifyGame(1, [0x0], [0, 0, 0])).to.emit(
-        hhSnarky, "SessionCertification").withArgs(1, true);
+      await expect(hhSnarky.certifyGame(1, [0x0], [1, 1])).to.emit(
+        hhSnarky, "GameCertification").withArgs(1, true);
     });
     it("Verifies a game incorrect", async function (){
       const { hhSnarky, mockedVerifier } = await loadFixture(deploySnarkyFixture);
 
       await mockedVerifier.mock.verifyProof.returns(false);
 
-      await expect(hhSnarky.certifyGame(1, [0x0], [0, 0, 0])).to.emit(
-        hhSnarky, "SessionCertification").withArgs(1, false);
+      await expect(hhSnarky.certifyGame(1, [0x0], [0, 1])).to.emit(
+        hhSnarky, "GameCertification").withArgs(1, false);
     });
   });
 
@@ -87,10 +103,10 @@ describe("SnarkyMonstersGame contract", function () {
       const { hhSnarky, mockedVerifier } = await loadFixture(deploySnarkyFixture);
       await mockedVerifier.mock.verifyProof.returns(true);
 
-      const tx = await hhSnarky.certifyGame(1, [0x0], [0, 0, 0]);
+      const tx = await hhSnarky.certifyGame(1, [0x0], [0, 1]);
       await tx.wait();
 
-      expect(await hhSnarky.checkSessionVerified(1)).to.equal(true);
+      expect(await hhSnarky.checkGameVerified(1)).to.equal(true);
       const topScores = await hhSnarky.getTopScores();
 
       const decodedScores = topScores.map((entry) => {
@@ -113,16 +129,16 @@ describe("SnarkyMonstersGame contract", function () {
       const gameHash2 = ethers.utils.formatBytes32String("gamehash");
       const gameHash3 = ethers.utils.formatBytes32String("gamehash");
       
-      await expect(hhSnarky.connect(owner).submitSession(2, gameHash1)).to.emit(
-        hhSnarky, "SessionSubmitted").withArgs(2);
-      await expect(hhSnarky.connect(owner).submitSession(3, gameHash2)).to.emit(
-        hhSnarky, "SessionSubmitted").withArgs(3);
-      await expect(hhSnarky.connect(addr1).submitSession(4, gameHash3)).to.emit(
-        hhSnarky, "SessionSubmitted").withArgs(4);
+      await expect(hhSnarky.connect(owner).submitGame(2, gameHash1)).to.emit(
+        hhSnarky, "GameSubmitted").withArgs(2);
+      await expect(hhSnarky.connect(owner).submitGame(3, gameHash2)).to.emit(
+        hhSnarky, "GameSubmitted").withArgs(3);
+      await expect(hhSnarky.connect(addr1).submitGame(4, gameHash3)).to.emit(
+        hhSnarky, "GameSubmitted").withArgs(4);
 
-      await hhSnarky.certifyGame(2, [0x0], [0, 0, 0]);      
-      await hhSnarky.certifyGame(3, [0x0], [0, 0, 0]);      
-      await hhSnarky.certifyGame(4, [0x0], [0,0,0]);
+      await hhSnarky.certifyGame(2, [0x0], [2, 2]);   
+      await hhSnarky.certifyGame(3, [0x0], [3, 3]);      
+      await hhSnarky.certifyGame(4, [0x0], [4, 4]);
 
       const topScores = await hhSnarky.getTopScores();
       const decodedScores = topScores.map((entry) => {
@@ -137,6 +153,15 @@ describe("SnarkyMonstersGame contract", function () {
 
       expect(decodedScores.length).equal(2);
       expect(decodedScores[0].wins).equal(BigInt(2));
+    });
+  });
+
+  describe("Real verifier with real example data", async function() {
+    it("Makes a call to the verifier contract with a legit game", async function() {
+      const { hhSnarky, addr1 } = await loadFixture(deploySnarkyFixtureLegit);
+      await hhSnarky.connect(addr1).submitGame(BigInt(test1.gameId), test1.gameHash);
+      await expect(hhSnarky.certifyGame(test1.gameId, test1.proof_bytes, test1.public_bytes)).to.emit(
+        hhSnarky, "GameCertification").withArgs(test1.gameId, true);
     });
   });
 })
