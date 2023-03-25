@@ -87,9 +87,9 @@ function createServer() {
           return
         }
         if (!game.lastCommitByPlayer) {
-          res.status(400)
-          res.send({ error: 'The player needs to first open their commit' })
-          return
+          res.status(400);
+          res.send({ error: "The player needs to first open their commit"})
+          return;
         }
 
         // the player
@@ -120,9 +120,9 @@ function createServer() {
           return
         }
         if (game.lastCommitByPlayer) {
-          res.status(400)
-          res.send({ error: 'The npc needs to first open their commit' })
-          return
+          res.status(400);
+          res.send({ error: "The npc needs to first open their commit"})
+          return;
         }
         storage.setItem(gameId, {
           ...game,
