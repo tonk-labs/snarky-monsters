@@ -18,6 +18,9 @@ const Container = styled.div`
     overflow: hidden;
     transition: opacity 3s ease-in-out;
     opacity: 1;
+    &.ending {
+      opacity: 0 !important;
+    }
     #playerCache {
       width: 50%;
     }
@@ -242,9 +245,6 @@ const Container = styled.div`
       transform: scale(110%, 110%);
     }
   }
-  .ending {
-    opacity: 0;
-  }
   .endgame {
     display: none;
     z-index: 10;
@@ -258,6 +258,20 @@ const Container = styled.div`
       flex-direction: column;
       justify-content: center;
       align-items: center;
+    }
+    p {
+      width: 80%;
+      margin-bottom: 5%;
+    }
+    .endgameButton {
+      padding: 2% 5%;
+      border: 2px solid white;
+      border-radius: 2px;
+      filter: brightness(1);
+      &:hover {
+        cursor: pointer;
+        filter: brightness(0.9);
+      }
     }
   }
 `
@@ -377,25 +391,45 @@ export default function BattleScreen({
       >
         {animateVictory && (
           <>
-            <h2>somethung</h2>
-            <p>something else</p>
+            <h2>VICTORY!</h2>
+            <p>
+              The {npcState.categoryName} regrets ever picking a fight with you,
+              and you've been invited onto the Bankless podcast as a special
+              guest.
+            </p>
+            <p>Wen airdrop?</p>
+            <div
+              className={`endgameButton`}
+              onClick={() => {
+                // GAVIN TODO: add logic for signing tx to Scroll
+              }}
+            >
+              PLAY AGAIN
+            </div>
           </>
         )}
         {animateDefeat && (
           <>
-            <h2>somethung</h2>
-            <p>something else</p>
-            <div className={`reloadButton`} onClick={() => location.reload()}>
-              Try again
+            <h2>DEFEAT</h2>
+            <p>
+              The {npcState.categoryName} wiped the floor with you and has begun
+              publicly shaming you on Twitter.
+            </p>
+            <p>Will you get your own back?</p>
+            <div className={`endgameButton`} onClick={() => location.reload()}>
+              PLAY AGAIN
             </div>
           </>
         )}
         {animateTimeout && (
           <>
-            <h2>somethung</h2>
-            <p>something else</p>
-            <div className={`reloadButton`} onClick={() => location.reload()}>
-              Try again
+            <h2>TIME UP</h2>
+            <p>
+              The battle took too long and {npcState.categoryName} moved on with
+              their life. Maybe you should too.
+            </p>
+            <div className={`endgameButton`} onClick={() => location.reload()}>
+              PLAY AGAIN
             </div>
           </>
         )}
