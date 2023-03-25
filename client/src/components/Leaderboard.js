@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import Web3ConnectManager from '@/pages/api/web3ConnectManager'
 
 const Container = styled.div`
   border: #5f3400 double thick;
@@ -29,7 +30,9 @@ export default function Leaderboard(props) {
       <hr />
       <h3>Check proof</h3>
       <p>has my proof been uploaded yet?</p>
-      <button>my performance</button>
+      <button onClick={() => {
+        Web3ConnectManager.getInstance().connectWallet()
+      }}>my performance</button>
     </Container>
   )
 }
