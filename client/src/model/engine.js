@@ -36,6 +36,7 @@ const calculateCrit = (source, move, randomness) => {
 }
 
 const isMiss = (move, randomness) => {
+  console.log(randomness)
   return randomness <= move.miss
 }
 
@@ -87,6 +88,12 @@ class Engine {
       gameJson.npc.category,
       gameJson.moveLimit,
     )
+    engine.player = {
+      ...gameJson.player
+    }
+    engine.npc = {
+      ...gameJson.npc
+    }
     engine.previousMoves = gameJson.previousMoves
     engine.previousState = gameJson.previousState
     engine.prevAtkEff = gameJson.prevAtkEff
@@ -199,6 +206,7 @@ class Engine {
           ...model.Monsters[move.category - 1].stats,
         },
         category: move.category,
+        categoryName: model.Monsters[move.category - 1].categoryName
       }
       return {
         didSwap: move.category,
@@ -210,6 +218,7 @@ class Engine {
           ...model.Monsters[move.category - 1].stats,
         },
         category: move.category,
+        categoryName: model.Monsters[move.category - 1].categoryName
       }
       return {
         didSwap: move.category,

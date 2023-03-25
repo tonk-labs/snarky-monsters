@@ -88,6 +88,12 @@ class Engine {
       gameJson.npc.category,
       gameJson.moveLimit,
     )
+    engine.player = {
+      ...gameJson.player
+    }
+    engine.npc = {
+      ...gameJson.npc
+    }
     engine.previousMoves = gameJson.previousMoves
     engine.previousState = gameJson.previousState
     engine.prevAtkEff = gameJson.prevAtkEff

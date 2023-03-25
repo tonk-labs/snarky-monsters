@@ -65,6 +65,9 @@ export const makePlayerMove = async (move) => {
 
   const engine = Engine.fromJSON(engineData)
   const report = engine.turn(move, r)
+
+  console.log("Player HP: " + engine.player.hp)
+
   report.lastMove = move
   localStorage.setItem(
     'game',
@@ -95,6 +98,9 @@ export const getNpcMove = async () => {
   const d = decryptSecret(key, commitRandomness)
   const r = calculateCombinedRandomness(d, randomness)
   const report = engine.turn(move, r)
+
+  console.log("NPC HP: " + engine.player.hp)
+
   report.lastMove = move
 
   localStorage.setItem(

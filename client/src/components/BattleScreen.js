@@ -351,10 +351,12 @@ export default function BattleScreen({
           setAnimateNPCHeal(true)
           break
         case 'animatePlayerHP':
+          console.log("new cached player state", npcState)
           setCachedPlayerState({ ...playerState })
           shiftAnimationQueue()
           break
         case 'animateNPCHP':
+          console.log("new cached npc state", npcState)
           setCachedNPCState({ ...npcState })
           shiftAnimationQueue()
           break
