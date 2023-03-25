@@ -13,6 +13,9 @@ const {
 const Engine = require('./src/engine.js')
 const NpcBrain = require('./src/npcBrain.js')
 const { generateUUID } = require('./src/helpers.js')
+const Queue = require('bull');
+
+const proofQueue = new Queue('proofs')
 
 const Game = {
   engine: null,
@@ -25,7 +28,7 @@ const Game = {
   numMoves: 0,
 }
 
-const DebugLogs = true;
+const DebugLogs = false;
 
 const debugLogger = (statement) => {
   if (DebugLogs) {
@@ -45,6 +48,7 @@ function createServer() {
   const restRouter = express.Router()
   restRouter.get('/', (req, res) => {
     res.send({ text: 'ping' })
+    proofQueue.add({ input: 'hi', gameId: 'there'})
   })
 
   /**

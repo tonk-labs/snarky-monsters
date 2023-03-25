@@ -8,10 +8,11 @@ const LOCAL_ENDPOINT = "http://localhost:8545"
 const LOCAL_CHAIN_ID = 31337n
 const SCROLL_ALPHANET_CHAIN_ID = 534353n
 
-const CHAIN_ID = isProd ? SCROLL_ALPHANET_CHAIN_ID : LOCAL_CHAIN_ID
+const CHAIN_ID = !isProd ? SCROLL_ALPHANET_CHAIN_ID : LOCAL_CHAIN_ID
 
 const PROD_CONTRACT_ADDRESS = '0xE6A653d510A0a4a72d081E8d0c5b4B65a4bEF9F8'
 const LOCAL_CONTRACT_ADDRESS = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
+const CONTRACT_ADDRESS = !isProd ? PROD_CONTRACT_ADDRESS : LOCAL_CONTRACT_ADDRESS
 
 const requestSwitchNetwork = async (provider) => {        
     try {
@@ -96,7 +97,7 @@ class Web3ConnectManager {
             // log the account address
             // console.log('Connected to account:', this.account);
 
-            this.contract =  new Contract(LOCAL_CONTRACT_ADDRESS, SnarkyMonstersGame.abi, this.provider)
+            this.contract =  new Contract(CONTRACT_ADDRESS, SnarkyMonstersGame.abi, this.provider)
             localStorage.setItem("hasConnected", true)
         }
     }
@@ -104,7 +105,7 @@ class Web3ConnectManager {
     async submitCertification(gameId, gameHash) {
         try {
             const tx = await this.contract.connect(this.signer).submitGame(
-                gameId, 
+                BigInt(gameId), 
                 ethers.toBeHex(gameHash)
             )
             await this.provider.waitForTransaction(tx, 1);
