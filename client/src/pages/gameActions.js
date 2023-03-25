@@ -63,137 +63,143 @@ export const selectMove = (dispatch, getState) => (
 ) => {
   var animationQueue = getState().animationQueue
   makePlayerMove(move)
-    .then(({ playerState, npcState, report }) => {
-      playerState.hp = 0
-      if (report.lastMove.name === 'Heal') {
-        animationQueue.push({
-          type: 'dialogue',
-          content: `You used ${report.lastMove.name}!`,
-        })
-        if (report.didMiss) {
+    .then(({ playerState, npcState, report, goodGame }) => {
+      if (!goodGame) {
+        if (report.lastMove.name === 'Heal') {
           animationQueue.push({
             type: 'dialogue',
-            content: "But it didn't work this time. Bad luck.",
+            content: `You used ${report.lastMove.name}!`,
           })
-        } else {
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animatePlayerHeal',
-          })
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animatePlayerHP',
-          })
-          if (report.didCrit) {
+          if (report.didMiss) {
             animationQueue.push({
               type: 'dialogue',
-              content: `Critical heal! You received extra HP.`,
+              content: "But it didn't work this time. Bad luck.",
             })
+          } else {
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animatePlayerHeal',
+            })
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animatePlayerHP',
+              playerState: {
+                ...playerState,
+              }
+            })
+            if (report.didCrit) {
+              animationQueue.push({
+                type: 'dialogue',
+                content: `Critical heal! You received extra HP.`,
+              })
+            }
           }
-        }
-      } else if (report.lastMove.name === 'Re-train') {
-        animationQueue.push({
-          type: 'dialogue',
-          content: `You took the plunge and decided to re-train and achieve your dream of becoming a...`,
-        })
-        animationQueue.push({
-          type: 'dialogue',
-          content: `...${attemptedSwapTarget.categoryName}!`,
-        })
-        animationQueue.push({
-          type: 'visual',
-          animation: 'animatePlayerPulse',
-        })
-        if (report.didMiss) {
+        } else if (report.lastMove.name === 'Re-train') {
           animationQueue.push({
             type: 'dialogue',
-            content:
-              'But it was too hard and you got distracted. Better luck next time! #PersistencePays.',
-          })
-        } else {
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animatePlayerExit',
-          })
-          dispatch({
-            payload: {
-              playerState: playerState,
-            },
-          })
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animatePlayerEntry',
+            content: `You took the plunge and decided to re-train and achieve your dream of becoming a...`,
           })
           animationQueue.push({
             type: 'dialogue',
-            content: `You successfully re-trained and re-branded as a ${playerState.categoryName}. Have you updated your Twitter yet?`,
-          })
-        }
-      } else {
-        animationQueue.push({
-          type: 'dialogue',
-          content: `You used ${report.lastMove.name}!`,
-        })
-        animationQueue.push({
-          type: 'visual',
-          animation: 'animatePlayerAttack',
-        })
-        if (report.didMiss) {
-          animationQueue.push({
-            type: 'dialogue',
-            content: 'But it missed. Bad luck.',
-          })
-        } else {
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animateNPCFlash',
+            content: `...${attemptedSwapTarget.categoryName}!`,
           })
           animationQueue.push({
             type: 'visual',
-            animation: 'animateNPCHP',
+            animation: 'animatePlayerPulse',
           })
-          if (report.didCrit) {
+          if (report.didMiss) {
             animationQueue.push({
               type: 'dialogue',
-              content: `It's a critical hit!`,
+              content:
+                'But it was too hard and you got distracted. Better luck next time! #PersistencePays.',
+            })
+          } else {
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animatePlayerExit',
+            })
+            dispatch({
+              payload: {
+                playerState: playerState,
+              },
+            })
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animatePlayerEntry',
+            })
+            animationQueue.push({
+              type: 'dialogue',
+              content: `You successfully re-trained and re-branded as a ${playerState.categoryName}. Have you updated your Twitter yet?`,
             })
           }
-          switch (report.attkEff) {
-            case 0:
+        } else {
+          animationQueue.push({
+            type: 'dialogue',
+            content: `You used ${report.lastMove.name}!`,
+          })
+          animationQueue.push({
+            type: 'visual',
+            animation: 'animatePlayerAttack',
+          })
+          if (report.didMiss) {
+            animationQueue.push({
+              type: 'dialogue',
+              content: 'But it missed. Bad luck.',
+            })
+          } else {
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animateNPCFlash',
+            })
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animateNPCHP',
+              npcState: { ...npcState },
+            })
+            if (report.didCrit) {
               animationQueue.push({
                 type: 'dialogue',
-                content: `But ${playerState.categoryName}'s moves are not very effective against ${npcState.categoryName}.`,
+                content: `It's a critical hit!`,
               })
-              animationQueue.push({
-                type: 'dialogue',
-                content: `Maybe you should retrain to another profession...`,
-              })
-              break
-            case 2:
-              animationQueue.push({
-                type: 'dialogue',
-                content: `${playerState.categoryName}'s moves are quite effective against ${npcState.categoryName}.`,
-              })
-              break
-            case 3:
-              animationQueue.push({
-                type: 'dialogue',
-                content: `${playerState.categoryName}'s moves are super effective against ${npcState.categoryName}!`,
-              })
-              break
+            }
+            switch (report.attkEff) {
+              case 0:
+                animationQueue.push({
+                  type: 'dialogue',
+                  content: `But ${playerState.categoryName}'s moves are not very effective against ${npcState.categoryName}.`,
+                })
+                animationQueue.push({
+                  type: 'dialogue',
+                  content: `Maybe you should retrain to another profession...`,
+                })
+                break
+              case 2:
+                animationQueue.push({
+                  type: 'dialogue',
+                  content: `${playerState.categoryName}'s moves are quite effective against ${npcState.categoryName}.`,
+                })
+                break
+              case 3:
+                animationQueue.push({
+                  type: 'dialogue',
+                  content: `${playerState.categoryName}'s moves are super effective against ${npcState.categoryName}!`,
+                })
+                break
+            }
           }
         }
+        dispatch({
+          payload: {
+            playerState: playerState,
+            npcState: npcState,
+            report: report,
+            animationQueue: animationQueue,
+            reportCounter: getState().reportCounter + 1,
+          },
+        })
       }
-      dispatch({
-        payload: {
-          playerState: playerState,
-          npcState: npcState,
-          report: report,
-          animationQueue: animationQueue,
-          reportCounter: getState().reportCounter + 1,
-        },
-      })
       if (
+        goodGame ||
         playerState.hp === 0 ||
         npcState.hp === 0 ||
         getState().reportCounter === 24
@@ -216,135 +222,142 @@ export const selectMove = (dispatch, getState) => (
       }
     })
     .then(() => {
-      getNpcMove().then(({ playerState, npcState, report }) => {
-        if (report.lastMove.name === 'Heal') {
-          animationQueue.push({
-            type: 'dialogue',
-            content: `${npcState.categoryName} used ${report.lastMove.name}!`,
-          })
-          if (report.didMiss) {
+      getNpcMove().then(({ playerState, npcState, report, goodGame }) => {
+        if (!goodGame) {
+          if (report.lastMove.name === 'Heal') {
             animationQueue.push({
               type: 'dialogue',
-              content: "But it didn't work!",
+              content: `${npcState.categoryName} used ${report.lastMove.name}!`,
             })
-          } else {
-            animationQueue.push({
-              type: 'visual',
-              animation: 'animateNPCHeal',
-            })
-            animationQueue.push({
-              type: 'visual',
-              animation: 'animateNPCHP',
-            })
-            if (report.didCrit) {
+            if (report.didMiss) {
               animationQueue.push({
                 type: 'dialogue',
-                content: `Critical heal! ${npcState.categoryName} received extra HP.`,
+                content: "But it didn't work!",
               })
+            } else {
+              animationQueue.push({
+                type: 'visual',
+                animation: 'animateNPCHeal',
+              })
+              animationQueue.push({
+                type: 'visual',
+                animation: 'animateNPCHP',
+                npcState: { ...npcState } 
+              })
+              if (report.didCrit) {
+                animationQueue.push({
+                  type: 'dialogue',
+                  content: `Critical heal! ${npcState.categoryName} received extra HP.`,
+                })
+              }
             }
-          }
-        } else if (report.lastMove.name === 'Re-train') {
-          animationQueue.push({
-            type: 'dialogue',
-            content: `${npcState.categoryName} took the plunge and decided to re-train.`,
-          })
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animateNPCPulse',
-          })
-          if (report.didMiss) {
+          } else if (report.lastMove.name === 'Re-train') {
             animationQueue.push({
               type: 'dialogue',
-              content: `But it was too hard and they got distracted. It's a tough world out there...`,
-            })
-          } else {
-            animationQueue.push({
-              type: 'visual',
-              animation: 'animateNPCExit',
-            })
-            dispatch({
-              payload: {
-                npcState: npcState,
-              },
+              content: `${npcState.categoryName} took the plunge and decided to re-train.`,
             })
             animationQueue.push({
               type: 'visual',
-              animation: 'animateNPCEntry',
+              animation: 'animateNPCPulse',
             })
-            animationQueue.push({
-              type: 'dialogue',
-              content: `They successfully re-trained and re-branded as a ${npcState.categoryName}. Maybe they'll blog about it.`,
-            })
-          }
-        } else {
-          animationQueue.push({
-            type: 'dialogue',
-            content: `${npcState.categoryName} used ${report.lastMove.name}!`,
-          })
-          animationQueue.push({
-            type: 'visual',
-            animation: 'animateNPCAttack',
-          })
-          if (report.didMiss) {
-            animationQueue.push({
-              type: 'dialogue',
-              content: 'But they missed. You lucky thing.',
-            })
-          } else {
-            animationQueue.push({
-              type: 'visual',
-              animation: 'animatePlayerFlash',
-            })
-            animationQueue.push({
-              type: 'visual',
-              animation: 'animatePlayerHP',
-            })
-            if (report.didCrit) {
+            if (report.didMiss) {
               animationQueue.push({
                 type: 'dialogue',
-                content: `Ouch! It's a critical hit!`,
+                content: `But it was too hard and they got distracted. It's a tough world out there...`,
+              })
+            } else {
+              animationQueue.push({
+                type: 'visual',
+                animation: 'animateNPCExit',
+              })
+              dispatch({
+                payload: {
+                  npcState: npcState,
+                },
+              })
+              animationQueue.push({
+                type: 'visual',
+                animation: 'animateNPCEntry',
+              })
+              animationQueue.push({
+                type: 'dialogue',
+                content: `They successfully re-trained and re-branded as a ${npcState.categoryName}. Maybe they'll blog about it.`,
               })
             }
-            switch (report.attkEff) {
-              case 0:
+          } else {
+            animationQueue.push({
+              type: 'dialogue',
+              content: `${npcState.categoryName} used ${report.lastMove.name}!`,
+            })
+            animationQueue.push({
+              type: 'visual',
+              animation: 'animateNPCAttack',
+            })
+            if (report.didMiss) {
+              animationQueue.push({
+                type: 'dialogue',
+                content: 'But they missed. You lucky thing.',
+              })
+            } else {
+              animationQueue.push({
+                type: 'visual',
+                animation: 'animatePlayerFlash',
+              })
+              animationQueue.push({
+                type: 'visual',
+                animation: 'animatePlayerHP',
+                playerState: {
+                  ...playerState
+                }
+              })
+              if (report.didCrit) {
                 animationQueue.push({
                   type: 'dialogue',
-                  content: `But ${npcState.categoryName}'s moves are not very effective against ${playerState.categoryName}.`,
+                  content: `Ouch! It's a critical hit!`,
                 })
-                break
-              case 2:
-                animationQueue.push({
-                  type: 'dialogue',
-                  content: `${npcState.categoryName}'s moves are quite effective against ${playerState.categoryName}.`,
-                })
-                break
-              case 3:
-                animationQueue.push({
-                  type: 'dialogue',
-                  content: `${npcState.categoryName}'s moves are super effective against ${playerState.categoryName}. Maybe you should retrain to another profession...`,
-                })
-                break
+              }
+              switch (report.attkEff) {
+                case 0:
+                  animationQueue.push({
+                    type: 'dialogue',
+                    content: `But ${npcState.categoryName}'s moves are not very effective against ${playerState.categoryName}.`,
+                  })
+                  break
+                case 2:
+                  animationQueue.push({
+                    type: 'dialogue',
+                    content: `${npcState.categoryName}'s moves are quite effective against ${playerState.categoryName}.`,
+                  })
+                  break
+                case 3:
+                  animationQueue.push({
+                    type: 'dialogue',
+                    content: `${npcState.categoryName}'s moves are super effective against ${playerState.categoryName}. Maybe you should retrain to another profession...`,
+                  })
+                  break
+              }
             }
           }
+          animationQueue.push({
+            type: 'dialogue',
+            content: 'What will you do?',
+          })
+          animationQueue.push({
+            type: 'showMoveBox',
+          })
+          // TODO: Decrypt randomness
+          // TODO: Update internal Game Hash with new state, including hashing state, randomness, move, attackEff, defEff.
+          dispatch({
+            payload: {
+              playerState: playerState,
+              npcState: npcState,
+              report: report,
+              reportCounter: getState().reportCounter + 1,
+            },
+          })
         }
-        animationQueue.push({
-          type: 'dialogue',
-          content: 'What will you do?',
-        })
-        animationQueue.push({
-          type: 'showMoveBox',
-        })
-        // TODO: Decrypt randomness
-        // TODO: Update internal Game Hash with new state, including hashing state, randomness, move, attackEff, defEff.
-        dispatch({
-          payload: {
-            playerState: playerState,
-            npcState: npcState,
-            report: report,
-            reportCounter: getState().reportCounter + 1,
-          },
-        })
         if (
+          goodGame ||
           playerState.hp === 0 ||
           npcState.hp === 0 ||
           getState().reportCounter === 24

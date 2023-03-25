@@ -83,7 +83,10 @@ export default function MoveBox({
                 onClick={() => {
                   setShowSwapOptions(false)
                   selectMove(
-                    playerState.moves.find((move) => move.type === 0),
+                    {
+                      ...playerState.moves.find((move) => move.type === 0),
+                      category: monster.category //on swap, the move category should be the intended swapTarget
+                    },
                     monster,
                   )
                   shiftAnimationQueue()

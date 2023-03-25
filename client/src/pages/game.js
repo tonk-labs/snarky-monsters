@@ -70,6 +70,8 @@ export default function GameComponent() {
     childRef.current.style.fontSize = fontSize + 'px'
   }, [])
 
+  // console.log(gameState);
+
   return (
     <Container>
       <div ref={parentRef} id="inner">

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
-    "test:server": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/server.test.js --detectOpenHandles"
+    "test:server": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/server.test.js --detectOpenHandles",
+    "test:hash": "cross-env NODE_ENV=test jest --testTimeout=100000 -i test/hash.test.js --detectOpenHandles"
   },
   "author": "Goblin Oats",
   "license": "MIT",
@@ -19,6 +20,7 @@
   "dependencies": {
     "@zefi/circomjs": "^1.0.5",
     "axios": "^1.3.4",
+    "bull": "^4.10.4",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
     "cors": "^2.8.5",

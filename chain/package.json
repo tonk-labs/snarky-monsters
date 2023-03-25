@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "deploy:hh": "npx hardhat run --network localhost scripts/deploy.js",
+    "deploy:scrollTestnet": "npx hardhat run --network scrollTestnet scripts/deploy.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -25,5 +27,8 @@
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",
     "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
   }
 }

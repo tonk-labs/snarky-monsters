@@ -1,6 +1,8 @@
 const { buildMimc7 } = require('circomlibjs')
 const CryptoJS = require('crypto-js')
 
+const Model = require('./model');
+
 /**
  * For (i = 0; i < NMoves; i++) {
     Hash(State_i), Hash(Randomness_i), Hash(Move_i), Hash(AttackEff_i), Hash(DefEff_i)
@@ -36,16 +38,14 @@ function intsToHex(list) {
  * @returns
  */
 const createEncryptedSecret = (seed) => {
-  const key = CryptoJS.lib.WordArray.random(16).toString()
-  const randomness = seed ? seed : generateRandomness()
-  const encrypted = CryptoJS.AES.encrypt(randomness, key, {
-    format: JsonFormatter,
-  })
+    const key = CryptoJS.lib.WordArray.random(16).toString();
+    const randomness = seed ? seed : generateRandomness();    
+    const encrypted = CryptoJS.AES.encrypt(randomness, key, { format: JsonFormatter })
 
-  return {
-    ciphertext: encrypted.toString(CryptoJS.enc.JSON),
-    key,
-  }
+    return {
+        ciphertext: encrypted.toString(CryptoJS.enc.JSON),
+        key,
+    }
 }
 
 /**
@@ -65,9 +65,7 @@ const generateRandomness = () =>
  * @returns
  */
 const decryptSecret = (key, encrypted, opts = { enc: CryptoJS.enc.Utf8 }) => {
-  return CryptoJS.AES.decrypt(encrypted, key, {
-    format: JsonFormatter,
-  }).toString(opts.enc)
+    return CryptoJS.AES.decrypt(encrypted, key, { format: JsonFormatter }).toString(opts.enc);
 }
 
 /**
@@ -79,7 +77,7 @@ const decryptSecret = (key, encrypted, opts = { enc: CryptoJS.enc.Utf8 }) => {
  * @returns
  */
 const calculateCombinedRandomness = (randomness1, randomness2) => {
-  return CryptoJS.SHA256(randomness1 + randomness2).words[0] % 101
+  return Math.abs(CryptoJS.SHA256(randomness1 + randomness2).words[0]) % 101
 }
 
 /**
@@ -101,6 +99,10 @@ const mimcHashArray = async (arr) => {
  */
 const hashGameState = (engine) => {
   let gameArray = []
+  // pad the engine state if it hasn't already been padded
+  while(engine.previousMoves.length < engine.moveLimit) {
+      engine.turn(Model.Moves[Model.Moves.length - 1], 0);
+  }
   for (var i = 0; i < engine.moveLimit; i++) {
     const ithState = engine.previousState[i]
     const ithMove = engine.previousMoves[i]
@@ -153,36 +155,36 @@ const hashGameState = (engine) => {
 }
 
 const JsonFormatter = {
-  stringify: function (cipherParams) {
-    // create json object with ciphertext
-    var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) }
-    // optionally add iv or salt
-    if (cipherParams.iv) {
-      jsonObj.iv = cipherParams.iv.toString()
+    stringify: function(cipherParams) {
+      // create json object with ciphertext
+      var jsonObj = { ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64) };
+      // optionally add iv or salt
+      if (cipherParams.iv) {
+        jsonObj.iv = cipherParams.iv.toString();
+      }
+      if (cipherParams.salt) {
+        jsonObj.s = cipherParams.salt.toString();
+      }
+      // stringify json object
+      return JSON.stringify(jsonObj);
+    },
+    parse: function(jsonStr) {
+      // parse json string
+      var jsonObj = JSON.parse(jsonStr);
+      // extract ciphertext from json object, and create cipher params object
+      var cipherParams = CryptoJS.lib.CipherParams.create({
+        ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+      });
+      // optionally extract iv or salt
+      if (jsonObj.iv) {
+        cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
+      }
+      if (jsonObj.s) {
+        cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+      }
+      return cipherParams;
     }
-    if (cipherParams.salt) {
-      jsonObj.s = cipherParams.salt.toString()
-    }
-    // stringify json object
-    return JSON.stringify(jsonObj)
-  },
-  parse: function (jsonStr) {
-    // parse json string
-    var jsonObj = JSON.parse(jsonStr)
-    // extract ciphertext from json object, and create cipher params object
-    var cipherParams = CryptoJS.lib.CipherParams.create({
-      ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct),
-    })
-    // optionally extract iv or salt
-    if (jsonObj.iv) {
-      cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-    }
-    if (jsonObj.s) {
-      cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-    }
-    return cipherParams
-  },
-}
+  };
 
 module.exports = {
   hashGameState,

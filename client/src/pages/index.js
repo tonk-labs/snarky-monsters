@@ -9,7 +9,7 @@ const Container = styled.div`
   .bigBox {
     width: 33%;
     border: #5f3400 double thick;
-    padding: 8px;
+    padding: 16px;
     margin: 8px;
   }
   @media (max-width: 1000px) {

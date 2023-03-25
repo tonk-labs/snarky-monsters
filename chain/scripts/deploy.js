@@ -13,7 +13,7 @@ const main = async () => {
     const snarkyContract = await snarkyMonstersFactory.deploy(verifierContract.address);
     await snarkyContract.deployed();
   
-    console.log("Snarkynaddress: ", snarkyContract.address);
+    console.log("Snarky Address: ", snarkyContract.address);
   };
   
   const runMain = async () => {

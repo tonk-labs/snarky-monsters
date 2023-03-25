@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image.js'
 import Dialogue from '@/components/Dialogue'
 import next from 'next'
+import { submitGame } from '@/pages/api/apiHelpers'
 
 const Container = styled.div`
   border-bottom: solid 2px #5f3400;
@@ -265,6 +266,7 @@ const Container = styled.div`
     }
     .endgameButton {
       padding: 2% 5%;
+      margin-bottom: 20px;
       border: 2px solid white;
       border-radius: 2px;
       filter: brightness(1);
@@ -351,11 +353,13 @@ export default function BattleScreen({
           setAnimateNPCHeal(true)
           break
         case 'animatePlayerHP':
-          setCachedPlayerState({ ...playerState })
+          console.log("new cached player state", playerState)
+          setCachedPlayerState({ ...nextAnimation.playerState })
           shiftAnimationQueue()
           break
         case 'animateNPCHP':
-          setCachedNPCState({ ...npcState })
+          console.log("new cached npc state", npcState)
+          setCachedNPCState({ ...nextAnimation.npcState })
           shiftAnimationQueue()
           break
         case 'animatePlayerPulse':
@@ -386,7 +390,7 @@ export default function BattleScreen({
     <Container>
       <div
         className={`endgame ${
-          animateVictory || animateDefeat || animateTimeout ? 'display' : ''
+          (animateVictory || animateDefeat || animateTimeout) ? 'display' : ''
         }`}
       >
         {animateVictory && (
@@ -401,7 +405,15 @@ export default function BattleScreen({
             <div
               className={`endgameButton`}
               onClick={() => {
-                // GAVIN TODO: add logic for signing tx to Scroll
+                submitGame()
+              }}
+            >
+              SUBMIT PROOF OF WIN
+            </div>
+            <div
+              className={`endgameButton`}
+              onClick={() => {
+                location.reload()
               }}
             >
               PLAY AGAIN

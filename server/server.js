@@ -13,6 +13,9 @@ const {
 const Engine = require('./src/engine.js')
 const NpcBrain = require('./src/npcBrain.js')
 const { generateUUID } = require('./src/helpers.js')
+const Queue = require('bull');
+
+const proofQueue = new Queue('proofs')
 
 const Game = {
   engine: null,
@@ -23,6 +26,14 @@ const Game = {
   lastConfirmedMove: null,
   lastCommitByPlayer: false,
   numMoves: 0,
+}
+
+const DebugLogs = false;
+
+const debugLogger = (statement) => {
+  if (DebugLogs) {
+    console.log(statement)
+  }
 }
 
 function createServer() {
@@ -37,6 +48,7 @@ function createServer() {
   const restRouter = express.Router()
   restRouter.get('/', (req, res) => {
     res.send({ text: 'ping' })
+    proofQueue.add({ input: 'hi', gameId: 'there'})
   })
 
   /**
@@ -44,29 +56,36 @@ function createServer() {
    */
   restRouter.post('/play', (req, res) => {
     const { playerState } = req.body;
-    const gameId = generateUUID();
-    const npcId = NpcBrain.selectRandomNPC();
-    const engine = new Engine(playerState.category, npcId, 25);
-    storage.setItem(gameId, { ...Game, engine });
-    res.send({
-      gameId,
-      npcState: engine.npc,
-    });
-  });
-
-  restRouter.get('/play/:gameId', (req, res) => {
-    storage.getItem(req.params.gameId).then((data) => {
-      const engine = Engine.fromJSON(data.engine)
+    try {
+      debugLogger(`req.body for /play ${JSON.stringify(req.body, null, 2)}`)
+      const gameId = generateUUID();
+      const npcId = NpcBrain.selectRandomNPC();
+      const engine = new Engine(playerState.category, npcId, 25);
+      storage.setItem(gameId, { ...Game, engine });
+      debugLogger(`return for /play ${JSON.stringify({ gameId, npcState: engine.npc })}`)
       res.send({
-        gameId: req.params.gameId,
-        playerState: engine.player,
+        gameId,
         npcState: engine.npc,
       });
-    });
+    } catch (e) {
+      res.status(500);
+      res.send({ error: "Failed with unknown error, check server logs"});
+    }
   });
 
-  const respondEndGame = (game, res) => {
-    if (game.numMoves >= 25) {
+  // restRouter.get('/play/:gameId', (req, res) => {
+  //   storage.getItem(req.params.gameId).then((data) => {
+  //     const engine = Engine.fromJSON(data.engine)
+  //     res.send({
+  //       gameId: req.params.gameId,
+  //       playerState: engine.player,
+  //       npcState: engine.npc,
+  //     });
+  //   });
+  // });
+
+  const respondEndGame = (res, game) => {
+    if (game.numMoves >= 25 || game.engine.npc.hp === 0 || game.engine.player.hp === 0) {
       res.send({
         goodGame: true,
       })
@@ -80,68 +99,93 @@ function createServer() {
    */
   restRouter.post('/battle/commit', (req, res) => {
     const { playerMove, commitRandomness, gameId } = req.body
+    debugLogger(`req.body for /battle/commit ${JSON.stringify(req.body)}`)
     // asking NPC for commit
     if (!playerMove) {
       storage.getItem(gameId).then((game) => {
-        if (respondEndGame(res, game)) {
-          return
+
+        try {
+          if (respondEndGame(res, game)) {
+            return
+          }
+          if (!game.lastCommitByPlayer) {
+            res.status(400);
+            res.send({ error: "The player needs to first open their commit"})
+            return;
+          }
+          // the player
+          const engine = Engine.fromJSON(game.engine)
+          const npcMove = NpcBrain.selectMove(engine)
+          const commit = createEncryptedSecret()
+
+          storage.setItem(gameId, {
+            ...game,
+            key: commit.key,
+            commit: commit.ciphertext,
+            move: npcMove,
+            lastCommitByPlayer: false,
+          })
+          debugLogger(`return for /battle/commit ${JSON.stringify({
+            commitRandomness: commit.ciphertext,
+            move: npcMove,
+            lastConfirmedMove: game.lastConfirmedMove,
+            numMoves: game.numMoves,
+          })}`)
+
+          res.send({
+            commitRandomness: commit.ciphertext,
+            move: npcMove,
+            lastConfirmedMove: game.lastConfirmedMove,
+            numMoves: game.numMoves,
+          })
+        } catch (e) {
+          res.status(500);
+          res.send({ error: "Failed with unknown error, check server logs"});
         }
-        if (!game.lastCommitByPlayer) {
-          res.status(400);
-          res.send({ error: "The player needs to first open their commit"})
-          return;
-        }
 
-        // the player
-        const engine = Engine.fromJSON(game.engine)
-        const npcMove = NpcBrain.selectMove(engine)
-        const commit = createEncryptedSecret()
-
-        storage.setItem(gameId, {
-          ...game,
-          key: commit.key,
-          commit: commit.ciphertext,
-          move: npcMove,
-          lastCommitByPlayer: false,
-        })
-
-        res.send({
-          commitRandomness: commit.ciphertext,
-          move: npcMove,
-          lastConfirmedMove: game.lastConfirmedMove,
-          numMoves: game.numMoves,
-        })
       })
       // player is making a commitment
     } else {
       const randomness = generateRandomness()
       storage.getItem(gameId).then((game) => {
-        if (respondEndGame(res, game)) {
-          return
+        try {
+          if (respondEndGame(res, game)) {
+            return
+          }
+          if (game.lastCommitByPlayer) {
+            res.status(400);
+            res.send({ error: "The npc needs to first open their commit"})
+            return;
+          }
+          storage.setItem(gameId, {
+            ...game,
+            commit: commitRandomness,
+            move: playerMove,
+            rand: randomness,
+            lastCommitByPlayer: true,
+          })
+          debugLogger(`return for /battle/commit ${JSON.stringify({
+            randomness,
+            lastConfirmedMove: game.lastConfirmedMove,
+            numMoves: game.numMoves,
+          })}`);
+          res.send({
+            randomness,
+            lastConfirmedMove: game.lastConfirmedMove,
+            numMoves: game.numMoves,
+          })
+        } catch (e) {
+          res.status(500);
+          res.send({ error: "Failed with unknown error, check server logs "});
         }
-        if (game.lastCommitByPlayer) {
-          res.status(400);
-          res.send({ error: "The npc needs to first open their commit"})
-          return;
-        }
-        storage.setItem(gameId, {
-          ...game,
-          commit: commitRandomness,
-          move: playerMove,
-          rand: randomness,
-          lastCommitByPlayer: true,
-        })
-        res.send({
-          randomness,
-          lastConfirmedMove: game.lastConfirmedMove,
-          numMoves: game.numMoves,
-        })
       })
     }
   })
 
   restRouter.post('/battle/open', (req, res) => {
     const { key, randomness, gameId } = req.body
+    debugLogger(`req.body for /battle/open ${JSON.stringify(req.body)}`)
+
     // we are opening the players move
     storage.getItem(gameId).then((game) => {
       if (respondEndGame(res, game)) {
@@ -164,24 +208,34 @@ function createServer() {
         return
       }
 
-      const k = key ? key : game.key
-      const rand = randomness ? randomness : game.rand
-      const d = decryptSecret(k, game.commit)
-      const engine = Engine.fromJSON(game.engine)
-      const r = calculateCombinedRandomness(d, rand)
-      engine.turn(game.move, r)
-      storage.setItem(gameId, {
-        ...Game,
-        engine,
-        lastConfirmedMove: game.move,
-        numMoves: game.numMoves + 1,
-        lastCommitByPlayer: game.lastCommitByPlayer,
-      })
-      res.send({
-        lastConfirmedMove: game.move,
-        numMoves: game.numMoves + 1,
-        key: k,
-      })
+      try {
+        const k = key ? key : game.key
+        const rand = randomness ? randomness : game.rand
+        const d = decryptSecret(k, game.commit)
+        const engine = Engine.fromJSON(game.engine)
+        const r = calculateCombinedRandomness(d, rand)
+        engine.turn(game.move, r)
+        storage.setItem(gameId, {
+          ...Game,
+          engine,
+          lastConfirmedMove: game.move,
+          numMoves: game.numMoves + 1,
+          lastCommitByPlayer: game.lastCommitByPlayer,
+        })
+        debugLogger(`return for /battle/open ${JSON.stringify({
+          lastConfirmedMove: game.move,
+          numMoves: game.numMoves + 1,
+          key: k,
+        })}`)
+        res.send({
+          lastConfirmedMove: game.move,
+          numMoves: game.numMoves + 1,
+          key: k,
+        })
+      } catch (e) {
+        res.status(500);
+        res.send({ error: "Failed with unknown error, check server logs"});
+      }
     })
   })
 

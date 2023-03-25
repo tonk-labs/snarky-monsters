@@ -6,7 +6,7 @@ import "./Verifier.sol"; // Import the Verifier contract with the verifyProof fu
 contract SnarkyMonstersGame {
     struct Game {
         address user;
-        bytes32 gameHash;
+        uint gameHash;
         bool verified;
     }
 
@@ -36,7 +36,7 @@ contract SnarkyMonstersGame {
         }
     }
 
-    function submitGame(uint256 gameId, bytes32 gameHash) external {
+    function submitGame(uint256 gameId, uint gameHash) external {
         require(games[gameId].user == address(0), "Game already exists");
 
         // console.log("Submitting Game for Game %s and user %s", gameId, msg.sender);
@@ -123,6 +123,7 @@ contract SnarkyMonstersGame {
         //We need to perform a check here to make sure the gameId matches the gameHash
         //In theory we could also make sure the correct gameId is included
         //to prevent man-in-middle-attack on the certification
+        require(pubSignals[0] == games[gameId].gameHash, "Game hash do not match");
         require(pubSignals[1] == gameId, "Game id should match the public signal");
 
         bool isValid = verifierContract.verifyProof(proof, pubSignals);
