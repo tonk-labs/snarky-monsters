@@ -5,11 +5,15 @@ const main = async () => {
     console.log("Deploying contracts with account: ", deployer.address);
     console.log("Account balance: ", accountBalance.toString());
   
-    const testContractFactory = await hre.ethers.getContractFactory("Test");
-    const testContract = await testContractFactory.deploy();
-    await testContract.deployed();
+    const VerifierFactory = await hre.ethers.getContractFactory("Verifier");
+    const verifierContract = await VerifierFactory.deploy();
+    await verifierContract.deployed();
+
+    const snarkyMonstersFactory = await hre.ethers.getContractFactory("SnarkyMonstersGame");
+    const snarkyContract = await snarkyMonstersFactory.deploy(verifierContract.address);
+    await snarkyContract.deployed();
   
-    console.log("testPortal address: ", testContract.address);
+    console.log("Snarkynaddress: ", snarkyContract.address);
   };
   
   const runMain = async () => {

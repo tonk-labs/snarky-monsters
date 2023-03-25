@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import "./Verifier.sol"; // Import the Verifier contract with the verifyProof function
 
 contract SnarkyMonstersGame {
-    struct Session {
+    struct Game {
         address user;
         bytes32 gameHash;
         bool verified;
@@ -18,13 +18,13 @@ contract SnarkyMonstersGame {
 
 
     BoardEntry[] topScores;
-    mapping(uint256 => Session) public sessions;
+    mapping(uint256 => Game) public games;
     mapping(address => BoardEntry) public leaderboard;
 
     Verifier public verifierContract;
 
-    event SessionSubmitted(uint256 indexed sessionId);
-    event SessionCertification(uint256 indexed sessionId, bool isValid);
+    event GameSubmitted(uint256 indexed gameId);
+    event GameCertification(uint256 indexed gameId, bool isValid);
 
     constructor(address verifierAddress) {
         verifierContract = Verifier(verifierAddress);
@@ -36,17 +36,17 @@ contract SnarkyMonstersGame {
         }
     }
 
-    function submitSession(uint256 sessionId, bytes32 gameHash) external {
-        require(sessions[sessionId].user == address(0), "Session already exists");
+    function submitGame(uint256 gameId, bytes32 gameHash) external {
+        require(games[gameId].user == address(0), "Game already exists");
 
-        // console.log("Submitting session for session %s and user %s", sessionId, msg.sender);
-        sessions[sessionId] = Session({
+        // console.log("Submitting Game for Game %s and user %s", gameId, msg.sender);
+        games[gameId] = Game({
             user: msg.sender,
             gameHash: gameHash,
             verified: false
         });
 
-        emit SessionSubmitted((sessionId));
+        emit GameSubmitted((gameId));
     }
 
     function updateTopScores(BoardEntry memory entry) private {
@@ -113,23 +113,24 @@ contract SnarkyMonstersGame {
     }
 
     function certifyGame(
-        uint256 sessionId,
+        uint256 gameId,
         bytes memory proof,
         uint[] memory pubSignals
     ) external {
-        require(!sessions[sessionId].verified, "Session already verified");
+        require(!games[gameId].verified, "Game already verified");
 
         //@TODO first 32 bytes of the pubSignals should be the gameHash
-        //We need to perform a check here to make sure the sessionId matches the gameHash
-        //In theory we could also make sure the correct sessionID is included
+        //We need to perform a check here to make sure the gameId matches the gameHash
+        //In theory we could also make sure the correct gameId is included
         //to prevent man-in-middle-attack on the certification
+        require(pubSignals[1] == gameId, "Game id should match the public signal");
 
         bool isValid = verifierContract.verifyProof(proof, pubSignals);
 
         if (isValid) {
-            address user = sessions[sessionId].user;
+            address user = games[gameId].user;
             BoardEntry memory entry = leaderboard[user]; 
-            sessions[sessionId].verified = true;
+            games[gameId].verified = true;
             // console.log("Retrieved entry for user %s", entry.user);
             if (entry.isEntry) {
                 leaderboard[user].wins += 1;
@@ -143,15 +144,15 @@ contract SnarkyMonstersGame {
             updateTopScores(leaderboard[user]);
         }
         
-        emit SessionCertification(sessionId, isValid);
+        emit GameCertification(gameId, isValid);
     }
 
-    function checkSessionSubmitted(uint256 sessionId) external view returns (bool) {
-        return sessions[sessionId].user != address(0);
+    function checkGameSubmitted(uint256 gameId) external view returns (bool) {
+        return games[gameId].user != address(0);
     }
 
-    function checkSessionVerified(uint256 sessionId) external view returns (bool) {
-        return sessions[sessionId].verified;
+    function checkGameVerified(uint256 gameId) external view returns (bool) {
+        return games[gameId].verified;
     }
 
     function getTopScores() external view returns (BoardEntry[] memory) {

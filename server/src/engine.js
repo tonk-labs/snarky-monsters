@@ -36,6 +36,7 @@ const calculateCrit = (source, move, randomness) => {
 }
 
 const isMiss = (move, randomness) => {
+  console.log(randomness)
   return randomness <= move.miss
 }
 
