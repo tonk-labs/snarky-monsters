@@ -307,7 +307,7 @@ export default function BattleScreen({
   const [animateTimeout, setAnimateTimeout] = useState(false)
   const [cachedPlayerState, setCachedPlayerState] = useState({ ...playerState })
   const [cachedNPCState, setCachedNPCState] = useState({ ...npcState })
-  const [rand, setRand] = useState(Math.floor(Math.random() * 4) + 1)
+  const [rand, setRand] = useState(2)
 
   // useEffect doesn't run if (1) a props changes where (2) the props is an array and (3) just the contents of the array change. We want
   useEffect(() => {
@@ -353,12 +353,12 @@ export default function BattleScreen({
           setAnimateNPCHeal(true)
           break
         case 'animatePlayerHP':
-          console.log("new cached player state", playerState)
+          console.log('new cached player state', playerState)
           setCachedPlayerState({ ...nextAnimation.playerState })
           shiftAnimationQueue()
           break
         case 'animateNPCHP':
-          console.log("new cached npc state", npcState)
+          console.log('new cached npc state', npcState)
           setCachedNPCState({ ...nextAnimation.npcState })
           shiftAnimationQueue()
           break
@@ -390,7 +390,7 @@ export default function BattleScreen({
     <Container>
       <div
         className={`endgame ${
-          (animateVictory || animateDefeat || animateTimeout) ? 'display' : ''
+          animateVictory || animateDefeat || animateTimeout ? 'display' : ''
         }`}
       >
         {animateVictory && (
