@@ -49,7 +49,42 @@ const About = styled.div``
 export default function Home() {
   return (
     <Container>
-      <Leaderboard />
+      <About className="bigBox">
+        <h2 style={{ textAlign: 'center' }}>WELCOME!</h2>
+        <p>
+          Get ready to duke it out and achieve web3 stardom as you climb the
+          ranks of crypto and battle enemies along the way.
+        </p>
+        <p>
+          Will you embrace life as the Bitcoin Maxi, launching tirades of angry
+          tweets, or wield the Degen's diamond hands?
+        </p>
+        <p>
+          Some moves are super effective against particular enemies but you'll
+          need to figure out what works against who.
+        </p>
+        <p>
+          The clock is ticking and with the right blend of strategy, luck and
+          timing you too can emerge victorious among the Snarky Monsters!
+        </p>
+        <hr />
+        <h3 style={{ textAlign: 'center' }}>UNDER THE HOOD</h3>
+        <p>
+          Accessor Labs' mission is to restore the magic of open networks by
+          porting artificially intelligent agents into on-chain games.
+        </p>
+        <p>
+          Fully on-chain games - or "Autonomous Worlds" - can solve (1) the
+          platform risk endemic to gaming and (2) the challenge of making web3
+          mainstream. However, in 2023, blockchain infrastructure is too slow
+          and public to run most video games.
+        </p>
+        <p>
+          A combination of cryptographic hacks and game design allows us to
+          recreate Pokémon-style battles in a trustless, low latency environment
+          incorporating hidden information. In other words, a simple, fun game!
+        </p>
+      </About>
       <Preview className="bigBox">
         <Link href="/game">
           <div>
@@ -59,34 +94,7 @@ export default function Home() {
           </div>
         </Link>
       </Preview>
-      <About className="bigBox">
-        <h2>Welcome to snarky monsters</h2>
-        <p>
-          Get ready to dive into the world of Web3 and battle it out for
-          ultimate dominance in this thrilling new video game! As a player,
-          you'll face off against some of the toughest opponents the Web3 has to
-          offer, using your wits, strategy, and a little bit of luck to emerge
-          victorious.
-        </p>
-        <p>
-          With each NPC opponent you face, you'll need to carefully study their
-          play patterns and learn their strengths and weaknesses in order to
-          defeat them. But don't get too comfortable - the Web3 is constantly
-          evolving, and you'll need to stay on your toes if you want to come out
-          on top. Whether you prefer to use brute force or cunning tactics, this
-          game has something for everyone.{' '}
-        </p>
-        <hr />
-        <h3>What is this?</h3>
-        <p>
-          Accessor Labs’ ZK-ML tooling empowers game creators to enrich their
-          games with vibrant, trustless, intelligent agents. Furthermore, we are
-          developing our own games to test this capability and inspire a
-          community of game devs. Right now we are working on a cooking game
-          that showcases proof of LSTM model execution and are excited to share
-          it out in Q1 2023.{' '}
-        </p>
-      </About>
+      <Leaderboard />
     </Container>
   )
 }

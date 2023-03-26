@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import Image from 'next/image'
 import discord from '../../public/discord.png'
 import twitter from '../../public/twitter.png'
+import github from '../../public/github.png'
 
 const Container = styled.div`
   .links {
@@ -27,6 +28,9 @@ export default function Footer(props) {
   return (
     <Container>
       <div className="links">
+        <a href="https://github.com/goblinoats/snarky-monsters" target="_blank">
+          <Image alt="social logo" src={github} height={20} />
+        </a>
         <a href="https://discord.gg/REF6tuZA7K" target="_blank">
           <Image alt="social logo" src={discord} height={20} />
         </a>

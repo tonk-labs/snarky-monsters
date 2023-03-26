@@ -30,18 +30,25 @@ export default function Opening({ setOpening, playMusic }) {
     <Container>
       <h1>WELCOME!</h1>
       <p>
-        Snarky Monsters is a turn-based combat game quite unlike anything you've
-        seen before. Start your journey in the world of web3 and fight off the
-        many enemies you'll meet.
+        Get ready to duke it out and achieve web3 stardom as you climb the ranks
+        of crypto and battle enemies along the way.
       </p>
       <p>
-        Pick your moves wisely and rise to the top - with enough luck, skill and
-        cunning, you too can take your place at the top of the crypto world.
+        Will you embrace life as the Bitcoin Maxi, launching tirades of angry
+        tweets, or wield the Degen's diamond hands?
       </p>
       <p>
-        Under the hood, this game is completely trustless - all in-game activity
-        is verified on the blockchain using zero-knowledge proofs. something
-        more about why this is cool.
+        Some moves are super effective against particular enemies but you'll
+        need to figure out what works against who.
+      </p>
+      <p>
+        The clock is ticking and with the right blend of strategy, luck and
+        timing you too can emerge victorious among the Snarky Monsters!
+      </p>
+      <p>
+        A combination of cryptographic hacks and game design allows us to
+        recreate Pokémon-style battles in a trustless, low latency environment
+        incorporating hidden information. In other words: a simple, fun game.
       </p>
       <div
         className="button"
