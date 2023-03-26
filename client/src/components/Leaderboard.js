@@ -8,6 +8,7 @@ const Container = styled.div`
   padding: 16px;
   margin: 8px;
   width: 33%;
+  overflow: hidden;
   @media (max-width: 1000px) {
     width: auto;
   }
@@ -37,7 +38,8 @@ const VerificationBox = styled.div`
   flex-direction: column;
   width: 100%;
   height: 20%;
-`;
+  text-align: center;
+`
 
 const VerificationDisplayBox = styled.div`
   display: flex;
@@ -52,10 +54,11 @@ const CenterDiv = styled.div`
   flex: 1;
   align-items: center;
   justify-content: center;
-`;
+`
 const StyledButton = styled.button`
   background-color: #cda882;
   width: 60%;
+  margin: auto;
   padding: 2%;
   border: 2px solid #5f3400;
   border-radius: 4px;
@@ -66,12 +69,9 @@ const StyledButton = styled.button`
     cursor: pointer;
     filter: brightness(1.1);
   }
-  
 `
 
-const CenterButton = styled.div`
-
-`
+const CenterButton = styled.div``
 
 export default function Leaderboard(props) {
   const [isConnected, setConnected] = useState(false)
@@ -81,9 +81,11 @@ export default function Leaderboard(props) {
   const [didCheckVerification, setDidCheckVerification] = useState(false)
 
   const connect = () => {
-    return Web3ConnectManager.getInstance().connectWallet().then(() => {
-      setConnected(true)
-    })
+    return Web3ConnectManager.getInstance()
+      .connectWallet()
+      .then(() => {
+        setConnected(true)
+      })
   }
 
   const checkVerified = () => {
@@ -106,7 +108,7 @@ export default function Leaderboard(props) {
     <Container>
       {!loading && isConnected ? (
         <div className="leaderList">
-          <h2>Leaderboard</h2>
+          <h2 style={{ textAlign: 'center' }}>Leaderboard</h2>
           <LeaderboardList>
             <ol>
               <li>0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266</li>
@@ -127,7 +129,7 @@ export default function Leaderboard(props) {
             <hr />
           </LeaderboardList>
           <VerificationBox>
-            <h3>Check Verification</h3>
+            <h3>CHECK VERIFICATION</h3>
             <p>Check your pending and verified wins</p>
             <VerificationDisplayBox>
               {didCheckVerification ? (
@@ -136,22 +138,19 @@ export default function Leaderboard(props) {
                   <p>{`Pending proofs: ${numberPending}`}</p>
                 </div>
               ) : (
-                <StyledButton
-                  onClick={checkVerified}
-                >
-                  Check Verification
+                <StyledButton onClick={checkVerified}>
+                  CHECK VERIFICATION
                 </StyledButton>
               )}
             </VerificationDisplayBox>
           </VerificationBox>
         </div>
-      ) : (!loading ? (
+      ) : !loading ? (
         <CenterDiv>
           <StyledButton onClick={connect}>CONNECT WALLET</StyledButton>
         </CenterDiv>
-        ) : (
-          <CenterDiv></CenterDiv>
-        )
+      ) : (
+        <CenterDiv></CenterDiv>
       )}
     </Container>
   )
