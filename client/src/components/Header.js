@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import discord from '../../public/discord.png'
 import twitter from '../../public/twitter.png'
+import github from '../../public/github.png'
 
 const Container = styled.div`
   display: flex;
@@ -28,7 +29,7 @@ const Container = styled.div`
       }
     }
   }
-  @media (max-width: 400px) {
+  @media (max-width: 500px) {
     h1 {
       font-size: 20px;
     }
@@ -42,6 +43,9 @@ export default function Header(props) {
         <h1>Snarky Monsters!</h1>
       </Link>
       <div className="links">
+        <a href="https://github.com/goblinoats/snarky-monsters" target="_blank">
+          <Image alt="social logo" src={github} height={20} />
+        </a>
         <a href="https://discord.gg/REF6tuZA7K" target="_blank">
           <Image alt="social logo" src={discord} height={20} />
         </a>

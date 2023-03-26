@@ -197,6 +197,8 @@ const Monsters = [
     },
     category: Category.DEGEN,
     categoryName: 'Degen',
+    description:
+      "Embrace chaos and volatility as the Degen, where high risk meets wild rewards. Are you ready to HODL your way to victory? Stay #SAFU and don't get rekt!",
   },
   {
     id: 2,
@@ -207,6 +209,8 @@ const Monsters = [
     },
     category: Category.REGULATOR,
     categoryName: 'Regulator',
+    description:
+      "Bring some much-needed order to the crypto world! As the Regulator, protect consumers and ensure the safety of the digital realm. Suit up and dust off your securities fraud textbook - it's time to lay down the law.",
   },
   {
     id: 3,
@@ -217,6 +221,8 @@ const Monsters = [
     },
     category: Category.VC,
     categoryName: 'Venture Capitalist',
+    description:
+      "Invest in the future and dominate the game! With keen foresight and a knack for spotting winners, the Venture Capitalist is ready to break into those big deals and 100X their way to the top. It's time to #build.",
   },
   {
     id: 4,
@@ -227,6 +233,8 @@ const Monsters = [
     },
     category: Category.NORMIE,
     categoryName: 'Normie',
+    description:
+      'Stay on trend as the Normie, sipping oat milk lattes in your athleisure while scrolling TikTok! Who needs endless crypto podcasts when you can just enjoy true crime and pop culture?',
   },
   {
     id: 5,
@@ -237,6 +245,8 @@ const Monsters = [
     },
     category: Category.AGI,
     categoryName: 'Artificial General Intelligence',
+    description:
+      'Master the matrix with unparalleled intelligence. The AGI calculates every move, always staying one step ahead. ChatGPT is coming for your job and soon will come for your crypto too!',
   },
   {
     id: 6,
@@ -247,6 +257,8 @@ const Monsters = [
     },
     category: Category.BITCOIN_MAXI,
     categoryName: 'Bitcoin Maxi',
+    description:
+      'Stand firm on the bedrock of digital gold! As the unwavering Bitcoin Maxi, accumulate sound, self-sovereign money - and prove that there can only be one true champion!',
   },
   {
     id: 7,
@@ -257,6 +269,8 @@ const Monsters = [
     },
     category: Category.MOON_MATHER,
     categoryName: 'Moon Mather',
+    description:
+      "Arm yourself with a PhD in advanced crytography and wake up each morning to a mountain of job offers. If you can survive those late nights catching up on the latest recursive proving system, you'll enjoy your status as one of the few experts that really grok zero-knowledge proofs!",
   },
 ]
 
@@ -298,12 +312,12 @@ const MoveTypeNames = {
 }
 
 const degen = [1, 0, 3, 2, 1, 1, 1]
-const reg =   [3, 1, 1, 2, 1, 0, 1]
-const vc =    [0, 1, 1, 1, 3, 2, 1]
-const norm =  [1, 1, 2, 1, 1, 3, 0]
-const agi =   [1, 2, 0, 1, 1, 1, 3]
-const btcm =  [1, 3, 1, 0, 1, 1, 2]
-const mm =    [1, 2, 1, 3, 0, 1, 1]
+const reg = [3, 1, 1, 2, 1, 0, 1]
+const vc = [0, 1, 1, 1, 3, 2, 1]
+const norm = [1, 1, 2, 1, 1, 3, 0]
+const agi = [1, 2, 0, 1, 1, 1, 3]
+const btcm = [1, 3, 1, 0, 1, 1, 2]
+const mm = [1, 2, 1, 3, 0, 1, 1]
 
 const EffectivenessMatrix = [degen, reg, vc, norm, agi, btcm, mm]
 

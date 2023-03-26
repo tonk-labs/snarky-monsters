@@ -13,6 +13,7 @@ const Container = styled.div`
     #carousel {
       display: flex;
       justify-content: space-between;
+      width: 75%;
       img {
         width: 50%;
       }
@@ -60,10 +61,13 @@ export default function MonsterPicker({
   fetchNPC,
 }) {
   const [carouselIndex, setCarouselIndex] = useState(0)
+  function sentences(text) {
+    return text.split(/(?<=[.?!])\s+(?=[A-Z])/)
+  }
 
   return (
     <Container>
-      <h2 style={{ marginTop: '0' }}>CHOOSE FIGHTER</h2>
+      <h3 style={{ marginTop: '0' }}>CHOOSE FIGHTER</h3>
       <div className="monsterDiv">
         <div id="carousel">
           <div
@@ -100,11 +104,18 @@ export default function MonsterPicker({
             </div>
           </div>
         </div>
-        <h2>{monsters[carouselIndex].categoryName}</h2>
-        <p>
-          Some explainer text about this character. They're really great but
-          watch out for X
-        </p>
+        <h2>{monsters[carouselIndex].categoryName.toUpperCase()}</h2>
+
+        {sentences(monsters[carouselIndex].description).map(
+          (sentence, index) => (
+            <p
+              key={index}
+              style={{ width: '90%', margin: 'auto', marginBottom: '2%' }}
+            >
+              {sentence.trim()}
+            </p>
+          ),
+        )}
         <div
           className="button"
           onClick={() => {
