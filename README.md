@@ -1,4 +1,4 @@
-# Snarky Monsters
+# Snarky Monsters!
 On-chain turn-based combat game between ZK-SNARKed server and client.
 - Randomness is verifiably generated between player and NPC using commitment schemes.
 - NPC logic (or as we like to call it, the NPC's internal psychology and biology) is hidden, allowing for a sweet hidden information mechanic. But the NPC verifiably follows the rules of the game.
