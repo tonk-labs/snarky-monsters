@@ -9,10 +9,11 @@ You can see a demo [here](https://youtu.be/r9OE89WkCuE?t=742).
 
 Hope you enjoy!
 
+Baz & Goblin Oats
+
 ## Ideas for next steps
 
 It would be cool to:
 - Create an NPC market that anyone could permissionlessly write to, creating their own NPCs with hidden move logic.
 - Decentralise battle servers so that anyone can create proofs.
 - Incorporate NFT rewards for players who make outstanding achievements.
-
